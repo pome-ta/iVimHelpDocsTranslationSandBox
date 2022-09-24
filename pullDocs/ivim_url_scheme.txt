@@ -1,0 +1,163 @@
+*ivim_url_scheme.txt*   For Vim version 8.1.    Last change: 2021 Sep 08
+
+                            iVim REFERENCE MANUAL   by Terry Chou
+
+                                            *ivim-url-scheme* *ivimeditor:*
+
+This file describes the details of iVim's URL scheme support.
+
+
+1. Introduction                                 |ivim-url-scheme-intro|
+2. Security                                     |ivim-url-scheme-security|
+3. Usage                                        |ivim-url-scheme-usage|
+
+
+==============================================================================
+1. Introduction                                 *ivim-url-scheme-intro*
+
+One of iVim's foremost goals is to contribute its editing power to the whole 
+iOS system. Examples for this effort include the supports to edit external
+files in place, to share files to other apps, and Shortcuts intents for users
+to integrate into their own workflows (|ivim-shortcuts|).
+
+Since version 2.41, iVim adds custom URL scheme support.
+
+Simply put, a custom URL scheme is a unique scheme that iVim registers in the
+system. When another app opens a URL with this scheme, the system launches
+iVim and passes the URL to it. iVim parses this URL, tries to find necessary 
+information from it, and acts according to the info found. In other words, you
+request iVim by putting your directives into a URL and simply opening it.
+
+
+==============================================================================
+2. Security                                     *ivim-url-scheme-security*
+
+URL schemes offer a potential attack vector into the app. For the sake of 
+security, iVim has the following design for its custom URL scheme.
+
+First alert ~
+
+When its URL scheme is invoked the first time, iVim alerts you to the potential
+security problem and lets you decide whether to allow or disallow URL schemes.
+
+This alert only shows once. After that, you can change the setting in the
+Settings.app (|ios-settings|).
+
+Toggle switch ~
+
+iVim also provides a switch in the Settings.app for you to toggle the custom
+URL schemes at any time.
+
+When custom URL scheme is disabled, iVim does nothing after launched by a URL.
+
+
+==============================================================================
+3. Usage                                        *ivim-url-scheme-usage*
+
+Format ~
+
+The general format of iVim's custom URL is as following: >
+
+        ivimeditor:<command>[?arg1=value1[&arg2=value2][&...]]
+<
+The beginning "ivimeditor:" part is the scheme iVim registers in the system.
+The system opens iVim whenever it sees this scheme. The <command> is the 
+command that is defined and provided by iVim, telling iVim what to do. After
+the command, you provide argument pairs, telling iVim how to do it.
+
+Sometimes this format would not be recognized as valid URLs. If this happens,
+use the traditional format instead: >
+
+        ivimeditor:///<command>[?arg1=value1[&arg2=value2][&...]]
+<
+
+Variable ~
+                            *ivim-url-scheme-var* *g:ivim_last_url_scheme*
+iVim provides a global variable "g:ivim_last_url_scheme" to record the info of 
+the last URL scheme it ran.
+
+It is a dictionary containing entries:
+
+- "scheme_command": the command ran.
+- "source_app": the bundle identifier of the source app that invoked this URL.
+                it may be unavailable.
+- other entries are command-dependent.
+
+It may be undefined if no custom URL scheme has been invoked yet.
+
+Note that it only records info for the last successful custom URL running,
+meaning earlier records are overwritten. New app launch makes it undefined.
+
+Commands ~
+                                                *ivim-url-scheme-cmds*
+So far, iVim defines and offers the following URL scheme commands:
+
+* runexcmd (since 2.41)                         *ivim-url-scheme-runexcmd*
+                It asks iVim to run an Ex command.
+
+                The following arguments are available:
+                    excmd: 
+                        the Ex command to run, this is required. Since only
+                        one command is ran for each URL, other Ex commands
+                        after the first one are ignored.
+                    arg:
+                        arguments for the Ex command. Multiple values are
+                        allowed and will be appended to *excmd* in order.
+                        This is optional since *excmd* can include all its
+                        arguments already. 
+                    callback:
+                        another URL that will be invoked when the Ex command
+                        is done. It supports the variable tokens as in cmd
+                        |:iopenurl| to provide info in the URL.
+                        
+                The following entries will be recorded into the global var
+                "ivim_last_url_scheme" afterwards:
+                    "excmd":
+                        the final Ex command line that ran.
+                    "output":
+                        the output of the Ex command.
+                    "callback":
+                        the original callback line if any. 
+
+                For example, this runs the command ":iexdir": >
+
+                    ivimeditor:runexcmd?excmd=iexdir
+<
+                This runs the command ":version": >
+
+                    ivimeditor:runexcmd?excmd=version&excmd=idoc
+<
+                the second command "idoc" is ignored because only one cmd
+                is ran for each URL.
+
+                This runs the command ':echo "hello"': >
+
+                    ivimeditor:runexcmd?excmd=echo%20%22hello%22
+<
+                the space and double quotes are properly percent escaped,
+                otherwise iVim would get an invalid URL.
+
+                This runs the command ":ibrowse -n -w": >
+
+                    ivimeditor:runexcmd?excmd=ibrowse&arg=-n&arg=-w
+<
+                by distributing args to the *arg* arguments, space escapings
+                are evaded.
+
+                This runs the command ':echo "hello"' and passes the output
+                to another app via the callback: >
+
+                    ivimeditor:runexcmd?excmd=echo&arg=%22hello%22&callback=
+                        s:x?o=%7Bg%3Aivim_last_url_scheme%5B%22output%22%5D%7D
+<
+                the value of *callback* before escaped was: >
+
+                    s:x?o={g:ivim_last_url_scheme["output"]}
+<
+                before invoking this URL scheme, iVim evaluates the token
+                "{g:ivim_last_url_scheme["output"]}" (the output of Ex cmd) and
+                replaces it with the value. As a result, the output is passed
+                to the target app.
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

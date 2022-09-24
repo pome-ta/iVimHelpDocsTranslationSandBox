@@ -1,0 +1,397 @@
+*ivim_file_browser.txt*	For Vim version 8.1.	Last change: 2021 Apr 07
+
+				iVim REFERENCE MANUAL	by Terry Chou
+
+						*ivim-file-browser* 
+
+This file describes the details of the file browser interface of iVim.
+
+
+1. Introduction                                 |ivim-file-browser-intro|
+2. GUI                                          |ivim-file-browser-gui|
+3. Ex Command                                   |ivim-file-browser-ex-cmd|
+
+==============================================================================
+1. Introduction                                 *ivim-file-browser-intro*
+
+Navigating the filesystem is one important component of the whole vim workflow.
+
+Although vim provides Ex commands and even the built-in plugin |netrw| serving
+this purpose well, it is not so convenient for users who are not accustomed to
+this text mode navigation.
+
+Since version 2.29, iVim begins to provide a new interface named "file browser"
+for users to navigate the filesystem in a scroll-and-tap way.
+
+In a file browser, you can:
+
+* see a filesytem item more intuitively and operate on it just by tapping
+* filter and search items quickly
+* select multiple items and act on them altogether
+* drag and drop items to accomplish some operations fast
+* navigate the browsing history
+* ...
+
+On a touchscreen, the file browser would be a productive choice even for a  
+traditional vim user.
+
+Use ":ibrowse -w" to open one file browser and just start using.
+
+See |ivim-file-browser-gui| for more details on functionalities and operations
+of the file browser graphical interface.
+
+
+==============================================================================
+2. GUI                                          *ivim-file-browser-gui*
+
+Basic ~
+
+Normally, a file browser presents items under a target directory as a list. 
+
+Each item has the following interface components:
+
+1) title: the title displays the type and name of the item. 
+
+a. a filesystem item can be one of the following types:
+
+. directory: represented by a folder icon in systems 13.0 and above; "[D]"
+otherwise.
+
+. file: represented by a doc icon in systems 13.0 and above; "[F]" otherwise.
+
+b. the name is the path of the item relative to the current target directory.
+It includes its extension if it has one.
+
+c. if the target directory has a readable parent, there is a specical item at
+the beginning of the whole list, representing the parent directory. It has the 
+name ".." and an arrow pointing to its real name (grayed).
+
+d. when the item is a symbolic link, its title also has an arrow pointing to
+its real path.
+
+2) subtitle: the subtitle displays the item's last modification date and size.
+
+a directory item does not show the size information.
+
+3) more button: an ellipses button at the other end which, when tapped, shows
+extra actions on the item in question.
+
+Items are sorted according to these rules:
+
+1) the parent directory item (if there is one) is always the first one;
+
+2) directories are listed before files;
+
+3) in each group, items are sorted by their last modification dates (latest 
+the first).
+
+The file browser does not hide any item. However, unreadable items have grey 
+titles and cannot be operated on.
+
+Multiple selection ~
+                                                *ivim-file-browser-select*
+Multiple items can be selected and operated on at the same time.
+
+There are 3 ways to enter the multiple selection mode:
+
+1) by tapping the "Select" button on the navigation bar;
+2) by long pressing one item until it is selected in the multiple mode;
+3) by choosing the "Select all" action in the file browser's actions menu.
+
+After entering the multiple selection mode:
+
+1) the "Select" navigation bar button turns into a "Done" button. Tapping it
+quits the multiple selection mode;
+2) and the file browser's "Done" button hides, to avoid misunderstanding;
+3) when some items are selected, their contextual actions are appended to the
+file browser's actions menu.
+
+Filter and search ~
+                                                *ivim-file-browser-search*
+The file browser has a search bar for you to locate items faster. To activate
+it, you can do any of the following:
+
+1) tap the "Filter & search …" button in the file browser's actions menu;
+2) in systems 11.0 and above, drag down the list to reveal the search bar and
+tap it.
+
+An item matches as long as its name includes the pattern you type. For some
+advanced searches, you can append some extra information after the pattern:
+
+1) search depth
+
+By default, only items under current directory are filtered. If you want to
+search deeper, you can specifiy the search depth at the end: >
+        ivim/3
+<
+this searches items whose names include "ivim" as deep as 3 levels.
+
+Note that the default and current level is 1. Use * to search at any level.
+
+2) navigation history
+
+You can list the navigation history (|ivim-file-browser-history|) by appending
+a ! at the end: >
+        hello/!
+<
+this filter the history and list ones containing "hello" in their names.
+
+Drag and drop ~
+                                                *ivim-file-browser-dragndrop*
+You can drag items from a file browser and drop them to differnt targets to
+fulfill different purposes:
+
+1) if the dragged item is a directory and you drop it at the edge of the
+screen, a new file browser window is opened (systems 13.0 and above);
+
+2) if the drop target is another directory item and it is writable, the items
+are moved (or copied if the source directory is unwritable) into the directory;
+
+3) if the drop target is current directory, a copy of the dragged item is made
+with a safe new name.
+
+Note that drag and drop is available in systems 11.0 and above.
+
+Multiple window ~
+                                                *ivim-file-browser-windows*
+If your system supports multiple windows (iPadOS 13.0 and above), you can open 
+more than one file browser at the same time.
+
+You can open a file browser in a window by any the following:
+
+1) drag and drop a directory item to the edge of the screen;
+2) tap "Open in new window" in a directory item's actions menu;
+3) use option -w when open file browsers via command |:ibrowse|.
+
+You can manage file browser windows via the Ex command |:ibrowse|.
+
+More actions ~
+                                                *ivim-file-browser-actions*
+A file browser does not make much sense if you cannot invoke actions on its 
+items.
+
+When you simply tap an item in a file browser:
+
+1) iVim starts editing it if it is a file;
+2) the browser changes into it if it is a directory.
+
+Beside these default actions, more contextual actions are available via the 
+actions menu:
+
+1) menu for the file browser
+
+Each file browser has an actions menu at its top right button.
+
+"Help":                 show this documentation;
+"Show main editor":     show the main editor if not already;
+"Filter or search":     activate the search bar and start typing;
+"Show history":         show the navigation history; 
+"Select all":           select all current items;
+"Deselect all":         deselect all selected items;
+"Add new item"          create a new item under the directory in question;
+"Add & open new item":  the same as above, also open the created item;
+
+When items are selected, more actions on them are appended:
+
+"Open":                    change into it if only one item is selected and 
+                           it is a directory;
+"Open in new window(s)":   open file browser window(s) for selected item(s) 
+                           if all selected items are directories;
+"Edit":                    edit selected items if all of them are files;
+"Preview":                 preview the previewable files among the selected;
+"Preview in new window":   same as above, but in a preview window;
+"Clean related buffer(s)": wipe all buffer(s) related to selected item(s);
+"Copy":                    copy selected item(s);
+"Move":                    move or rename selected item(s);
+"Remove":                  remove selected items.
+
+2) menu for each item
+
+Each item also has a contextual actions menu at its right end.
+
+a. parent directory item
+
+Each parent directory item has a list of all reachable ancestor directories. 
+You can choose and jump to one of them directly.
+
+b. menu for a directory item
+
+"Open":                    change into the directory;
+"Open in new window":      open a new file browser window for the directory;
+"Add new item":            create new item under the directory;
+"Add & open new item":     the same as above but also open the created item;
+"Clean related buffer(s)": wipe buffer(s) related to the directory;
+"Copy":                    copy the directory;
+"Move | rename":           move or rename the directory;
+"Remove":                  remove the directory.
+
+c. menu for a file item
+
+"Edit":                    edit the file;
+"Preview":                 preview the file;
+"Preview in new window":   same as above, but in a preview window;
+"Share":                   show the file's share sheet;
+"Clean related buffer(s)": wipe buffer(s) related to the file;
+"Copy":                    copy the file;
+"Move | rename":           move or rename the file;
+"Remove":                  remove the file.
+
+Behaviors of some actions are worth mentioning:
+
+1) Add new item
+
+You are prompted to give a name for the new item and get to choose to create 
+whether a file or directory.
+
+2) Clean related buffer(s)
+
+The related buffer for a file item is the one opening the file; related buffers
+for a directory item are those opening any descendents of the directory.
+
+3) Copy
+
+You are prompted to give the destination path of the copy operation:
+
+a. if the path starts with /, it is treated as an absolute path; otherwise, it
+is relative to the directory of the file browser;
+b. if the path ends with /, it means a destination directory. The copy will be
+created under it with the same name as the source; otherwise, it is used as the
+destination file and the copy is placed right at it;
+c. multiple items cannot be copied to the same destination path;
+c. the operation aborts when there is already an item with the same name.
+
+4) Move | rename
+
+You are prompted to give the destination path of the operation:
+
+a. if the path starts with /, it is treated as an absolute path; otherwise, it
+is relative to the directory of the file browser;
+b. if the path ends with /, it represents a destination directory, and the items
+are moved into it; otherwise, the path is treated as the rename destination;
+c. multiple items cannot be renamed to the same destination path;
+d. the operation aborts if an item already exists at the destination;
+e. all related buffers will be updated respectively.
+
+5) Remove
+
+All related buffers are also wiped.
+
+History ~
+                                                *ivim-file-browser-history*
+A file browser records the directories it has ever travelled into. 
+
+You can show the history list by:
+
+1) tapping "Show history" in the file browser's actions menu;
+2) or typing "/!" into the search bar.
+
+Each history item has a clock icon (in systems 13.0 and above) or "[H]" as its
+type indicator.
+
+Tapping a history item changes into the directory it represents.
+
+
+==============================================================================
+3. Commands                                     *ivim-file-browser-ex-cmd*
+
+iVim provides an Ex command |:ibrowse| for users to manage the file browser
+and its windows.
+
+:ibrowse [option] [path]...                                     *:ibrowse*
+                The following [option]s are available:
+                    -a, --activate:
+                        activate an open file browser.
+                    -l, --list:
+                        list existing file browsers.
+                    -w, --window:
+                        open file browsers in windows.
+                    -n, --new:
+                        force to create new file browsers.
+
+                A [path] is a path to indicate the target directory. When it
+                is a directory, it is used directly; when it is a file, its
+                parent directory is used. Environment variables are expanded.
+                One exception is that when option -a is used to activate an
+                existing file browser, a [path] is used as a pattern to match
+                file browsers.
+
+                Note that duplicate targets are only respected once.
+
+                                                            *:ibrowse-open*
+                By default, it opens file browsers for given [path]s. Even
+                when no [path]s are given, the current working directory is
+                opened. 
+
+                For example, this opens a file browser for current working
+                directory: >
+                        :ibrowse
+<
+                This opens a file browser for HOME directory: >
+                        :ibrowse $HOME
+<
+                And this opens a file browser for subdirectory `hello`: >
+                        :ibrowse hello
+<
+                                                            *:ibrowse-list*
+                Use option -l to list existing file browsers. If [path]s are
+                given, only file browsers matching any of them are listed.
+                Otherwise, it lists all.
+
+                This is an example output of a listing: >
+                
+                76547B21-B3A3-571C-8931-2281DEADBEEF   Documents
+                87654321-AABB-7231-6543-1122DDEECCBB   hello
+
+                2 file browser(s) found
+<
+                the first column is the file browser's identifier, the second
+                its opening directory.
+        
+                This lists all available file browsers: >
+                    :ibrowse -l
+<
+                And this lists all file browsers opening directory `~/hello`: >
+                    :ibrowse -l ~/hello
+<
+                                                        *:ibrowse-activate*
+                Use option -a to activate a file browser. For this option, a
+                [path] is used as a pattern to match the identifiers. A file
+                browser matches when its identifier starts with a pattern.
+                Since only one file browser can be active at any moment, the
+                first matched file browser wins and gets activated.
+
+                For example, this activates the file browser whose identifier
+                starts with `765`: >
+                        :ibrowse -a 765
+<
+                This activates the first file browser matching any of `765`
+                or `876`: >
+                        :ibrowse -a 765 876
+<
+                And this activates the first file browser: >
+                        :ibrowse -a
+<
+                                                        *:ibrowse-window*
+                By default, this command opens file browsers in the editor
+                window. Use option -w to open them in their own windows. Note
+                that in systems not support multiple window, this option has
+                no effect.
+
+                For example, this opens current working directory in its 
+                window: >
+                        :ibrowse -w
+<
+                                                        *:ibrowse-new*
+                When this command opens a file browser for a target directory,
+                it tries to find an existing file browser with the target. If
+                one is found, instead of opening a new file browser, it just
+                activate the found one. To force to open a new file browser,
+                use option -n.
+
+                This opens a new file browser for subdirectory `hello`: >
+                        :ibrowse -n hello
+<
+
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

@@ -1,0 +1,577 @@
+*ivim_plugins_manager.txt*   For Vim version 8.1.  Last change: 2020 Jun 15
+
+			iVim REFERENCE MANUAL	by Terry Chou
+
+
+					        *ivim-plugins-manager* *iplug* 
+
+This file documents the particularities of the plugins manager "iplug"
+provided by iVim.
+
+1. Introduction                                 |iplug-intro|
+2. Concepts                                     |iplug-concepts|
+3. Commands                                     |iplug-commands|
+
+
+==============================================================================
+1. Introduction                                 *iplug-intro*
+
+To assist you to install and manage online plugins, iVim provides a plugins 
+manager. It is called "iplug".
+
+Easy installation ~
+
+`iplug` supports all online plugins available as git repositories.
+
+All you need to do is just to provide the URLs of the online plugins to it,
+then `iplug` takes care of the rest of the installation:
+
+a. it guesses the name for a plugin from its URL;
+b. it categorizes the plugin according to its directory structure and puts it
+into the right location, automatically (See |iplug-plugin-type|);
+c. if there is documentation available in the plugin, it generates the related
+help tags;
+d. after everything is in position, it loads the plugin if it is one of type
+`start`.
+
+After the installation, the plugin is ready for you to use right away.
+
+Easy version control ~
+
+You can check whether there is any updated content available for a installed
+plugin with a simple command. `iplug` connects to repository and fetches the 
+latest content for you. 
+
+But rather than overwriting the current content automatically, it leaves it 
+to you to choose when to apply the new content.
+
+You can switch to any revision (|iplug-plugin-revision|) of a plugin at any 
+time to see whether it fits your needs more.
+
+If the latest version feels not so good to you, you can revert to an old state
+to which you have been accustomed.
+
+Easy management ~
+
+If you don't need a plugin any more, you can tell `iplug` to uninstall it.
+`iplug` removes it completely like it's never been there.
+
+Or, you can instead disable a plugin so that you can re-enable it when you need
+it later.
+
+You can see which plugins are upgradable, which ones belong to the group where
+they will be loaded automatically at app launch, or which ones need manual
+activation.
+
+If a plugin does not feel right to be loaded everytime iVim launches, you can
+change it to the type where it is only loaded by you when necessary. Or, the
+other way around.
+
+Easy export and import ~
+
+At any time, you can take a snapshot of your plugins by exporting the related
+information to a file. 
+
+The resulting file then can be used as a backup which you restore later; or 
+you can share it with your friends so that they can enjoy your great config.
+
+Efficiency ~
+
+`iplug` runs networking tasks concurrently. Therefore it is fast to install or
+update multiple plugins at the same time.
+
+See |iplug-concepts| for related concepts and |iplug-commands| for how to use
+the manager to do the concrete work.
+
+
+==============================================================================
+2. Concepts                                     *iplug-concepts*
+
+There are several concepts concerning better understanding and using `iplug`.
+
+a. plugin type
+                                                *iplug-plugin-type*
+Plugins are divided into three types in `iplug`:
+
+1) start: plugins are loaded automatically at every app launch;
+2) opt:   plugins need manual loading with command |:packadd|;
+3) pack:  vim 8 standard packages which themselves contain one or both of the
+          above plugins. (See |packages|)
+
+b. plugin state
+                                                *iplug-plugin-state*
+A plugin is said to be in a different state when it has a different version
+of content. 
+
+For example, when a plugin is newly installed, it is in a state. When it gets 
+upgraded afterwards, it changes into another state.
+
+Since each plugin's intallation, `iplug` records a history of states for it.
+
+c. plugin revision
+                                                *iplug-plugin-revision*
+`iplug` supports three types of revision:
+
+1) branch
+
+A branch normally means a line of development of a plugin repository. 
+
+For example, the author of plugin "one" has created three branches for its
+repository. The branch "master" is the one containing the content the author
+mean to release to its users; branch "dev" is supposed to hold the content the
+author is working on; and branch "test" is where the author put content about
+testings.
+
+You can jump among different branches of a plugin to make one as the current
+content. Note that you can only upgrade a plugin when it is in a branch.
+
+2) commit
+
+In turn, a branch is composed of a history of development snapshots, a.k.a.
+commits.
+
+When the author has fixed an issue or added a new feature, they would create a 
+snapshot in the branch to save related work.
+
+A commit is identified by an ID like "990ee5ff32ae80a6ea37bfae5ac3fbdf7477d2a4".
+
+You can pick one existing commit and pin the plugin to it.
+
+3) tag
+
+a tag is a named commit to mark a development milestone. Usually, the plugin
+author uses tags to mark versions of the plugin representing major stages of
+its development. Examples include "1.0.0", "1.6.2" or "v2.0".
+
+You can also pin a plugin to one of its tags.
+
+Note that you can only upgrade a plugin when it is in a branch. Because in the 
+other two cases (commit, tag), the plugin has been pinned to a fixed snapshot.
+
+The concepts of revision are essentially part of git.
+
+Sometimes you need to give a value to a revision option in |iplug-commands|.
+The standard format of it is "type:value". For instance, "b:release" means 
+branch "release"; "t:v2.2.0" means tag "v2.2.0"; "c:990ee5" means commit whose
+id starts with "990ee5". You can just give the "value" part for branch or tag
+and `iplug` can guess the right type when there is no conflicts. But "type"
+part is always necessary for commits.
+
+
+==============================================================================
+3. Commands                                     *iplug-commands*
+
+`iplug` exposes its functionalities to you via the Ex command |:iplug|.
+
+Subcommands ~
+
+`iplug` provides subcommands of which each covers a specific operation. The 
+currently available subcommands are:
+
+    list:    query and list available plugins;
+    add:     install new plugins;
+    remove:  uninstall given plugins;
+    enable:  re-activate disabled plugins;
+    disable: disable plugins without removing them;
+    update:  fetch content from plugins' remote repositories without upgrading
+             them;
+    upgrade: actually upgrade plugins according to the results of their last
+             update;
+    switch:  change plugins' properties such as type or revision;
+    revert:  move a plugin back to an old state in its history;
+    export:  export information of plugins in JSON format;
+    import:  import plugins according to the information from an export.
+
+Details and examples ~
+
+Following lists the details and examples of each subcommand.
+
+:iplug                                                  *:ip* *:iplug*
+                Without any subcommand, it lists all currently available
+                subcommands.
+
+:iplug list [option] [name]...                          *:iplug-list*
+                It lists all installed plugins when there is no [option]s or
+                [name]s given.
+
+                A [name] is a pattern that will be matched against a plugin's
+                name. It may contain wildcards to indicate multiple names. If 
+                any [name]s are given, only plugins whose names match any of 
+                them will be listed. Example: >
+                        :iplug list plugone plugo*
+<
+                This lists the plugin named "plugone", or plugins whose names
+                start with "plugo", provided there are any existing.
+
+                There are also some [option]s for you to filter plugins with
+                specific properties:
+                    -t <type>, --type <type>:
+                        list plugins of the given type.
+                    -u, --upgradable: 
+                        list plugins that can be upgraded.
+                                        
+                For example, below lists all plugins of type `opt`: >
+                        :iplug list -t opt
+<
+                And this lists all upgradable plugins: >
+                        :iplug list --upgradable
+<
+                [option]s and [name]s can be specified at the same time. In
+                this case, plugins need to pass all their testings to survive.
+
+:iplug add [option] <url>...                            *:iplug-add*
+                It installs plugins from the given <url>s. Example: >
+                        :iplug add https://github.com/terrychou/myplug.git
+<
+                This downloads the plugin from the above url, and installs it
+                with the name "myplug".
+
+                You can install multiple plugins at one time by simply giving
+                several urls. `iplug` tries to do them concurrently to make
+                the whole operation fast.
+
+                The following [option]s are available:
+                    -n <name>, --name <name>:
+                        specify the name for the new plugin.
+                        Without this, `iplug` guesses the name from the given
+                        url, by picking the last part of it and removing the
+                        possible ".git" suffix.
+
+                        Note that since plugins are identified by their names,
+                        you cannot install two plugins with the same name.
+                    -t <type>, --type <type>:
+                        specify the type of the new plugin.
+                        If this option is absent, `iplug` decides the type of
+                        the plugin according to its directory structure:
+                            1) if it contains sub-directory "start" or "opt",
+                               it is a package itself;
+                            2) if it contains sub-directory "colors", it is
+                               color schemes therefore of type `opt`;
+                            3) otherwise, it belongs to `start` by default.
+                    -r <revision>, --rev <revision>:
+                        specify the revision with which the new plugin starts.
+                        Without it, `iplug` uses the default revision of the
+                        origin repository, usually the "master" branch.
+                    -d <docdir>, --doc <docdir>:
+                        specify the sub-directory name for docs.
+                        A well organized plugin often includes documentation
+                        files and puts them in one of its sub-directory. By 
+                        default, this directory is named "doc". Because `iplug` 
+                        tries to generate help tags according to this path, it
+                        is helpful to provide it when it has a surprising name.
+                    -f, --force:
+                        overwrite all possible existing plugins during adding.
+                    -q, --quiet:
+                        do not show the progress view of the installation and
+                        only show a simple notification when the whole process
+                        is done.
+
+                For example, this installs a plugin with the name "test" other
+                than its default name "myplug": >
+                        :iplug add -n test https://github.com/.../myplug
+<
+                This installs the plugin with the type `opt`: >
+                        :iplug add -t opt https://github.com/.../myplug
+<
+                This installs the plugin and changes it to branch "release": >
+                        :iplug add -r b:release https://github.com/.../myplug
+<
+                This tells `iplug` that the documentation is in sub-dir "help"
+                instead: >
+                        :iplug add -d help https://github.com/.../myplug
+<
+                When there are multiple urls given, you can specify options
+                respectively like this: >
+                        :iplug add -n ,name1,name2,name3 url1 url2 url3
+<
+                Above installs plugins from url1, url2 and url3, and names them
+                as "name1", "name2" and "name3" respectively. The option value
+                is devided and distributed to each url:
+                    1) the first character is the delimiter, e.g. the first ","
+                tells `iplug` to divide "name1,name2,name3" by ",";
+                    2) the number of the divided options has to equal to the 
+                number of arguments, i.e. 3 urls in this example.
+
+:iplug remove [option] <name>...                        *:iplug-remove*
+                It uninstalls plugins whose names match <name>s.
+
+                A <name> can contain wildcards to represent multiple plugins: >
+                        :iplug remove plugone *test
+<
+                Above uninstalls plugin "plugone" and all other plugins whose
+                names end with "test".
+
+                As a guard, it lists all the plugins to be removed and asks you
+                for confirmation before the real uninstallation happens.
+
+                This removes all matched plugins, whether enabled or disabled.
+
+                The following [option]s are available:
+                    -q, --quiet:
+                        do the removing quietly. The confirmation step is also
+                        skipped.
+
+                Note that until next app launch, a plugin's functionalities stay
+                after it is removed.
+
+:iplug enable [option] [literal_name]...                *:iplug-enable*
+                It re-enables plugins with [literal_name]s.
+
+                A [literal_name] means a plugin name without any wildcards. If
+                no [literal_name]s are given, all currently disabled plugins,
+                which can be re-enabled again, are listed.
+
+                See |:iplug-disable| for details about disabled plugins.
+
+                These [option]s are available:
+                    -q, --quiet:
+                        do the job without output any progress information.
+
+                Note that a plugin is not loaded immediately after re-enabled
+                until next launch. 
+                
+:iplug disable [option] [literal_name]...               *:iplug-disable*
+                It disables plugins with [literal_name]s, without removing
+                them completely.
+
+                To get rid of the functionalities of a plugin, you can remove
+                it completely from the system. Or, as an alternative, you can
+                disable it for now. In the latter case, you can re-enable it
+                via |:iplug-enable| later when you need it again.
+
+                If no [literal_name]s are given, it lists all currently active
+                plugins which you can disable.
+
+                For example, this disables plugin "one" and "two": >
+                        :iplug disable one two
+<
+                The following [option]s are available:
+                    -q, --quiet:
+                        do the operation without output any progress info.
+
+                Note that after it is disabled, a plugin's functionalities 
+                stay until next launch.
+
+:iplug update [option] [name]...                        *:iplug-update*
+                It connects to the origin repositories of the given plugins,
+                and downloads their possible updated content.
+
+                Note that this does not change a plugin into its latest state.
+                You need to run |:iplug-upgrade| to actually apply the latest
+                content to a plugin.
+
+                For example, this fetches possible updated content from their
+                respective remote repositories for plugins whose names start
+                with "up": >
+                        :iplug update up*
+<
+                When no [name]s are given, it does the update operation for
+                all plugins.
+
+                Update operations skip disabled or pinned plugins.
+
+                When there are more than one target plugins, it tries to do
+                the operations concurrently to be efficient.
+
+                The following [option]s are available:
+                    -q, --quiet:
+                        do not show the progress view for updating and only
+                        shows a notification after the whole updating is done.
+
+:iplug upgrade [option] [name]...                       *:iplug-upgrade*
+                It upgrades the plugins with the given [name]s.
+
+                It applies the latest content that is obtained in the last
+                update operation to the target plugins. Example: >
+                        :iplug upgrade one two
+<
+                This changes the plugin "one" and "two" to their respective
+                latest state, provided they have updated content available
+                from their last |:iplug-update| operations. Note that an 
+                upgrade operation will never connect to the remote repository.
+
+                If no [name]s are given, it tries to upgrade all the plugins.
+
+                Upgrade operations skip disabled or pinned plugins.
+
+                The following [option]s are available:
+                    -q, --quiet:
+                        do not show the progress view and only shows a simple
+                        notification after the whole operation is done.
+
+:iplug switch <option> <literal_name>...                *:iplug-switch*
+                It changes properties of plugins with <literal_name>s to the
+                new value given in <option>s.
+
+                For example, this changes plugin "one" to its branch "test": >
+                        :iplug switch -r b:test one
+<
+                This pins plugin "two" to its tag "2.1.0": >
+                        :iplug switch -r t:2.1.0 two
+<
+                This changes plugin "three" to type `opt`, therefore it needs
+                manual loading from now on: >
+                        :iplug switch -t opt three
+<
+                The following [option]s are available:
+                    -r <revision>, --rev <revision>:
+                        specify the target revision to change to.
+                    -t <type>, --type <type>:
+                        specify the target plugin type to change to.
+                    -q, --quiet:
+                        do not show the progress view and just give a simple
+                        notification when the whole operation is done.
+
+                Different kinds of switches can be done at the same time, as
+                long as they do not conflict with each other: >
+                        :iplug switch -r c:e2670f -t start four
+<
+                This pins plugin "four" to its commit "e2670f" and changes it
+                to type `start`.
+
+                It supports to operate on multiple plugins at the same time,
+                provided respective targets are divided and distributed as in
+                |:iplug-add|: >
+                        :iplug switch -t ,opt,start five six
+<
+                This changes plugin "five" to type `opt` and "six" to `start`.
+                
+:iplug revert [option] <literal_name>...                *:iplug-revert*
+                It reverts plugin with <literal_name> to an old state in its
+                history.
+
+                A new state is recorded into a plugin's history when it is:
+                    1) newly installed (|:iplug-add|)
+                    2) upgraded to a new state (|:iplug-upgrade|)
+                    3) changed into another revision (|:iplug-switch|)
+                    4) reverted to another state (|:iplug-revert|)
+
+                Then you can choose to revert to an old state that you feel 
+                works better than the current one.
+
+                To list all available history records, omit any [option] (so
+                no revert target specified): >
+                        :iplug revert one
+<
+                This lists the history records of plugin "one":
+                    history of plugin 'one':
+                    
+                    0  e2670f...  b:master  * fix duplicated slash...
+                    1  990ee5...  b:master  * add shortcut for...
+                    ...
+
+                As seen in the above, each line represents a record. The first
+                record is the current one. The second is the last one ...
+                For each record, the first column is the steps needed to revert
+                from current record to it; The second column is the id of the
+                record; The third is the revision; and the rest is the summary
+                of the version of the record.
+
+                The following [option]s are available:
+                    -s <step>, --step <step>:
+                        specify the steps to revert.
+                    -i <id>, --id <id>:
+                        specify the id of the target record to revert to.
+                    -q, --quiet:
+                        do the operation quietly.
+
+                To revert a plugin, you need to specify the target via some of
+                the options: >
+                        :iplug revert -s 1 two
+<
+                This reverts plugin "two" one step back, i.e. to its last 
+                record.
+
+                This reverts plugin "one" to the record with id "990ee5...": >
+                        :iplug revert -i 990ee5 one
+<
+                Of course, you can do the revert for multiple plugins at the
+                same time, just remember to provide targets in the divide way
+                as in |:iplug-switch|: >
+                        :iplug revert -s ,1,2 one two
+<
+                This revert plugin "one" 1 step back and "two" 2 steps back.               
+
+                Note that |:iplug-remove| will also delete the plugin's 
+                history records.
+
+:iplug export [option] [name]...                        *:iplug-export*
+                It exports information of plugins with the given [name]s. So
+                that it can be used later to restore them via |:iplug-import|.
+
+                A [name] can contain wildcards to represent multiple plugins.
+                When no [name]s are given, it exports all existing plugins.
+
+                The output format is in JSON, which contains the necessary
+                entries of plugins for a later restoration.
+
+                The following [option]s are available:
+                    -o <filename>, --output <filename>:
+                        specify the file into which the output is written. If
+                        this option is omitted, the output is printed on the
+                        screen.
+                    -f, --force:
+                        if the specified output file already exists, an error
+                        is reported; this option ignores this safeguard and
+                        overwrites the file directly.
+                    -q, --quiet:
+                        do the operation in silence.
+
+                For example, this exports info of all plugins into the file
+                "exported_plugins" under current directory: >
+                        :iplug export -o exported_plugins
+<
+                This exports info of plugin "one" and "two" into file "expo"
+                and overwrites the file when it already exists: >
+                        :iplug export -f -o expo one two
+<
+                Note that the info exported is a snapshot of the plugins'
+                states at the moment of exporting. It doesn't care whether a
+                plugin is disabled or not.
+
+:iplug import [option] <url>...                         *:iplug-import*
+                It restores plugins according to the information in the files
+                at the given <url>s.
+
+                A <url> can be either a local path or a remote one. The given
+                file needs to be in the format supported by |:iplug-export|. 
+
+                Note that if multiple files are given, and a plugin with the 
+                same name appears in more than one of them, the last wins.
+
+                If not in quiet mode, it prompts you for confirmation before
+                the real importing.
+
+                The following [option]s are available:
+                    -f, --force:
+                        if this option is specified, it overwrites existing
+                        plugins during importing.
+                    -q, --quiet:
+                        do the operation quietly and only notify at the end.
+
+                For example, this imports plugins given by the local file
+                "exported_plugins": >
+                        :iplug import exported_plugins
+<
+                This imports plugins listed in the remote file "plugins" and
+                overwrites all possible existing plugins: >
+                        :iplug import -f https://example.com/plugins
+<
+                Note that if an invalid entry is encountered, it is ignored
+                rather than the whole operation stops.
+
+Single workflow ~
+                                                    *iplug-single-workflow*
+To maintain internal consistency, `iplug` only allows one subcommand to run at
+the same time.
+
+If you attempt to run another subcommand while there is already one running,
+`iplug` reminds you of the conflicts:
+
+a) if the running command has a progress view, the view is restored and shown;
+
+b) otherwise, an error is printed saying one command is already running.
+        
+
+==============================================================================
+vim:tw=78:ts=8:noet:ft=help:norl:

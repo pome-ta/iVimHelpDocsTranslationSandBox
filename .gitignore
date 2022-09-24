@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# iVim help docs
+iVimDocsMaster/
+
+# PyCharm
+.idea/
