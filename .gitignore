@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # iVim help docs
-iVimDocsMaster/
+#iVimDocsMaster/
 
 # PyCharm
 .idea/

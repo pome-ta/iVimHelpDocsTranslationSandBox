@@ -1,0 +1,1654 @@
+*ios_commands.txt*	For Vim version 8.1.	Last change: 2022 May 30
+
+				iVim REFERENCE MANUAL	by Terry Chou
+
+						*ios-commands* *icommands*
+
+This file describes the details of the ex commands added by iVim to support 
+its features.
+
+1. Font Management		|font-management-icommands|
+2. Share			|share-icommands|
+3. Open URL			|open-url-icommand|
+4. Set Extended Keyboard	|set-extended-keyboard-icommand|
+5. Old Documents		|old-documents-icommands|
+6. Settings                     |ivim-settings|
+7. Preview Windows              |ivim-preview-windows-icommand|
+8. Spotlight Management         |ivim-spotlight-icommand|
+
+==============================================================================
+1. Font Management				*font-management-icommands*
+
+iVim provides the Ex command |:ifont| to assist you with the font management 
+|ios-font-management|.
+
+Subcommands ~
+                                                *:ifont-subcmds*
+|:ifont| currently has the following subcommands:
+
+    list:     query and list available fonts;
+    set:      change font settings;
+    add:      import fonts or restore fonts from the trash;
+    remove:   trash fonts or delete fonts completely;
+    increase: make font size bigger;
+    decrease: make font size smaller. 
+
+Details and examples ~
+
+Below lists the details and examples of command |:ifont| & its subcommands.
+
+:ifont                                                  *:ifo* *:ifont*
+                Without any subcommand given, it lists all subcommands that 
+                are currently available.
+
+:ifont list [option] [pattern]...                   *:ifont-list* *:ifont-ls*
+                It lists all available fonts when no [option]s or [pattern]s 
+                is given: >
+
+                       Apple Color Emoji [r]
+                       Courier New [r,b,i,bi]
+                       Menlo [r,b:b,i,bi]
+                    >  Source Code Pro [r:r,b,i] 14.0
+<
+                Each line represents a font family, with the name followed by
+                its member typefaces |ifont-typefaces| in the square brackets.
+                The current font family is indicated by a ">" at the start,
+                and its size the end. In the example above, the current font
+                is set to "Source Code Pro" with size 14.0.
+
+                All listed font families are ordered by their names.
+                                                        *ifont-typefaces*
+                |:ifont| abbreviates font typefaces (|ivim-font-typefaces|):
+                    regular -> r
+                    bold -> b
+                    italic -> i
+                    bold & italic -> bi
+                                                    *ifont-list-typeface-fmt*
+                In fonts listing, the format of a font typeface is: >
+                    <typeface>[:<target style>[;<target style>]...]
+<
+                A <target style> means the <typeface> of the font family is 
+                used to render text in this style. In the font list above, you 
+                can see that the regular text is currently rendered in regular
+                "Source Code Pro"; bold text bold "Menlo".
+                                                        *ifont-pattern*
+                A [pattern] has the format below: >
+                    [keyword][/<typeface>]
+<
+                If [keyword] is given, a candidate's name is matched against
+                it. A keyword supports wildcards and is case-insensitive. 
+
+                If <typeface> is given, a candidate that has the typeface
+                matches. A <typeface> is parsed abbreviated from the beginning 
+                For example, both "/b" and "/br" mean "bold" ("r" in "/br" is
+                ignored since there is no typeface abbreviation "br" but "b").
+                                                        *ifont-family-filter*
+                When a font family is matched against a [pattern], its name
+                is matched against the keyword and its available typefaces
+                against the pattern's typeface.
+
+                When multiple [pattern]s are given, a font family that matches
+                any of them matches.
+
+                In the above fonts listing for example, "*code*/b" matches the 
+                "Source Code Pro" because it has "code" in its name and also
+                has the bold typeface; "/b" filters out "Apple Color Emoji" 
+                because it does not has the bold typeface.
+
+                The following [option]s are available for fonts listing:
+                    -c, --current:
+                        list current font settings.
+                    -r, --reverse:
+                        reverse the pattern filtering results.
+                    -T, --trash:
+                        list trashed fonts.
+                                                        *:ifont-list-current*
+                With the option "-c", the current font settings is listed: >
+
+                     R: Source Code Pro 14.0
+                     B: Source Code Pro/b
+                     I: Source Code Pro/i
+<
+                One settings line has the format: >
+                    <text style>: <font family>[/<typeface>] [size]
+<
+                The <text style> is a capitalized letter representing a text
+                style. The <font family> and <typeface> together represents
+                the font picked to render the related style of text. When 
+                <typeface> is omitted, the regular typeface is implied. The 
+                [size] means the size of fonts and is only appended to the 
+                regular style line.
+
+                The reading of the above listing means currently:
+                    * the regular text is rendered in regular "Source Code Pro" 
+                    * the bold text is rendered in bold "Source Code Pro"
+                    * the italic text is rendered in italic "Source Code Pro"
+                                                        *:ifont-list-trash*
+                When the option "-T" is given, the trashed fonts are listed: >
+
+                    Monaco [r] <Monaco.ttf>
+                    Ubuntu Mono [b,i] <UbuntuMono.ttc>
+<
+                One trashed line has the format: >
+                    <font family> [<typeface>[,<typeface>]...] <font file>
+<
+                The <font family> is the font family name. The <typeface>s in 
+                the square backets are trashed font typefaces. The <font file>
+                is the name of the font file where the fonts were from.
+
+                The trashed lines are sorted according to <font family> and
+                <font file>. They can also be filtered by |ifont-pattern|s.
+
+                The reading of the above example means:
+                    * the regular "Monaco" from "Monaco.ttf" has been trashed
+                    * the bold and italic "Ubuntu Mono" from "UbuntuMono.ttc"
+                      have been trashed
+                                                        *:ifont-list-examples*
+                For example, this lists all available fonts that have "pro" in
+                their names: >
+                        :ifont list *pro*
+<
+                And this lists all available fonts that have bold typeface: >
+                        :ifont list /b
+<
+                This lists all trashed fonts that have italic typeface: >
+                        :ifont list --trash /i
+<
+                This lists current font settings: >
+                        :ifont list --current
+<
+                                                        *:ifont-list-aliases*
+                Also, the alias "ls" is available for lazy-typers: >
+                        :ifont ls
+<
+:ifont set [option] [pattern]                           *:ifont-set*
+                It changes the current font settings.
+
+                When no [option]s or [pattern]s are given, a GUI font settings
+                view |ivim-fsv| pops up for you to tune by tapping.
+
+                The [pattern] is a |ifont-pattern|. When it is given, all the
+                available font families are matched against it and the first
+                matched is set as the regular font. When no exact target font 
+                is found, it uses |ivim-font-alt| mechanism. Note that only 
+                the first [pattern] is used for this, the rest, if given, are 
+                ignored.
+                
+                The following [option]s are available:
+                    -b <pattern>, --bold <pattern>:
+                        find the font that matches <pattern> and set it as
+                        the bold font.
+                        
+                        When the typeface is not indicated in <pattern>, the
+                        bold typeface is implied. It uses |ivim-font-alt|
+                        mechanism too.
+
+                        If <pattern> is empty, it resets the customized bold
+                        font.
+                    -d, --default:
+                        switch back to the default settings. Note that this
+                        ignores all other arguments.
+                    -i <pattern>, --italic <pattern>:
+                        find the font that matches <pattern> and use it as the
+                        italic font.
+
+                        When the typeface is omitted in <pattern>, the italic 
+                        typeface is implied. It uses |ivim-font-alt| in cases
+                        that no exact font found.
+
+                        If <pattern> is empty, the customized italic font is
+                        reset.
+                    -q, --quiet:
+                        no output in the message window even when warnings or
+                        errors happen. Notifications still show.
+                    -s <size>, --size <size>:
+                        change the font size to <size>. Note that if the given
+                        size resides out of the size limits [6.0, 42.0], it is
+                        cut.
+                        
+                        You can also use |:ifont-increase| or |:ifont-decrease|
+                        to change font size quickly.
+
+                Note that if no customized bold or italic font is set, the
+                regular font family is followed.
+                                                    *:ifont-set-examples*
+                For example, this changes the regular font to "Monaco": >
+                        :ifont set monaco
+<
+                This tries and changes the regular font to the first font
+                whose name begins with "ub": >
+                        :ifont set ub*
+<
+                This changes the font size to 18.0: >
+                        :ifont set --size 18
+<
+                And this asks iVim to use "Menlo" as the bold font: >
+                        :ifont set --bold menlo
+<
+                This changes the regular font back to the default: >
+                        :ifont set --default
+<
+:ifont add [option] [<pattern>|<path>]...           *:ifont-add*
+                It imports fonts into iVim, or restores fonts from trash.
+
+                When no [option]s, <pattern>s or <path>s are given, it opens
+                the documents picker and lets you import fonts from there.
+
+                When any <path> is given, it tries to import fonts from files
+                at the <path>s.
+
+                It has the following [option]s:
+                    --force:
+                        force the importing in the following situations:
+
+                        * All imported font files are stored in the directory
+                        "Library/Fonts/". Normally, an importing fails when
+                        there is already a font file with the same name. This
+                        option asks iVim to overwrite the existing file and
+                        import the file any way.
+                    -m, --move:
+                        move the source font files while importing them. Or
+                        they are just copied.
+                    -q, --quiet:
+                        do not print any warning or errors in the message
+                        window, and take yes for any confirmation silently.
+                    -r, --reverse:
+                        reverse the pattern matching results in the case of
+                        restoring fonts from the trash.
+                    -T, --trash:
+                        restore fonts from the trash.
+                    -t <typefaces>, --typefaces <typefaces>:
+                        specify typefaces to restore. Its format is the same
+                        as described in |:ifont-rm-typefaces|.
+                                                    *:ifont-add-restore*
+                Besides importing new fonts into iVim, |:ifont-add| can also
+                restore trashed fonts when the option "-T" is given.
+
+                In the restoration mode, arguments are treated as <pattern>s.
+                Trashed fonts match against them as described above in 
+                |:ifont-list-trash|. It restores all matches trashed fonts
+                after your confirmation.
+                                                    *:ifont-add-examples*
+                For example, you open the documents picker then pick fonts
+                to import from it: >
+                        :ifont add
+<
+                This imports font file "PTMono.ttf" in your home folder: >
+                        :ifont add ~/PTMono.ttf
+<
+                This imports file "UbuntuMono.ttc" in the current folder, and
+                deletes it afterwards: >
+                        :ifont add --move UbuntuMono.ttc
+<
+                This restores all bold fonts from trash: >
+                        :ifont add --trash --typefaces b
+<
+                Note that only font files of types listed in |ivim-font-types|
+                can be imported.
+
+:ifont remove [option] [pattern]...                 *:ifont-remove* *:ifont-rm*
+                It trashes fonts or deletes fonts completely.
+
+                It has the following [option]s available:
+                    -q, --quiet:
+                        do not show warnings or errors in the message window,
+                        and take yes for any confirmation silently.
+                    -R, --remove:
+                        delete fonts directly instead of trashing them.
+                    -r, --reverse:
+                        reverse matched fonts.
+                    -t <typefaces>, --typefaces <typefaces>:
+                        specify typefaces to remove rather than the whole
+                        font family.
+                    -T, --trash:
+                        clean trashed fonts.
+
+                Normally, available font families match against the given
+                [pattern]s as described in |ifont-family-filter|. Matched
+                fonts are trashed on your confirmation.
+
+                Note that you can only trash or delete fonts that have been
+                imported into iVim by you.
+
+                When option "-R" is given, matched fonts are deleted directly
+                and completely, instead of moved into trash.
+                                                    *:ifont-rm-typefaces*
+                By default, all available typefaces of a matched font family 
+                are trashed or deleted. If you just want to remove specific
+                typefaces, you can indicate your intention with option "-t". 
+                The <typefaces> has the following format: >
+                    <typeface abbreviation>[,<typeface abbreviation>]...
+<
+                                                    *:ifont-rm-trash-clean*
+                When option "-T" is given, it cleans trashed fonts instead of
+                trashing available fonts. In this case, trashed fonts match
+                against the [pattern]s as described in |:ifont-list-trash|.
+                Matched trashed fonts are cleaned up on your confirmation.
+                                                    *:ifont-rm-examples*
+                For example, this tries to trash all font families whose names
+                start with "ub": >
+                        :ifont remove ub*
+<
+                This tries to trash bold typeface of "Monaco": >
+                        :ifont remove monaco --typefaces b
+<
+                This cleans up all trashed bold fonts: >
+                        :ifont remove --trash --typefaces b
+<
+                                                    *:ifont-remove-aliases*
+                You also have its shortcut: >
+                        :ifont rm ub*
+<
+                Note that you can also trash or remove fonts in a font family
+                picker |ivim-ffp| or font typeface picker |ivim-tfp|.
+
+:ifont increase [step]                              *:ifont-increase*
+                It increases the font size by the given [step], or by 1 if
+                [step] is omitted.
+                                                    *:ifont-incr-examples*
+                For example, this increases the current font size by 5: >
+                        :ifont increase 5
+<
+                This increases the font size by 1: >
+                        :ifont increase
+<
+                Note that iVim has a maximum font size 42.0, so any exceeded
+                target size is cut to it.
+                                                    *:ifont-incr-aliases*
+                It also has a shorter alias: >
+                        :ifont +
+<
+:ifont decrease [step]                              *:ifont-decrease*
+                It decreases the font size by the given [step], or by 1 if
+                [step] is omitted.
+                                                    *:ifont-decr-examples*
+                For example, this decreases the current font size by 3: >
+                        :ifont decrease 3
+<
+                This decreases the font size by 1: >
+                        :ifont decrease
+<
+                Note that iVim has a minimum font size 6.0, so any smaller
+                target size is set to it automatically.
+                                                    *:ifont-decr-aliases*
+                It has a shorter alias too: >
+                        :ifont -
+<
+
+                                                    *:idel* *:ideletefont*
+Since version 2.45, the old fonts deletion command ":ideletefont" retired. Use
+|:ifont-remove| instead.
+
+
+==============================================================================
+2. Share						*share-icommands*
+
+iVim provides the following commands for sharing |ios-share|.
+
+:[range]ish[are] [fname]				*:ish* *:ishare*
+		Share files or text with other apps via the share extension.
+		
+		When [range] is given, text of lines in it of current buffer
+		will be shared. Example: >
+			:3,8ishare		"share text of line 3 thro 8
+<
+		Otherwise, the file represented by [fname] will be shared: >
+			:ishare todo		"share file `todo` under 
+						"current directory
+			:ishare			"share file of current window 
+<
+		Note: only one file can be shared at a time.
+
+:idoc[uments] [mode]				    *:idoc* *:idocuments*
+		Pick documents from iCloud Drive or other document provider
+		apps via the document picker.
+
+		When the mode is `open` or omitted, the picked document will
+		be edited in place, meaning that the modifications will be
+		saved back to the original document directly. Example: >
+			:idoc			"open the document picker
+						"and edit the picked file
+						"in place
+<		
+                Directories can also be opened in `open` mode. Before iOS 13,
+                this needs explicit support from the document provider app.
+                Since iOS 13, this becomes system-wide. However, it needs to
+                be done in the separate UI opened with mode `dir`: >
+                        :idoc dir               "open the document picker
+                                                "specific for picking dirs
+<
+                If the mode is `import`, the picked document will be copied
+		into iVim's `Documents` directory and opened for further
+		editing. 
+
+		Note: the imported file will be renamed if there has been 
+		a file already possesses that name.
+
+
+iVim exposes the functionalities of external directory links as the Ex command
+`:iexdir` and its subcommands:
+
+    list:   query and list existing external directory links;
+    add:    add a new external directory link;
+    remove: remove given external directory links;
+    goto:   change current working directory to the given external directory;
+    fix:    fix possible problems for given external directory links.
+
+The following gives the details and examples of this command:
+
+:iexdir                                                 *:ie* *:iexdir*
+                It lists all available subcommands.
+
+:iexdir list [pattern]...                               *:iexdir-list*
+                It lists existing external directory links filtered by the
+                given [pattern]s.
+
+                If no [pattern]s are given, it lists all links. Example:
+
+                        0  Documents/edocs  :Documents dir of Exa.app ~
+                        1  Documents/shell  :Some shell related stuff ~
+                        2-  Documents/nodesc ~
+                        ... ~
+                        20 link(s) found ~
+
+                Each line represents an external directory link. They are
+                ordered by the time of adding, with the earliest the first.
+                The number in the first column is its index. The second is the
+                local path of the link. The third is its description (provided
+                during its adding |:iexdir-add| optionally).
+
+                Note that if an external directory link has some problems, its
+                index will has a suffix "-", like link 2 in the above example.
+                You can run |:iexdir-fix| to fix it.
+
+                                                        *:iexdir-pattern*
+                A [pattern] is something for filtering the list, it can be one
+                of the following types:
+                    1) a literal string: a link matches if its local path or 
+                description contains this literal string;
+                    2) an index: indicate the link at this index. Note that to
+                distinguish it from a literal string, it starts with a comma.
+                e.g. `,2`;
+                    3) an index range: a link matches if its index is within
+                this range. A range is formatted as `[start],[end]`, including
+                the `start` but excluding the `end`. `start`, `end` or both
+                could be omitted to indicate open ends. It needs to start with
+                a comma for the same reason as an index. For example, `,1,5`
+                includes indices 1 2 3 4; `,2,` means indices from 2 all to the
+                end.
+
+                Multiple [pattern]s can be given. A link matches if it matches
+                any one of them.
+
+                For example, this lists all links whose local path or desc
+                contains "example": >
+                        :iexdir list example
+<
+                This lists links at indices 3 4 5: >
+                        :iexdir list ,3,6
+<
+                And this lists links at indices 2 3 and 7: >
+                        :iexdir list ,2,4 ,7
+<
+
+:iexdir add [option]                                    *:iexdir-add*
+                It adds a new external directory link into iVim's sandbox.
+
+                It opens the documents picker for you to choose a directory.
+                Then it makes a symbolic link to the chosen directory.
+
+                The following [option]s are available:
+                    -o <local path>, --output <local path>:
+                        indicate the local path this new link to link to. If
+                        this option is not given, the local path will be a
+                        directory with the same name as the external one under
+                        the current working directory.
+                    -d <description>, --description <description>:
+                        A description for yourself to recognize the link 
+                        better than a bare local path.
+                
+                For example, this creates an external dir link under current
+                working directory with the same name as the external dir you
+                pick: >
+                        :iexdir add
+<
+                This creates a link with the name "allrepos" under the parent
+                directory: >
+                        :iexdir add -o ../allrepos
+<
+                This creates a link with the name "docs" and a description: >
+                        :iexdir add -o docs -d "All the help documentation"
+<
+                Note that to make sense, you cannot create an external dir 
+                link in an external directory.
+
+:iexdir remove [option] <pattern>...                    *:iexdir-remove*
+                It removes all external directory links matching the given 
+                <pattern>s.
+
+                Removing a link is composed of the following jobs:
+                    a) removing the local directory;
+                    b) removing the link record;
+                    c) cleaning related vim buffers and closing related
+                    windows;
+                    d) correcting the current working directory if it was
+                    under the related local directory.
+
+                If it is not in the quiet mode, it prompts you to confirm the
+                removing.
+
+                The following [option]s are available:
+                    -q, --quiet:
+                        do the operation in quiet mode. All outputs are muted
+                        and the removing is confrimed positively by default.
+
+                See |:iexdir-pattern| for details on a <pattern>.
+
+                For example, this removes links whose description or local
+                path contains "shell": >
+                        :iexdir remove shell
+<
+                This removes link at index 3, in silence: >
+                        :iexdir remove -q ,3
+<
+                This removes links at indices 2 5 6: >
+                        :iexdir remove ,2 ,5,7
+<
+                
+:iedir goto [option] <pattern>                          *:iexdir-goto*
+                It changes the current working directory to one related to
+                the link matching <pattern>.
+
+                See |:iexdir-pattern| for the details on <pattern>.
+
+                If the <pattern> gives more than one link, the first one is
+                picked.
+
+                The following [option]s are available:
+                    -p, --parent:
+                        go to the local parent directory of the link instead 
+                        of itself.
+                    -s <scope>, --scope <scope>:
+                        specify the scope of the directory changing. 
+                        There are 3 types of scope:
+                            1) window: the directory change is only for the 
+                        current window;
+                            2) tab: the directory change is only for the 
+                        current tabpage;
+                            3) global: the directory change is global.
+                        By default, the scope is global.
+                    -q, --quiet:
+                        do the operation in silence.
+                
+                For example, this goes to directory of link at index 3: >
+                        :iexdir goto ,3
+<
+                This changes into parent directory of link at index 5: >
+                        :iexdir goto -p ,5
+<
+                This changes the current directory of the current tabpage to
+                link at index 5: >
+                        :iexdir goto -s tab ,5
+<
+                This makes the current directory of the current window to link
+                at index 5: >
+                        :iexdir goto -s window ,5
+<
+
+:iexdir fix [option] [pattern]...                       *:iexdir-fix*
+                It fixes possible problems for external directory links
+                matching the given [pattern]s.
+
+                If no [pattern]s are given, it tries to fix for all the links.
+
+                See |:iexdir-pattern| for the details on a [pattern].
+
+                An external directory link may stop working when:
+                    a) its origin was renamed;
+                    b) its origin was removed;
+                    c) its local link was removed (not by |:iexdir-remove|).
+
+                |:iexdir-list| will appends a "-" sign after the index of an
+                external directory link if it is not working.
+
+                This command tries to detect the reason and do the related 
+                fixing:
+                    a) it relinks the local link to the new origin directory;
+                    b) it removes all the local link related to the removed
+                    origin directory;
+                    c) it removes the broken local link.
+
+                The following [option]s are available:
+                    -d, --dryrun:
+                        run the fix operation without making any real changes.
+                        This prints out possible fixes for reference.
+                    -q, --quiet:
+                        do the operation in silence.
+
+                For example, this outputs all possible fixes for all links: >
+                        :iexdir fix -d
+<
+                This fixes problems for links at indices 2, 5 and 8: >
+                        :iexdir fix ,2 ,5 ,8
+<
+                Note that if multiple local links share one origin external
+                directory, all of their problems may be fixed even if some of
+                them are not included by the [pattern]s.
+
+
+==============================================================================
+3. Open URL						*open-url-icommand*
+
+iVim adds one command to support the URL scheme opening |ios-open-url|.
+
+:iopen[url] {url}					*:iopen* *:iopenurl*
+		Open the {url} to invoke the iOS URL scheme workflow.
+
+		Example: >
+			:iopen https://www.example.com/search?q={@*%[Q}
+<
+		It will launch Safari and open the site "www.example.com" and
+		do a search with the contents in the clipboard as the query.
+		
+		Note that it opens only one URL at a time.
+
+Variable token ~
+
+You need to use variable tokens to include useful info into an URL. The format
+for a variable token is "{expr%[encode}". 
+
+a. the "{" and "}" are the opening and closing delimiter respectively. 
+
+As a result, they need to be backslash-escaped if you want to use them 
+literally in the URL. Note that nested token is not supported.
+
+b. the "expr" is a vim |expression| which will be replaced with its value when 
+the whole URL is opened.
+
+This expression will be evaluated by vim and errors will be given if it is
+invalid. Note a) only expressions with value type "string" and "number" are
+supported. b) tokens are evaluated one by one from left to right.
+
+c. the "%[" is the indicator for a following URL encoding type.
+
+d. the "encode" is the URL encoding type which is explained in details below.
+
+Backslash escape ~
+
+Sometimes you need to put certain characters literally into an URL. You can 
+put a backslash character before each to achieve this. For example, "\{expr\}"
+will be treated literally instead of a variable token.
+
+Because of its special meaning, a literal backslash always needs to be 
+backslash escaped, e.g. "\\".
+
+URL encoding ~
+
+Certain characters in an URL need to be percent encoded for a successful
+opening. Moreover, in different parts of an URL, the characters that need 
+encoding differ. iVim provides an URL encoding type to help with this.
+
+A typical URL skeleton is 
+>
+	scheme://user:password@host:port/path?query#fragment
+<
+The following encoding types are available:
+
+	U:	indicates encoding for "user" part
+	PW:	"password" part
+	H:	"host" part
+	PT:	"path" part
+	Q:	"query" part, it is the default
+	F:	"fragment" part
+
+For example, if you will include a variable token into the "host" part, you
+need to indicate it as "{expr%[H}". Then iVim will encode its value for the
+specific part automatically. Omitting the encoding part, e.g. "{expr}", will 
+encode it for the default "query" part. Note that they are case insensitive.
+e.g. "%[Q" and "%[q" mean the same encoding.
+
+Debug errors ~
+
+iVim provides some debug errors when you try to open an URL but it has some
+problems.
+
+"token open character { expected":
+	a closing delimiter is encountered before an opening one.
+"token close character } expected": 
+	one opening delimiter is expecting a closing one but none given.
+"nested token not allowed":
+	you are trying to put a variable token inside another one.
+"unfinished character escaping":
+	there is a backslash at the end of the URL.
+"invalid path: ...":
+	the URL is invalid
+"failed to open URL: ...":
+       	the system failed to open the given URL.
+	
+If the position of the problem can be located in the URL, it will be 
+highlighted as ">...<".
+
+
+==============================================================================
+4. Set Extended Keyboard		*set-extended-keyboard-icommand*
+
+iVim offers one command for customizing the extended keyboard.
+
+:iset[ekbd][!] [operation] [configuration]		*:iset*	*:isetekbd*
+		Set the extended keyboard according to the given [operation]
+		or [configuration].
+
+		If [!] presents, it won't record the editing into the history
+		in `compose` mode |isetekbd-mode-compose|.
+		
+		"isetekbd" means "iset extended keyboard".
+
+Concepts ~
+
+The extended keyboard consists of compact buttons, each of which, in turn, 
+contains some keys. By editing its default buttons or keys, you can customize
+the extended keyboard to meet your own needs.
+
+The editings such as `remove`, `append` or `insert` are called operations. 
+According to the arguments obtained from the configuration, they change the 
+buttons or keys. The format of the configuration is given below.
+
+Configuration format ~				*isetekbd-config-format*
+
+The configuration is written in vim's |dict|, |list| or their mixing. For 
+example: >
+
+	:isetekbd {'operation':'remove', 'locations':[0]}
+<
+this command will remove the button at location 0. The configuration is given
+as a vim |dict|, and its property `locations` is a vim |list|.
+
+						*isetekbd-operation-node*
+This kind of dict in the above example is called a node. It contains necessary
+properties to fulfill the operation. More specifically, the above dict is an
+operation node, which may have the following properties:
+
+a. operation
+
+it gives the name of the operation. An error will emerge if it is not one of
+the available operations |isetekbd-operations|. A special characteristic of 
+this property is that you can use it as a subcommand of command |:isetekbd|
+therefore put it outside of the dict: >
+
+	:isetekbd remove {'locations':[0]}
+<
+this command is the same as the last one. The operation `remove` becomes the
+[operation] part in the command's usage. When an operation is given as a
+subcommand like this, it will be added to its following configuration as the 
+`operation` property: one if the configuration is a single node (a dict); or 
+one for each if an node group (a list of nodes). 
+
+Note this property is mandatory.
+
+b. locations
+
+it means locations of buttons for this operation. As in the above example, it
+is an integer list and zero-based (button location starts at zero). An error
+appears if any location is outside of the legal range.
+
+c. buttons
+
+it is a list of button nodes (|isetekbd-button-node|) providing information on 
+the button level for the operation. For example: >
+
+	:isetekbd remove {'locations':[0], 'buttons':[{'locations':[1]}]}
+<
+this will remove the second key on the first button. In order to remove keys 
+on a specific button, their locations need to be given in the button node.
+
+d. arguments
+
+it contains information for operations that require plain arguments. Such as
+config file paths for `source` operation (|isetekbd-op-source|).
+
+Except for `operation`, which property is necessary depends on the specific 
+operation. Each operation will try and seek the properties it needs, and 
+ignore the rest.
+
+						*isetekbd-button-node*
+A button node provides the button level information for an operation. It may 
+have the following properties:
+
+a. locations
+
+it is an integer list indicating the locations of keys on this button. Like
+button locations, it is zero-based and an error shows if any location is 
+outside of the legal range.
+
+b. keys
+
+it is a list of key nodes (|isetekbd-key-node|).
+
+						*isetekbd-key-node*
+A key node contains information for making a new key. It has the following 
+properties:
+
+a. title
+
+it is the text shown as the key on a button.
+
+b. type
+
+it is the name of the key type. Together with property `contents`, it decides
+the function of the key. There are several key types for different scenarios:
+
+1) command
+
+it means that this key invokes an ex command in `contents`: >
+
+	{'title':'Fs', 'type':'command', 'contents':'isetekbd source funcs'}
+<
+this runs command ":isetekbd source funcs", therefore changes the extended
+keyboard according to the configuration file named "funcs", when this key is 
+triggered.
+
+2) insert
+
+it means that this key inserts the characters in `contents`: >
+
+	{'title':'A', 'type':'insert', 'contents':'A'}
+<
+this inserts the uppercase 'A' whenever the key is triggered.
+
+3) modifier
+
+it means that this key is a modifier key indicated in `contents`: >
+
+	{'title':'D', 'type':'modifier', 'contents':'command'}
+<
+this makes the key the Command key |<D-|.
+
+The following modifier keys are supported:	*isetekbd-modifier-keys*
+	
+	alt:		the alt key |<A-|
+	command:	the Command key |<D-|
+	control:	the control key |<C-|
+	meta:		the meta key |<M-|
+	shift:		the shift key |<S-|
+
+If the key name is not found among the above, it shows an error.
+
+Note that a modifier key will be sticky like the default `ctrl` key. And a
+modifier key will lose its state after the extended keyboard is updated.
+
+4) special
+
+for iVim to work properly, some keys need to be handled in a special way. You
+can make a special key by indicating it in `contents`: >
+
+	{'title':'esc', 'type':'special', 'contents':'esc'}
+<
+this makes the key be the `esc` key. Note that this is different from simply 
+running command ":call feedkeys('\<Esc>')" because iVim does extra things when
+`esc` is pressed.
+
+The following special keys are available:	*isetekbd-special-keys*
+
+	esc:		the esc key
+	up:		the arrow Up
+	down:		the arrow Down
+	left:		the arrow Left
+	right:		the arrow Right
+	tab:		the tab key
+
+If the key name is not one of the above, it shows an error.
+
+Note that it is an error if the key type is not one of the above.
+
+c. contents
+
+it provides the contents for a specific key type, as shown above.
+ 
+Editing modes ~					*isetekbd-modes*
+
+There are several different situations in which the editing behavior differs:
+
+a. compose					*isetekbd-mode-compose*
+
+when a |:isetekbd| command is ran directly from the ex command line, it is
+in the compose mode. In this mode, each editing will be recorded into the
+editing history unless the [!] presents. As a result, you can edit the 
+editing by manipulating the history: you can give up the last editing with 
+the `undo` operation; resume it with `redo`; save the editings in the history
+into a config file for future use when you are content with the result, with 
+`export`.
+
+The result of each editing (i.e. each |:isetekbd| command) will be reflected
+on the extended keyboard immediately.
+
+b. vim source					*isetekbd-mode-vimsource*
+
+if a |:isetekbd| command is from a file being sourced by vim, e.g. in the 
+.vimrc file, it is in the vimsource mode. In this case, the editing will not 
+be recorded into the editing history. However, the result of each editing 
+will be applied immediately.
+
+c. source					*isetekbd-mode-source*
+
+editing items could also be saved into a config file that could be applied
+by the `source` operation later. It is in the `source` mode during a `source`
+operation. None of editing items in the config file will be recorded into the
+editing history. Also for the sake of efficiency, the changes will not be 
+applied to the extended keyboard until the end of the outmost `source`
+operation.
+
+iVim will change into the related mode automatically when the situation comes.
+
+Operations ~					*isetekbd-operations*
+
+The command |:isetekbd| fulfills its function through different operations.
+The available operations and their details are listed as following:
+
+a. remove					*isetekbd-op-remove*
+
+it removes buttons or keys on specific buttons. 
+
+For the locations of target buttons, it seeks the `locations` property of the 
+operation node. For example: >
+
+	:isetekbd remove {'locations':[3,7]}
+<
+this command removes buttons at locations 3 and 7.
+
+If the property `buttons` also presents, it tries and associates button
+locations with the button nodes in it one by one and orderly. If a button 
+location finds its associated node and a non-empty `locations` property in the
+node also presents, this button will be treated as a key-removing button and
+the related keys will be removed from it. For example: >
+
+	:isetekbd remove {'locations':[5,2],
+			 \'buttons':[{'locations':[3]}]}
+<
+this removes key 3 on button 5, and then removes button 2. In this example, 
+button 5 finds a associated node in the buttons list and is considered as a 
+key-removing button. On the other hand, button 2 fails to associate any node 
+therefore is removed as a whole button.
+
+b. append					*isetekbd-op-append*
+
+it appends new buttons to the end of the extended keyboard bar, or new keys
+to the end of a specific button.
+
+For the new buttons, it seeks the property `buttons`. Example: >
+
+	:isetekbd append {'buttons':[
+				    \{'keys':[
+					     \{'title':'C',
+					     \ 'type':'modifier',
+					     \ 'contents':'control'}
+					     \]},
+				    \{'keys':[
+					     \{'title':'D',
+					     \ 'type':'modifier',
+					     \ 'contents':'command'}
+					     \]}
+				    \]}
+<
+this appends two new buttons, the first with a modifier `control` key and the 
+second a modifier `command`, to the end of the current extended keyboard.
+
+If the property `locations` also presents in the operation node, it tries and 
+associates the button nodes in `buttons` with locations in `locations` one by
+one and orderly. Any associated button node will be key-appending, meaning
+new keys generated from its property `keys` will be appended to the end of
+the button. Example: >
+
+	:isetekbd append {'buttons':[
+				    \{'keys':[
+					     \{'title':'C',
+					     \ 'type':'modifier',
+					     \ 'contents':'control'}
+					     \]},
+				    \{'keys':[
+					     \{'title':'D',
+					     \ 'type':'modifier',
+					     \ 'contents':'command'}
+					     \]}
+				    \],
+			 \'locations':[3]}
+<
+because of the presence of `locations`, this command appends a new modifier 
+`control` key to the end of button 3, and a new button with a modifier 
+`command` to the end of the extended keyboard.
+
+Note that iVim will hide buttons or keys if they exceed their respective
+visual limits (enough space on extended keyboard bar for buttons; 5 for keys).
+
+c. insert					*isetekbd-op-insert*
+
+it inserts new buttons or new keys to a specific button.
+
+For the new buttons, it seeks the property `buttons`. For the target locations 
+of them, it seeks `locations` of the operation node. Example: >
+
+	:isetekbd insert {'buttons':[
+				    \{'keys':[
+					     \{'title':'C',
+					     \ 'type':'modifier',
+					     \ 'contents':'control'}
+					     \]},
+				    \{'keys':[
+					     \{'title':'D',
+					     \ 'type':'modifier',
+					     \ 'contents':'command'}
+					     \]}
+				    \],
+			 \'locations':[3,5]}
+<
+this inserts a button with a modifier `control` key to location 3, and a 
+button with a modifier `command` to 5. Note that the insertion is processed in
+the order of the locations, so later locations should take the results of the
+earlier ones into account. e.g. the location 5 in the above example is the new 
+location 5 after the insertion at location 3.
+
+The locations are respected more, which means the size of button nodes for new 
+buttons should be enough for locations, it is an error otherwise.
+
+If a button node also has a non-empty `locations` property, it means the new
+keys in the property `keys` will be inserted to this button. Example: >
+
+	:isetekbd insert {'buttons':[
+				    \{'keys':[
+					     \{'title':'C',
+					     \ 'type':'modifier',
+					     \ 'contents':'control'}
+					     \]},
+				    \{'keys':[
+					     \{'title':'D',
+					     \ 'type':'modifier',
+					     \ 'contents':'command'}
+					     \],
+				     \'locations':[2]}
+				    \],
+			 \'locations':[3,5]}
+<
+while this still inserts a new button generated by the first button node to 
+location 3 like the last example did, it inserts a new `command` key at
+location 2 on button 5 rather than inserting a new button at location 5, 
+because the second button node has its `locations` property present.
+
+Likewise, the key-insertion locations should also take the order significantly.
+And the key nodes should always be enough for the target locations.
+
+d. replace					*isetekbd-op-replace*
+
+it replaces buttons or keys on a specific button with new ones.
+
+It seeks the property `locations` for the locations of the buttons to be 
+replaced. For the new buttons, it seeks `buttons`. Example: >
+
+	:isetekbd replace {'buttons':[
+				     \{'keys':[
+					      \{'title':'C',
+					      \ 'type':'modifier',
+					      \ 'contents':'control'}
+					      \]},
+				     \{'keys':[
+					      \{'title':'D',
+					      \ 'type':'modifier',
+					      \ 'contents':'command'}
+					      \]}
+				     \],
+			  \'locations':[3,5]}
+<
+this replaces button 3 with a new one generated by the first button node, and
+button 5 with one by the second.
+
+Like operation `insert`, the size of button nodes should be enough for that of
+the target locations. Or it is an error.
+
+If a button node has its own `locations`, instead of replacing this button, it 
+will replace the keys located by this property on this button, with new ones 
+generated by its property `keys`. Example: >
+
+	:isetekbd replace {'buttons':[
+				     \{'keys':[
+					      \{'title':'C',
+					      \ 'type':'modifier',
+					      \ 'contents':'control'}
+					      \]},
+				     \{'keys':[
+					      \{'title':'D',
+					      \ 'type':'modifier',
+					      \ 'contents':'command'}
+					      \],
+				      \'locations':[2]}
+				     \],
+			  \'locations':[3,5]}
+<
+thanks to the property `locations` in the second button node, this replaces 
+key 2 on button 5, rather than replacing button 5 altogether like the last
+example did.
+
+Also, the size of key nodes should be enough for the target locations for key
+replacing.
+
+e. clear					*isetekbd-op-clear*
+
+it removes all existing buttons from the extended keyboard.
+
+It requires no other properties. Example: >
+
+	:isetekbd clear
+<
+
+f. default					*isetekbd-op-default*
+
+it makes the extended keyboard revert to its default state.
+
+It requires no other properties. Example: >
+
+	:isetekbd default
+<
+
+g. source					*isetekbd-op-source*
+
+it reads configuration files and applies them to the extended keyboard.
+
+The trailing part of a |:isetekbd| invoking (the part without the command 
+name, e.g. "remove {'locations':[3]}") is called an editing item. A config
+file is comprised of editing items, one on each line.
+
+The `source` operation reads the config file line by line and processes them
+in order. As mentioned above, it is in the `source` mode while a config file 
+is being sourced. Therefore, changes brought by each editing item won't be 
+applied until the outmost (it could be recursive) sourcing is done.
+
+It accepts multiple config files at once, and will process them in order: >
+
+	:isetekbd source cfile1 cfile2 cfile3 ...
+<
+
+In a config file, all whitespaces at the beginning of each line will be
+ignored. And a line will be treated as a comment if it begins with a double 
+quote '"', for example: >
+
+	"this is a comment
+	remove {'locations':[3]}
+<
+and a line will be the continuation of its last line if it begins with a
+backslash '\', and they will be treated as one line altogether, example: >
+
+	replace {
+		\'locations":[2],
+		\'buttons':[
+			\{'keys':[
+				\{'title':'C',
+				\ 'type':'modifier',
+				\ 'contents':'control'}]}]
+		\}
+<
+
+Note that any error during a `source` operation will stop the whole operation
+and revert to the state before it.
+
+The 7 operations above are ones that modify buttons or keys on the extended 
+keyboard.
+
+h. compose					*isetekbd-op-compose*
+
+it resets the compose mode.
+
+In the `compose` mode, this operation clears the existing editing history and 
+sets the current state as the initial history entry. As a result, it makes a 
+clean environment for its following composition. Example: >
+
+	:isetekbd compose
+<
+Since it doesn't makes sense otherwise, it can only be called in `compose`
+mode as a single operation (cannot be a member of a operation group): >
+
+	:isetekbd [
+		  \{'operation':'compose'},
+		  \{'operation':'remove',...}
+		 \]
+<
+the above example will show an error because the `compose` operation becomes a
+member of an operation group.
+
+i. undo						*isetekbd-op-undo*
+
+it goes back to the previous state in the editing history.
+
+It requires no further arguments, example: >
+
+	:isetekbd undo
+<
+An error shows if there is no previous entry in the history.
+
+Like operation `compose`, it is only allowed in `compose` mode as a single
+operation. It is an error otherwise.
+
+j. redo						*isetekbd-op-redo*
+
+it goes to the next state in the editing history.
+
+It requires no further arguments, example: >
+
+	:isetekbd redo
+<
+An error shows if there is no more entry in the history.
+
+Likewise, it is only allowed in `compose` mode as a single operation.
+
+k. export					*isetekbd-op-export*
+
+it writes current items in the editing history to configuration files.
+
+The items in the editing history are those that have been making the extended
+keyboard to its current state since the beginning of the related `compose` 
+mode. Therefore, the outcome of the `export` operation is config files that 
+can be re-applied by the `source` operation in the future.
+
+It accepts multiple files at once, and writes the contents to each of them: >
+
+	:isetekbd export cfile1 cfile2 ...
+<
+You can peek the contents by invoking it without any target files: >
+
+	:isetekbd export
+<
+this prints the contents in the ex command line window.
+
+It is only allowed as a single operation in `compose` mode.
+
+The 4 operations above are helper ones to assist editing in `compose` mode.
+
+
+==============================================================================
+5. Old Documents				*old-documents-icommands*
+
+iVim provides one command to manage the old documents |ivim-old-documents|
+
+:iold[docs][!] [pattern|I1 I2 ...]		*:iold* *:iolddocs*
+		Manage the old documents.
+
+		Without any argument, it lists all the old documents: >
+
+			1: /private/var/...
+			2: /private/var/...
+			3: /private/var/...
+			...
+<
+		The first column is the index of the document; the second its
+		original path. Note that the upper limit of saved entries is 
+		100, the oldest and excessive ones will yield places for the 
+		new ones.
+
+		You can open the old documents by their indexes [I1 I2 ...]: >
+			:iolddocs 4 2 8		"it opens documents 4, 2 and 8
+<
+		the documents will be opened in the given order. When a doc
+		is already opened, iVim will jump to its containing window
+		rather than open it again. Any invalid index will be reported
+		as an error. Note that especially, if the first index is not
+		valid, the arguments will be tried as [pattern] instead.
+
+		If [!] presents, rather than opening the indexed docs, their
+		records will be removed from the list permanently.
+
+		Besides using the indexes to indicate the documents, you can
+		also use [pattern] to filter them: >
+			:iolddocs /test/	"it opens the first doc that
+						"contains 'test' in path
+<
+		[pattern] is a vim search pattern. Any non-ID character (see
+		|'isident'|), besides "/", can be used to enclose the pattern,
+		as long as it does not in [pattern]. A pattern without a 
+		enclosing character also works (its end is decided by a space)
+		The [pattern] is matched against the document original path.
+		Note that the last search pattern is used when [pattern] is
+		empty.
+
+		Also, the presence of [!] will change the operation from open
+		the documents to remove related records: >
+			:iolddocs! /test/	"it removes the first record
+						"that contains 'test' in path
+<
+		There are several flags that could change the [pattern]'s
+		behavior if present:
+
+		g: "global". Rather than only the first one, all the matched 
+		documents will be the targets: >
+			:iolddocs /test/g	"it opens all docs whose path
+						"contains 'test'
+<
+		p: "print". It prints the matched entries rather than doing
+		opening or removing: >
+			:iolddocs /test/p	"it prints the first entry 
+						"whose path contains 'test'
+<
+		i: "ignore case". The pattern match will ignore the cases of
+		letters: >
+			:iolddocs /test/i	"the pattern will match 'test'
+						"'TEST', or 'Test'
+<
+		n: "negate". The entries NOT matched will be the targets: >
+			:iolddocs /test/n	"it opens the first doc whose 
+						"path does not contain 'test'
+<
+		Flags can be mixed together to indicate more complicated 
+		behaviors: >
+			:iolddocs /test/gp	"it prints all entries whose
+						"path contains 'test'
+			:iolddocs /test/ng	"it opens all docs whose
+						"path does not contain 'test'
+<
+		Note that any repetitive or invalid flag, or spaces in between 
+		will be ignored.
+
+		To provide flags to patterns without enclosing characters, use
+		a space to separate them: >
+			:iolddocs test gp
+			:iolddocs test g p
+<
+
+==============================================================================
+6. Settings                                         *ivim-settings*
+
+iVim offers the following commands concerning its settings.
+
+:isettings                                          *:isettings*
+                It opens the preference section in the system's Settings.app
+                directly, to avoid the annoying manual searching.
+
+
+==============================================================================
+7. Preview Windows                          *ivim-preview-windows-icommand*
+
+You can manage the preview windows via the Ex command |:ipreview|.
+
+:ipreview [option] [path]...                                    *:ipreview*
+                The following [option]s are available:
+                    -l, --list:
+                        list existing preview windows.
+                    -a, --activate:
+                        activate an existing preview window.
+                    -t, --test:
+                        test [path]s to see whether they are previewable.
+                    -w, --window:
+                        open preview windows in windows.
+                    -e <ext[,ext...]>, --extension <ext[,ext...]>:
+                        specify custom extensions for documents.
+
+                A [path] is the path of a target file. One exception is that
+                when option -a is used to activate an existing preview window,
+                a [path] is treated as a pattern to match preview windows.
+
+                Note that not all files are previewable, you can do the test
+                via |:ipreview-test|. And duplicate targets are only respected
+                once.
+
+                                                            *:ipreview-open*
+                By default, it opens preview windows for given [path]s. When
+                no [path]s are given, the file of the current buffer is used.
+
+                For example, this opens a preview window for current buffer: >
+                        :ipreview
+<
+                And this opens a preview window for file hello.html under
+                HOME directory: >
+                        :ipreview $HOME/hello.html
+<
+                Sometimes, you may have documents that have common contents
+                but uncommon extensions. In these cases, iVim may be unable to
+                preview them or open them in a surprising way. This is when
+                option "-e" comes to rescue: >
+                        :ipreview -e md,jpeg readme.h hello
+<
+                This opens "readme.h" as markdown (.md) and "hello" as JPEG
+                picture (.jpeg). Here are some points about the format:
+
+                    . multiple extensions can be specified and delimited by
+                      commas.
+                    . empty extension means not to specify one.
+                    . when the given extensions are more than the docs, only
+                    first enough ones are used.
+                    . when the given extensions are less, the rest will be
+                    padded with the last given one.
+
+                                                            *:ipreview-list*
+                Use option -l to list existing preview windows. If any [path]s
+                are given, only preview windows containing any of them are 
+                listed, otherwise it lists all preview windows.
+
+                Following is an example of preview windows listing: >
+
+                87654321-EEFF-5432-1867-3355BBAADDEE [FB]   [a.jpg, b.html]
+                12345678-FFEE-2345-7681-EEDDAABB5533        [c.txt as md]
+
+                2 preview view(s) found
+<
+                the first column is the identifier of the containing window.
+                Note that a preview window can also be modally presented in
+                an existing window. If this is the case, the type sign of the
+                containing window is appended to the identifier.
+            
+                The possible type signs are:
+                .ME: main editor
+                .FB: file browser
+                .PW: preview window (it is omitted here since it is right a
+                     preview window)
+
+                Therefore, the first row means the preview window is presented
+                in a file browser window.
+
+                The second column lists the files being previewed. e.g. the
+                first preview window contains files a.jpg and b.html and the
+                second file c.txt (as markdown).
+
+                This lists all existing preview windows: >
+                    :ipreview -l
+<
+                And this lists all preview windows that contain file c.txt: >
+                    :ipreview -l ~/c.txt
+<
+                                                        *:ipreview-activate*
+                Use option -a to activate a preview window. In this case, a
+                [path] is treated as a pattern to match the identifiers. A
+                matching happens when a preview window's identifier starts
+                with the pattern. The first matched preview window wins and
+                gets activated.
+
+                For example, this activates the file browser whose identifier
+                starts with `876`: >
+                    :ipreview -a 876
+<
+                And this activates the first preview window: >
+                    :ipreview -a
+<
+                                                            *:ipreview-test*
+                Not all files are valid for previewing in a preview window.
+                Use option -t to test whether a file is previewable or not.
+
+                For example, this tests files a.html and hello under current
+                directory: >
+                    :ipreview -t a.html hello
+<
+                This tests current buffer file: >
+                    :ipreview -t
+<
+                                                        *:ipreview-window*
+                By default, this command presents a preview window in current
+                window. Use option -w to preview in a standalone preview
+                window. Note that in systems not supporting multiple windows,
+                this option has no effect.
+
+                For example, this previews current buffer file in a standalone
+                preview window: >
+                    :ipreview -w
+<
+                Also note that, iVim tries best to open as few preview windows
+                as possible. It priorily activate an existing preview window
+                if it already contains the target file. Or it updates the
+                foreground preview window with the new targets.               
+
+
+==============================================================================
+8. Spotlight Management                         *ivim-spotlight-icommand*
+
+You can manage iVim's Spotlight indexing via the Ex command |:ispotlight|.
+
+Subcommands ~
+                                                *ispotlight-subcommands*
+The following subcommands are currently available:
+
+    list:       query and list available index types
+    enable:     enable a disabled index type
+    disable:    disable an enabled index type
+    index:      request a manual re-index
+
+Details and examples ~
+                                                    *:ispo* *:ispotlight*
+Below lists the details and examples of |:ispotlight|.
+
+:ispotlight
+                Without any args given, it lists all available subcommands.
+
+:ispotlight list [option] [pattern]...              *:ispotlight-list*
+                It lists all available index types and their info when no
+                [option]s or [pattern]s given. Example: >
+
+                        [+] help      7750 item(s) indexed, still indexing...
+                        [+] document  'Documents' indexed
+                        [-] buffer    (it requires auto-restore to be enabled)
+
+                        3 type(s) in total: 2 enabled, 1 disabled
+<
+                As shown in the above example, enabled types start with "[+]"
+                disabled ones "[-]". Extra info may be available for each type:
+                the first line shows that 7750 help tags have been indexed and
+                more is still being indexed; the second line shows that the
+                documents indexing under directory 'Documents' has been done;
+                the third line says that buffer indexing is disabled because
+                its prerequisite |ios-auto-restore| is disabled.
+
+                                                    *ispotlight-pattern*
+                When any [pattern] is given, it is matched against a type's 
+                name. In this case, only types whose names start with it will
+                be listed. Example: >
+                        :ispotlight list h d
+<
+                This lists types "help" and "document", filtering out "buffer".
+
+                The following [option]s are available:
+                    -e, --enabled:
+                        list enabled types besides any pattern matching.
+                    -d, --disabled:
+                        list disabled types besides any pattern matching.
+
+                For example, below lists all disabled types: >
+                        :ispotlight list --disabled
+<
+                And this lists type "help" only when it is enabled: >
+                        :ispotlight list -e help
+<
+                You can also use the shortcut name "ls": >
+                        :ispotlight ls
+<
+:ispotlight enable [option] [pattern]...            *:ispotlight-enable*
+                It enables disabled index types.
+
+                See |ios-spotlight-state| for what a type's state means.
+
+                When no [option]s or [pattern]s given:
+                
+                1) If you can toggle index types individually, it lists all
+                currently disabled types for your reference;
+                2) Otherwise, it enables the whole Spotlight search indexing.
+
+                Any given [pattern] works as discussed at |ispotlight-pattern|.
+
+                The following [option]s are available:
+                    -a, --all:
+                        enable all disabled types.
+                    -q, --quiet:
+                        work in silence, i.e. ignore confirmations or errors.
+
+                For example, this tries to enable type "buffer": >
+                        :ispotlight enable buffer
+<
+                If type "buffer" cannot be enabled (say, it is already enabled,
+                or |ios-auto-restore| is disabled), it complains. Otherwise, it
+                asks for your confirmation to process.
+
+                This tries to enable all disabled types: >
+                        :ispotlight enable --all
+<
+                And this tries to do the above without being bothered further: >
+                        :ispotlight enable --all --quiet
+<
+                You can use its shortcut name "eb" too: >
+                        :ispotlight eb
+<
+:ispotlight disable [option] [pattern]...           *:ispotlight-disable*
+                It disables enabled index types.
+
+                See |ios-spotlight-state| for what a type's state means.
+
+                When no [option]s or [pattern]s provided:
+
+                1) If you can toggle index types individually, it lists all
+                currently enabled types as the candidates;
+                2) Otherwise, it disables the whole Spotlight search indexing.
+
+                [pattern]s work as discussed in |ispotlight-pattern|.
+
+                It has the following [option]s:
+                    -a, --all:
+                        disable all enabled types.
+                    -q, --quiet:
+                        keep confirmations or errors in silence.
+
+                For example, this tries to disable type "document": >
+                        :ispotlight disable document
+<
+                It complains if "document" cannot be disabled (e.g. it is
+                already disabled). Otherwise, it asks for your confirmation.
+
+                This tries to disable all enabled types: >
+                        :ispotlight disable --all
+<
+                And this does the same as the above but also mute any further
+                confirmation or error: >
+                        :ispotlight disable --all --quiet
+<
+                It has a shortcut name too: >
+                        :ispotlight db
+<
+:ispotlight index [option] [pattern]...             *:ispotlight-index*
+                It requests re-index of types.
+
+                If you don't provide any [option]s or [pattern]s, it shows you
+                currently enabled types, telling which are re-indexable.
+
+                [pattern]s work in the way as described in |ispotlight-pattern|.
+
+                The following [option]s are available:
+                    -a, --all:
+                        re-index all enabled types.
+                    -q, --quiet:
+                        keep confirmations or errors in silence.
+
+                For example, this requests a re-index of type "buffer": >
+                        :ispotlight index buffer
+<
+                If "buffer" is not currently enabled, it complains. Otherwise,
+                it asks for your confirmation to proceed.
+
+                This requests re-indexing of all enabled types: >
+                        :ispotlight index --all
+<
+                And this does the same as above, in silence: >
+                        :ispotlight index --all --quiet
+<
+                You can also use its shortcut name: >
+                        :ispotlight idx
+<
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

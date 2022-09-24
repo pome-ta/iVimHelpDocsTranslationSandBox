@@ -1,0 +1,946 @@
+*ivim_version_control.txt* For Vim version 8.1.    Last change: 2021 Oct 15
+
+                                    iVim REFERENCE MANUAL   by Terry Chou
+
+                                    *ivim-version-control*  *ivim-vc*
+
+This file describes the details of the native version control of iVim.
+
+
+1. Introduction                                     |ivim-vc-intro|
+2. Concepts                                         |ivim-vc-concepts|
+3. File Browser Integration                         |ivim-vc-file-browser|
+4. Live Diff                                        |ivim-vc-livediff|
+
+==============================================================================
+1. Introduction                                     *ivim-vc-intro*
+
+A version control system helps track changes in a changing project over time.
+With version control enabled, you can take a snapshot of important changes 
+and save it permanently at any time while editing in a project. A saved record 
+can be referred to or restored later when needed.
+
+Another merit of a version control system is that it is able to manage more
+than one line of editing in a project. You can add as many editing lines as
+you like, switch among them at any time, and even merge changes of one line
+into another.
+
+Since version 2.40, iVim begins to provide a native version control support
+for users to edit their files with more efficiency and confidence.
+
+Besides the native merits from a version control system, iVim also brings you:
+
+* great integration into iVim's existing UI
+* real-time updates of info, so that you get to know what is happening to your 
+project at a glance
+* some simplified concepts and one-tap actions for often-used version control
+workflows
+* convenient accounts and credentials management
+* concise UI of prompts for you to input necessary info, they also remind you
+of invalid inputs so that you won't be left scratching your head
+* user friendly notifications telling and recording results of your operations
+* live diff enables you to manage the changes right in the editor
+* ...
+
+
+==============================================================================
+2. Concepts                                     *ivim-vc-concepts*
+
+iVim's version control is implemented based on Git. However, for users who
+are not familiar with Git to manage their projects as well, some concepts are 
+worth making clear first.
+
+Repository ~
+                                                *ivim-vc-repo*
+In iVim, a project folder with version control enabled is called a repository.
+It is the basic unit that a version control system manages, which means that
+two repositories don't interfere with each other. Sometimes, a repository is 
+also briefly called "repo".
+
+For better maintainance, repos need to be registered to be tracked in iVim.
+
+Worktree ~
+                                                *ivim-vc-worktree*
+Oftentimes you may need to open different editing lines of the same project at 
+once. An intuitive way is to make multiple copies of repos of this project. 
+However, this is a waste of resources and requires extra maintenance cost.
+
+A better alternative is to use worktrees.
+
+A worktree is a new project folder that can be added from a repository. It 
+works just like a repo except that its version control data is managed by its
+mother repo behind the scene. A worktree opens a different editing line than
+that in its mother repo or sibling worktrees, allowing you edit mulitple lines
+simultaneously.
+
+Revisions ~
+                                        *ivim-vc-revision* *ivim-vc-commit*
+Changes in a repo are saved into one and another record. A record is usually 
+called a "revision" or "rev" in version control's culture. Creating a revision 
+is often called "committing".
+
+iVim provides flexible revision creation. Instead of saving all changed files,
+you get to pick which ones to go into the new revision.
+
+Editing line ~
+
+With time goes by, more and more revisions are created and chained together,
+forming an editing line. In another word, an editing line records the history
+of changes of an editing path in the repo.
+
+Moreover, you would branch out from an editing line to start another one to 
+meet your new editing purpose. In turn, more and more editing lines are born.
+As a result, a revision tree forms.
+
+References ~
+                                                *ivim-vc-references*
+You can use its end revision to indicate an editing line.
+
+However, a revision, like other objects in Git, is identified by its ID which
+is a string of meaningless mixed letters and digits. For users to remember or
+recognize editing lines easily, come references.
+
+A reference is just an alias that:
+
+a. has a user friendly name
+b. points at a sepcific revision
+
+The following types of references are available for different use cases:
+
+1) branch
+                                                *ivim-vc-ref-branch*
+a branch is always pointing to the latest revision of an editing line. You can 
+make a branch grow by appending new revisions to it. It moves its tip itself.
+
+When you need a new topic to work on, you create a new branch and switch to it.
+
+2) tag
+                                                *ivim-vc-ref-tag*
+a tag never changes its target once it is created. You can always locate the
+same revision through a tag. This also means that you cannot make changes to
+a line referred by a tag.
+
+3) remote branch
+                                                *ivim-vc-ref-remote*
+for each public branch in a remote repo, Git creates a remote branch in the 
+local repo to track the related downloaded contents.
+
+Remote ~
+                                                *ivim-vc-remote*
+Users can collaborate on a project by associating their local repos with a
+shared remote repo. Once a local repo is configured with a remote repo, it can 
+download revisions from or upload revisions to this remote repo, therefore
+share work with other users.
+
+A local repo can be configured with more than one remote repo.
+
+Index ~
+                                                *ivim-vc-index*
+Between the current working copy and the last saved revision, there actually
+is an intermediate storage called "index". Changes are added into the index
+before they are finally saved into a new revision from there.
+
+"Live Diff" |ivim-livediff| utilizes the index to store changes temporarily.
+As a result, iVim has two types of "changes":
+
+1) changes have been stored in the index. This type is usually introduced by
+|ivim-livediff-index| in iVim, and is called "indexed";
+2) all changes including indexed and non-indexed. This is called "changed".
+
+Update ~
+                                                *ivim-vc-update*
+Since different users can upload to it, a remote repo would often have contents 
+that a local repo doesn't.
+
+If a local repo has a remote repo assoicated, updating means to inquire the
+remote repo and download from it the contents that are not available in the
+local repo yet.
+
+Instead of messing with the existing local contents, updatings only store the 
+downloaded contents and update related remote branches if necessary.
+
+"update" is actually "fetch" in Git's concept.
+
+Upgrade ~
+                                                *ivim-vc-upgrade*
+Upgrading makes the local contents up-to-date with related contents downloaded
+by the last updating.
+
+Even though the version control system tries best to combine changes from both
+repos, conflicts are likely to happen. If any conflict shows, the upgrading 
+stops and waits for your action to deal with this:
+
+1) cancel the upgrading
+
+you can cancel this upgrading and the repo returns to the state before this
+upgrading.
+
+2) continue the upgrading
+
+or you can fix all the conflicts, mark them resolved, and continue to finish 
+this upgrading.
+
+Signatures ~
+                                                *ivim-vc-signatures*
+Mostly when you try to make a record, such as commit a revision, the system
+asks you for a name and email address and stores them together with the record
+as its author. For this record, this name and email info works as a signature,
+implying responsibility.
+
+To avoid providing signature every time, you can save you signatures in two
+types:
+
+1) save as local
+
+a local signature is saved specifically for a repo. 
+
+2) save as global
+
+a global signature is available in all repos in iVim.
+
+Once a signature is saved, it will be filled automatically the next time it is
+needed.
+
+To save a signature, tap the "Save Signature" button below a signature input
+form.
+
+Credentials ~
+                                                *ivim-vc-credentials*
+To interact with private remote repos, you need to provide credentials info.
+
+Currently, iVim supports three types of credentials:
+
+1) username & password
+
+this asks for a username and password. This is the most common way for
+authenticating through web.
+
+2) ssh key files
+
+this is for authenticating via SSH key pair. It asks for the username, the
+paths of the public key file and private key file, and an optional password
+for possible decrypting the private key.
+
+3) ssh keys
+
+this is the same as the above except that it asks for the keys' contents
+directly.
+
+You can save credentials to avoid repetitive inputs.
+
+To save a credential, tapping the "Save Credential" button below the form.
+
+Note that a credential is saved against a repo URL, meaning that a saved
+credential works for all repo with the same URL.
+
+See |ivim-vc-file-browser| for details on how version control is integrated
+into iVim's file browser GUI.
+
+
+==============================================================================
+3. File Browser Integration                     *ivim-vc-file-browser*
+
+iVim's version control system is well integrated into its file browsers.
+With proper design and real-time info updates, you can easily get an idea
+of what is happending to your project.
+
+Repository related items ~
+
+iVim highlights the root repository and worktree folders in a file browser:
+
+1) a root repository item:
+
+. has a filled folder icon (in system 13.0+; "[R]" otherwise)
+
+2) a root worktree item:
+
+. has a circled folder icon (in system 13.0+; "[W]" otherwise)
+
+. its mother repo path is appended to its name
+
+3) either a root repository or worktree item:
+
+. displays info of the version it is now pointing at (HEAD) at the end of 
+its last modified date.
+
+. if the current version has a upstream branch, its name is appended to the
+above info. The upstream branch will have color orange if it is upgradable
+to.
+
+When under a repo related folder, the file browser's title includes the
+current editing line info at the end.
+
+Item status ~
+
+After an item is edited and before its changes are saved into a new revision,
+iVim displays a status icon to let you know what has happened to it since the 
+last record.
+
+For a file item, the following statuses (shown as filled icons) are available:
+
+[A] (green): the item is newly added
+[M] (teal): the item is modified
+[D] (gray): the item is deleted
+[I] (gray): the item is ignored
+[C] (red): the item has conflicts
+[U] (orange): the item is unreadable
+
+iVim also shows status for indexed changes of a file with unfilled icons:
+
+(A) (green): the item is new in the index
+(M) (teal): the item has modified content in the index
+(D) (gray): the item has been deleted in the index
+
+Note that a filled icon (e.g. [A]) actually stands for changes between a file
+and its counterpart in the index. When there is no changes in the index, you 
+can treat it as changes compared with the last revision. However, when it also
+has changes in the index, it is not so intuitive any more. In this case, the
+indexed changes represented by the unfilled icon is more significant.
+
+See |ivim-vc-index| for details of the index.
+
+For a dir item, its status icon reflects the mixed status of its descendant
+files:
+
+. if all of its descendants have the same status, it has the status too.
+For example, if all files under a dir have status [M], the dir also has the
+status [M]
+
+. if its descendants have different statuses, the dir shows [?] (teal) as
+its status
+
+. an exception to the above rule is that if any of its descendant has the
+status [C], the dir shows [C] to emphasize the underlying conflicts.
+
+Version control actions ~
+
+iVim provides common version control actions into the action menu of a file
+browser. 
+
+To avoid cluttering up the action menu further, except for some repo creation
+actions, iVim packs all version control actions into a submenu under the
+item "Version control …" in the action menu.
+
+These actions are available under the root action menu:
+
+* "Make into a repo …"
+
+this action is only available to a non-repo folder, it makes the folder 
+named 'dir' into a git repo:
+
+a. it adds the default .gitignore file if it does not have one yet;
+b. it makes an initial commit out of all existing files in the folder;
+c. it registers this new repo to iVim.
+
+* "Clone a repository …"
+
+this action is only available to a non-repo folder, it prompts for info of
+a remote repo and then make a clone under the folder in question.
+
+* "Create new repository"
+
+now file browser actions "Add new item" and "Add & open new item" both have
+a new button "Create new repository". It creates a new empty repository with
+the given name.
+
+The "Version control" submenu contains the following actions:
+
+* "Cancel upgrading"
+
+An upgrading of a repo stops when conflicts appear. 
+
+this action gives up the stuck upgrading and goes back to the state before
+the upgrading.
+
+* "Continue upgrading"
+
+this action tries to finish a stuck upgrading after you have resolved all the
+conflicts.
+
+* "Show revisions"
+
+this action lists the revisions at the current editing line of the repo, in
+reverse order. 
+
+Note that if the item in question is not the root of the repo, only revisions 
+related to it are filtered and shown.
+
+* "Show changed"
+
+this action shows changed content of the item in question:
+
+a. if the item is a folder, it lists its all changed descendant files. Tapping
+an entry to show its changes in a diff view (|vimdiff|). You can refine the 
+selection and commit the selected files to a new revision.
+
+b. if the item is a file, it shows its changes directly in a diff view.
+
+See |ivim-vc-index| for difference between "changed" and "indexed".
+
+* "Show indexed"
+
+this action shows indexed changes of the item in question:
+
+a. if the item is a folder, it lists all its descendant files that have changes
+currently stored in the index |ivim-vc-index|. Tapping an entry shows its indexed
+changes in a diff view (|vimdiff|). You can refine the list and commit the
+final result to a new revision.
+
+b. if the item is a file, its indexed changes are shown in a diff view.
+
+See |ivim-vc-index| for difference between "changed" and "indexed".
+
+* "Commit changed"
+
+this action records the changes in files in question and creates a new revision
+out of them in the current editing line.
+
+See |ivim-vc-index| for difference between "changed" and "indexed".
+
+* "Commit indexed"
+
+this action collects indexed changes in files in question and creates a new rev
+out of them.
+
+See |ivim-vc-index| for difference between "changed" and "indexed".
+
+* "Mark … as resolved"
+
+this action marks the conflicted file in question as resolved.
+
+Note that rather than really resolve the conflicts in the file for you, it just
+remove the "conflicted" status from the file so that you can continue a merge
+or upgrade.
+
+* "Restore" 
+
+this action restores the deleted file.
+
+* "Discard changes in" 
+
+this action discards all changes in the item in qestion. If the item is a
+folder, all its deleted descendant files are restored too.
+
+Note that untracked files are left alone.
+
+* "Switch to …"
+
+this action switches the repo to another editing line. If one of its relative
+repos has already opened the target line, it offers an option to jump into the 
+repo.
+
+* "Create new branch …"
+
+this action creates a new branch based on the current editing line and switches
+to it.
+
+* "Update"
+
+this action fetches, from the current remote server, all contents that are not
+available in the local repo. Note that this does not do any local upgrading.
+
+* "Upgrade"
+
+this action upgrades the current editing line to make it up-to-date with the
+contents fetched from the remote server last time. To avoid possible data lose,
+you need to commit existing changes before upgrading.
+
+* "Upgrade from"
+
+this action upgrades the current editing line directly from the remote server,
+i.e. it fetches locally unavailable contents from the remote server, then does
+the upgrading if possible.
+
+* "Push to"
+
+this action tries and pushes the current editing line's local contents up to its
+remote server.
+
+* "Add new worktree …"
+
+this action adds a new worktree for the repo in question:
+
+a. it prompts for a target editing line;
+b. it then creates a new worktree in the same folder as the mother repo;
+c. it then switches the new worktree to the selected editing line.
+
+* "Prune worktree"
+
+this action changes the worktree in question into a normal folder. 
+
+Note that this only cleans the worktree info in its mother repo, its files are
+intact.
+
+* "Remove worktree"
+
+this action removes the worktree in question.
+
+Note that removing a worktree both cleans its info and all its files.
+
+* "Unregister repo"
+
+this action unregisters a repo from iVim so that it is not tracked any more.
+
+* "Register repo"
+
+this action registers a repo folder to iVim so that it is tracked from then on.
+
+
+==============================================================================
+4. Live Diff                            *ivim-vc-livediff* *ivim-livediff*
+
+While you are editing a tracked file, iVim indicates changes in the editing
+window in realtime. This feature is named "Live Diff".
+
+Through different signs in the sign column, you can tell which lines have been
+added, modified or removed, at a glance.
+
+iVim's "Live Diff" is inspired by the great plugin "vim-gitgutter".
+
+Change units ~
+
+Changes shown in "Live Diff" are the result of comparing the content being
+edited with its counterpart in the index |ivim-vc-index|.
+
+In "Live Diff", the smallest unit of change is a line. Continuous changed lines
+make up a change block. 
+
+Signs ~
+                                                *ivim-livediff-signs*
+iVim indicates changes by placing signs on related lines. The following signs
+are available:
+
+    `+`:  the line is newly added;
+    `¯`:  one or more lines above the line are removed;
+    `_`:  one or more lines below the line are removed;
+    `~`:  the line is modified;
+    `~_`: the line is modified and one or more lines below it are removed;
+    `¯_`: one or more lines above and below the line are removed.
+
+While signs representing addition or modification are placed right on the lines
+in question, signs for deletion need to be placed on nearby lines because the 
+deleted lines no longer exist.
+
+When lines are removed, the related sign is usually placed on the line above.
+However, when this does not apply (the removed lines are top ones), the "¯" sign
+is placed on the line below. Therefore, signs `¯` and `¯_` are two special cases
+and they would only display on the first line.
+
+Change block ~
+
+Continuous changed lines make up a change block. A change block is the smallest
+unit handled in "Live Diff":
+
+* you jump among change blocks;
+* you preview the details of changes in a change block;
+* you index or discard a change block.
+
+                                        *ivim-cursor-in-two-blocks* *ivim-citb*
+In most cases, a line belongs to only one change block. However, there is a
+special case: `¯_` on the first line. In this case, the first line represents
+two change blocks:
+
+1) lines removed above
+2) lines removed below
+
+When the cursor is in this line, it requires extra info to specify which block
+is exactly expected.
+
+Navigate ~
+                                                *ivim-livediff-jump*
+You can jump among change blocks in normal mode with:
+
+    `]c`: jump to next change block
+    `[c`: jump to previous change block
+
+they both take a preceding count, e.g. `2]c` jumps to the next 2 change block.
+
+After a successful jump, cursor is placed in the first line of the new block.
+
+In the |ivim-citb| case, it treats it as one block only: one jump gets out of
+it.
+
+If the preview window was shown before a jump, it stays after the jump and is
+updated for the new block.
+
+                                                *ivim-livediff-list*
+You can also list all change blocks of the current buffer with `<Leader>cl`.
+
+One |location-list-window| is opened, containing starting lines of all change
+blocks. For example: >
+    filename|3| [~2, -4] first line sample
+    ...
+<
+"filename" is the file name of the buffer. "|3|" means the block starts at line
+3. The info between the square brackets is the stats of the change block: "~2"
+says 2 lines have been modified; "-4" 4 lines removed; another possible sign is
+"+", e.g. "+5" means 5 lines have been added. The rest ("first line sample") is
+the first line of the diff details.
+
+If you make some changes while the list window is open, it updates in realtime
+correspondingly.
+
+Typing `enter` on a line in the list window jumps to the related block in the
+editing buffer.
+
+Preview ~
+                                                *ivim-livediff-preview* 
+You can preview the details of changes in a change block by placing the cursor
+in the block and opening the preview window with `<Leader>cp`. 
+
+The preview window shows up as a |popup-window| at the cursor, displaying and 
+highlighting the changes (lines removed and added) in syntax "diff".
+
+When you move the cursor, the preview window is closed automatically.
+
+For the |ivim-citb| special case, `<Leader>cp` takes a preceding count:
+    
+    `2<Leader>cp`: to preview the block above 
+    `3<Leader>cp`: to preview the block below
+
+The preview window also has a title like:
+
+    `32: ~2, +4`
+
+"32" means the block begins at line 32. The rest is the stats info as mentioned
+in |ivim-livediff-list|.
+
+Discard a change block ~
+                                                *ivim-livediff-discard*
+You can discard an individual change block if it fails to satisfy, by placing
+the cursor in the target block then typing `<Leader>cd`.
+
+You can undo the discarding by typing `u` right after it.
+
+For the |ivim-citb| case, `<Leader>cd` takes a preceding count:
+
+    `2<Leader>cd`: to discard the block above
+    `3<Leader>cd`: to discard the block below
+
+Index a change block ~
+                                                *ivim-livediff-index*
+When a change block is ready for the next revision and only seems to distract,
+you can save it to the index |ivim-vc-index| by placing the cursor in it then 
+typing `<Leader>ci`.
+
+Note that undoing a change block indexing is not currently supported.
+
+For the |ivim-citb| case, `<Leader>ci` uses a preceding count to specify the
+target block:
+
+    `2<Leader>ci`: to index the block above
+    `3<Leader>ci`: to index the block below
+
+Update ~
+                                                *ivim-livediff-update*
+Normally, the automatic changes updates are triggered by the following events:
+
+    |WinEnter|
+    |BufEnter|
+    |BufWritePost|
+    |ShellCmdPost|
+    |CursorHold|
+    |CursorHoldI|
+
+among these, the last two have direct impact on the "realtime" updating. In
+turn, they are governed by option 'updatetime'. So you can tune the option's
+value to meet your needs.
+
+You can update the current buffer manually by typing `<Leader>ld`.
+
+Also, one update follows each change block discarding or saving.
+
+Toggle ~
+                                                *ivim-livediff-toggle*
+You can toggle (enable or disable) live diff and do it in 3 levels:
+
+1) for the whole app;
+
+This turns on or off live diff of the whole app. It has the highest priority
+and persists between app launches. You do it via an option in |ios-settings|.
+
+2) for all open and tracked buffers;
+
+This affects all currently open and tracked buffers. You do it via command 
+|:iverctl-livediff-toggle| with its option "--all".
+
+3) for a specific buffer.
+
+This only changes the live diff state of the current buffer, if tracked. You 
+do it via command |:iverctl-livediff-toggle|.
+
+Note that the last two have the same priority and they are lost in the next
+app launch (i.e. not persisted).
+
+No default key mappings are set up for toggling.
+
+Ex commands ~
+                                                *:iverctl-livediff* *:iv-ld*
+iVim exposes some "Live Diff" functionality via command ":iverctl livediff".(
+also, the short form ":iv ld" is available for lazy typers).
+
+The following subcommands are available:
+
+    update:   update changes
+    previous: jump to previous change block
+    next:     jump to next change block
+    list:     list all change blocks
+    preview:  preview change block at cursor
+    discard:  discard change block
+    index:    save change block to the index
+    toggle:   enable or disable live diff for tracked buffer(s)
+
+Here are the details and examples of these subcommands:
+
+:iverctl livediff update                        *:iverctl-livediff-update*
+                It updates changes immediately.
+
+                For example: >
+                        :iverctl livediff update
+<
+                It also has a short form: >
+                        :iv ld u
+<
+
+:iverctl livediff previous [option]             *:iverctl-livediff-previous*
+                It jumps to the previous change block, if any.
+
+                The following [option]s are available:
+                    -c <count>, --count <count>:
+                        specify how many change blocks to jump.
+
+                Note that it treats the |ivim-citb| case as one block. In
+                another word, it immediately warns if you try to jump in
+                the cursor-in-two-blocks case.
+    
+                For example, this tries to find a previous change block and
+                jumps to it if found, warns otherwise: >
+                        :iverctl livediff previous
+<
+                This tries and jumps to the previous 3 block: >
+                        :iverctl livediff previous --count 3
+<
+                It also has a short form: >
+                        :iv ld p
+<
+
+:iverctl livediff next [option]                 *:iverctl-livediff-next*
+                It jumps to the next change block, if any.
+
+                The following [option]s can be used:
+                    -c <count>, --count <count>:
+                        specify how many change blocks to jump.
+
+                Note that it treats the |ivim-citb| case as one block. It
+                jumps out of the cursor-in-two-blocks block immediately.
+
+                For example, this tries to find a next change block and
+                jumps to it if found, warns otherwise: >
+                        :iverctl livediff next
+<
+                This tries and jumps the next 2 block: >
+                        :iverctl livediff next --count 2
+<
+                Its short form is: >
+                        :iv ld n
+<
+
+:iverctl livediff list                          *:iverctl-livediff-list*
+                It lists all change blocks of current buffer in a location
+                list window.
+
+                See |ivim-livediff-list| for an example and details of the 
+                list window.
+
+                For example, this lists change blocks of current buffer: >
+                        :iverctl livediff list
+<
+                It has a short form too: >
+                        :iv ld l
+<
+
+:iverctl livediff preview [option]              *:iverctl-livediff-preview*
+                It previews the details of change block at cursor, if any.
+
+                It has the following [option]s:
+                    -P <position>, --cbposition <position>:
+                        specify the target block in the |ivim-citb| case.
+                        the <position> can be either "above" or "below". It
+                        is ignored in other cases.
+
+                The preview window is a |popup-window| at cursor. It closes
+                automatically when the cursor moves outside |<cWORD>|.
+
+                For example, this opens the preview window and displays the
+                details of the change block at cursor if applicable: >
+                        :iverctl livediff preview
+<
+                This previews the block below in the |ivim-citb| case: >
+                        :iverctl livediff preview -P below
+<
+                It has a short form: >
+                        :iv ld pv
+<
+
+:iverctl livediff discard [option]              *:iverctl-livediff-discard*
+                It discards a change block.
+
+                The following [option]s are available:
+                    -P <position>, --cbposition <position>:
+                        specify the target block in the |ivim-citb| case.
+                        the <position> can be either "above" or "below". It
+                        is ignored in other cases.
+
+                For example, this discards the change block at cursor: >
+                        :iverctl livediff discard
+<
+                This discards the block above in the |ivim-citb| case: >
+                        :iverctl livediff discard -P above
+<
+                You can also use its short form: >
+                        :iv ld dd
+<
+
+:iverctl livediff index [option]                 *:iverctl-livediff-index*
+                It saves a change block to the index.
+
+                The following [option]s are available:
+                    -P <position>, --cbposition <position>:
+                        specify the target block in the |ivim-citb| case.
+                        the <position> can be either "above" or "below". It
+                        is ignored in other cases.
+
+                For example, this saves the change block at cursor: >
+                        :iverctl livediff index 
+<
+                This saves the block below in the |ivim-citb| case: >
+                        :iverctl livediff index -P below
+<
+                Its short form is available: >
+                        :iv ld i
+<
+
+:iverctl livediff toggle [option]               *:iverctl-livediff-toggle*
+                It enables or disables live diff for tracked buffer(s).
+
+                The following [option]s are available:
+                    -e, --enable:
+                        explicitly enable live diff.
+                    -d, --disable:
+                        explicitly disable live diff.
+                    -A, --all:
+                        work on all tracked buffers. Otherwise, the command
+                        only tries to affect the current buffer.
+                    -q, --quiet:
+                        silent error message or notifications.
+                    -s, --state:
+                        show the current live diff state rather than changing
+                        it.
+
+                For example, this toggles live diff state of the current buf: >
+                        :iverctl livediff toggle
+<
+                This toggles live diff for all other tracked buffers besides the
+                current one: >
+                        :iverctl livediff toggle --all
+<
+                This enables live diff explicitly for the current buffer: >
+                        :iverctl livediff toggle --enable
+<
+                This disables live diff explicitly for the current buffer: >
+                        :iverctl livediff toggle --disable
+<
+                The above 2 cases notify if any error happens (e.g. attempt to
+                enable when it is already enabled). With option "--quiet", the
+                errors are ignored: >
+                        :iverctl livediff toggle --enable --quiet
+<
+                This just prints live diff state of the current buffer: >
+                        :iverctl livediff toggle --state
+<
+                This prints live diff states of all tracked buffers, with current
+                one, if also tracked, prefixed with a "*": >
+                        :iverctl livediff toggle --state --all
+<
+                You can also use its short form: >
+                        :iv ld t
+<
+                
+Key mappings ~
+                                                *ivim-livediff-keymappings*
+By default, iVim provides several key mappings under normal mode for you to
+invoke "Live Diff" commands quickly:
+
+    `<Leader>ld`: update changes, see |<Leader>|.
+    `[c`:         jump to previous change block. It accepts a preceding count 
+                  to jump as many blocks.
+    `]c`:         jump to next change block. It accepts a preceding count to
+                  jump as many blocks.
+    `<Leader>cp`: preview the change block at cursor. An preceding count to 
+                  specify target block in the |ivim-citb| case (2: above, 3:
+                  below).
+    `<Leader>cd`: discard the change block at cursor. An preceding count to 
+                  specify target block in the |ivim-citb| case (2: above, 3:
+                  below).
+    `<Leader>ci`: index the change block at cursor. An preceding count to 
+                  specify target block in the |ivim-citb| case (2: above, 3:
+                  below).
+    `<Leader>cl`: list all change blocks of current buffer.
+
+These are all mapping local to the buffer in question. You can see them via
+|:nmap|. As you would see, they are all implemented via |:iverctl-livediff|.
+
+Customization ~
+                                                *ivim-livediff-custom*
+There are several things you can customize in "Live Diff" to meet your 
+convinience.
+
+                                                *ivim-livediff-highlight*
+The following highlight groups control how the signs look:
+
+    `iVimLiveDiffAddSign`: `+`
+    `iVimLiveDiffModifySign`: `~`
+    `iVimLiveDiffRemoveAboveSign`: `¯`
+    `iVimLiveDiffRemoveBelowSign`: `_`
+    `iVimLiveDiffModifyRemoveSign`: `~_`
+    `iVimLiveDiffRemoveAboveBelowSign`: `¯_`
+
+these are defined by default.
+
+And the following highlight groups decide how changed lines look:
+
+    `iVimLiveDiffAddLine`: a newly added line (with sign `+`)
+    `iVimLiveDiffModifyLine`: a modified line (`~`)
+    `iVimLiveDiffRemoveAboveLine`: a line with lines above removed (`¯`)
+    `iVimLiveDiffRemoveBelowLine`: a line with lines below removed (`_`)
+    `iVimLiveDiffModifyRemoveLine`: a modified line and with lines below 
+                                    removed (`~_`)
+    `iVimLiveDiffRemoveAboveBelowLine`: a line with lines above and below
+                                        removed (`¯_`)
+
+these are not defined by default. You can add these to get highlighted
+lines to make change blocks better stand out.
+
+                                                *ivim-livediff-custom-events*
+As mentioned in |ivim-livediff-update|, some |autocmd-events| are utilized to
+trigger the updates of live diff. These are in the group "iVimLiveDiffEvents"
+and local to the buffer in question.
+
+You can tune the events by removing some of them or adding new ones. Some
+candidates worth considering include:
+
+    |TextChanged|
+    |InsertEnter|
+    |InsertLeave|
+
+Also, as mentioned above, option 'updatetime' governs events |CursorHold| and
+|CursorHoldI|. iVim changes its default value from 4000 to 200 to make live
+diff more "responsive". Note that it also controls the frequency of writing to
+swap files.
+
+
+                                                *ivim-livediff-custom-keys*
+You can change the default key mappings if they are against your habit.
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
