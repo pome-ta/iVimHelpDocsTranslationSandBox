@@ -4,6 +4,8 @@
 
                                             *ivim-url-scheme* *ivimeditor:*
 
+このファイルには、iVim の URL スキーム サポートの詳細が記述されています。
+
 This file describes the details of iVim's URL scheme support.
 
 
@@ -15,12 +17,22 @@ This file describes the details of iVim's URL scheme support.
 ==============================================================================
 1. Introduction                                 *ivim-url-scheme-intro*
 
+
+iVim の最大の目標の 1 つは、その編集機能を iOS システム全体に提供することです。この取り組みの例には、外部ファイルをその場で編集するためのサポート、他のアプリとファイルを共有するためのサポート、およびユーザーが独自のワークフローに統合するためのショートカット インテント (|ivim-shortcuts|) が含まれます。
+
 One of iVim's foremost goals is to contribute its editing power to the whole 
 iOS system. Examples for this effort include the supports to edit external
 files in place, to share files to other apps, and Shortcuts intents for users
 to integrate into their own workflows (|ivim-shortcuts|).
 
+
+バージョン 2.41 以降、iVim はカスタム URL スキームのサポートを追加します。
+
 Since version 2.41, iVim adds custom URL scheme support.
+
+
+簡単に言うと、カスタム URL スキームは、iVim がシステムに登録する固有のスキームです。別のアプリがこのスキームで URL を開くと、システムは iVim を起動し、それに URL を渡します。 iVim はこの URL を解析し、そこから必要な情報を見つけようとし、見つかった情報に従って動作します。言い換えると、ディレクティブを URL に入れ、それを開くだけで iVim を要求します。
+
 
 Simply put, a custom URL scheme is a unique scheme that iVim registers in the
 system. When another app opens a URL with this scheme, the system launches
@@ -28,25 +40,41 @@ iVim and passes the URL to it. iVim parses this URL, tries to find necessary
 information from it, and acts according to the info found. In other words, you
 request iVim by putting your directives into a URL and simply opening it.
 
-
 ==============================================================================
 2. Security                                     *ivim-url-scheme-security*
+
+
+URL スキームは、アプリへの潜在的な攻撃ベクトルを提供します。セキュリティのために、iVim のカスタム URL スキームは次のように設計されています。
+
 
 URL schemes offer a potential attack vector into the app. For the sake of 
 security, iVim has the following design for its custom URL scheme.
 
+
 First alert ~
+
+URL スキームが初めて呼び出されると、iVim は潜在的なセキュリティ問題を警告し、URL スキームを許可するか禁止するかを決定させます。
 
 When its URL scheme is invoked the first time, iVim alerts you to the potential
 security problem and lets you decide whether to allow or disallow URL schemes.
 
+
+このアラートは 1 回だけ表示されます。その後、Settings.app (|ios-settings|) で設定を変更できます。
+
 This alert only shows once. After that, you can change the setting in the
 Settings.app (|ios-settings|).
 
+
 Toggle switch ~
+
+
+iVim は、カスタム URL スキームをいつでも切り替えることができるように、Settings.app にスイッチも提供します。
 
 iVim also provides a switch in the Settings.app for you to toggle the custom
 URL schemes at any time.
+
+
+カスタム URL スキームが無効になっている場合、iVim は URL によって起動された後、何もしません。
 
 When custom URL scheme is disabled, iVim does nothing after launched by a URL.
 
@@ -56,14 +84,22 @@ When custom URL scheme is disabled, iVim does nothing after launched by a URL.
 
 Format ~
 
+iVim のカスタム URL の一般的な形式は次のとおりです
+
 The general format of iVim's custom URL is as following: >
 
         ivimeditor:<command>[?arg1=value1[&arg2=value2][&...]]
 <
+
+最初の "ivimeditor:" の部分は、iVim がシステムに登録するスキームです。システムは、このスキームを見つけるたびに iVim を開きます。 <command> は、iVim によって定義および提供され、iVim に何をすべきかを伝えるコマンドです。コマンドの後に、引数のペアを指定して、iVim にその方法を伝えます。
+
 The beginning "ivimeditor:" part is the scheme iVim registers in the system.
 The system opens iVim whenever it sees this scheme. The <command> is the 
 command that is defined and provided by iVim, telling iVim what to do. After
 the command, you provide argument pairs, telling iVim how to do it.
+
+
+この形式は、有効な URL として認識されない場合があります。このような場合は、代わりに従来の形式を使用してください
 
 Sometimes this format would not be recognized as valid URLs. If this happens,
 use the traditional format instead: >
