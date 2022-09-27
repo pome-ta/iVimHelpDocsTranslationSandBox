@@ -91,9 +91,9 @@ iVim は、最後に実行した URL スキームの情報を記録するグロ�
 これまでのところ、iVim は次の URL スキーム コマンドを定義して提供しています:
 
 * runexcmd (since 2.41)                         *ivim-url-scheme-runexcmd*
-                It asks iVim to run an Ex command.
+                Ex コマンドを実行するように iVim に要求します。
 
-                The following arguments are available:
+                以下の引数が利用可能です:
                     excmd: 
                         the Ex command to run, this is required. Since only
                         one command is ran for each URL, other Ex commands
