@@ -95,18 +95,11 @@ iVim は、最後に実行した URL スキームの情報を記録するグロ�
 
                 以下の引数が利用可能です:
                     excmd: 
-                        the Ex command to run, this is required. Since only
-                        one command is ran for each URL, other Ex commands
-                        after the first one are ignored.
+                        実行する Ex コマンド。これは必須です。各 URL に対して 1 つのコマンドのみが実行されるため、最初のコマンドの後の他の Ex コマンドは無視されます。
                     arg:
-                        arguments for the Ex command. Multiple values are
-                        allowed and will be appended to *excmd* in order.
-                        This is optional since *excmd* can include all its
-                        arguments already. 
+                        Ex コマンドの引数。複数の値が許可され、順番に *excmd* に追加されます。 *excmd* はすでにすべての引数を含めることができるため、これはオプションです。
                     callback:
-                        another URL that will be invoked when the Ex command
-                        is done. It supports the variable tokens as in cmd
-                        |:iopenurl| to provide info in the URL.
+                        Ex コマンドが実行されたときに呼び出される別の URL。 cmd |:iopenurl| のような変数トークンをサポートします。 URL に情報を提供します。
                         
                 The following entries will be recorded into the global var
                 "ivim_last_url_scheme" afterwards:
