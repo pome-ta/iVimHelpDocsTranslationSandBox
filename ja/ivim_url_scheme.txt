@@ -101,16 +101,15 @@ iVim は、最後に実行した URL スキームの情報を記録するグロ�
                     callback:
                         Ex コマンドが実行されたときに呼び出される別の URL。 cmd |:iopenurl| のような変数トークンをサポートします。 URL に情報を提供します。
                         
-                The following entries will be recorded into the global var
-                "ivim_last_url_scheme" afterwards:
+                その後、次のエントリがグローバル変数 "ivim_last_url_scheme" に記録されます:
                     "excmd":
-                        the final Ex command line that ran.
+                        実行された最後のExコマンドライン。
                     "output":
-                        the output of the Ex command.
+                        Ex コマンドの出力。
                     "callback":
-                        the original callback line if any. 
+                        元のコールバック行がある場合。
 
-                For example, this runs the command ":iexdir": >
+                たとえば、これはコマンド ":iexdir" を実行します: >
 
                     ivimeditor:runexcmd?excmd=iexdir
 <
