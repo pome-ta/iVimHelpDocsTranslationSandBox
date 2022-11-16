@@ -113,14 +113,17 @@ iVim は、最後に実行した URL スキームの情報を記録するグロ�
 
                     ivimeditor:runexcmd?excmd=iexdir
 <
-                This runs the command ":version": >
+                これにより、コマンドが実行されます ":version": >
 
                     ivimeditor:runexcmd?excmd=version&excmd=idoc
 <
                 the second command "idoc" is ignored because only one cmd
                 is ran for each URL.
+                
+                2 番目のコマンド「idoc」は、URL ごとに 1 つのコマンドしか実行されないため無視されます。
+                
 
-                This runs the command ':echo "hello"': >
+                これにより、コマンドが実行されます':echo "hello"': >
 
                     ivimeditor:runexcmd?excmd=echo%20%22hello%22
 <
