@@ -1,13 +1,14 @@
-*ios_appstore.txt*	For Vim version 8.1.	Last change: 2022 Jul 13
+*ios_appstore.txt*	For Vim バージョン 8.1.	Last change: 2022 Jul 13
 
 			iVim REFERENCE MANUAL	by Terry Chou
 
 
 					    *ios-appstore* *iOS-AppStore*
 
-This file documents the particularities of the App Store version of iVim.
+このファイルは、iVimのApp Storeバージョンの特殊性(註: 特質性？) を文書化しています。
 
 See |ios| for details of the specific iOS-related part.
+特定のiOS関連の部分の詳細については、 |ios| を参照してください。
 
 
 ==============================================================================
