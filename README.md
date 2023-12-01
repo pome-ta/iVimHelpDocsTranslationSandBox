@@ -1,5 +1,15 @@
 # iVimHelpDocsTranslationSandBox
 
+## iVim
+
+```
+VIM - Vi IMproved 8.1 (2018 May 18, compiled Jun  6 2023 16:17:19)
+iVim 2.55(4)
+Included patches: 1-2110
+Modified by Boogaloo
+Huge version with iOS GUI.
+```
+
 ## iVimDocsMaster
 
 ``` .txt
