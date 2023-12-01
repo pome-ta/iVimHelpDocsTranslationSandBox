@@ -1,4 +1,4 @@
-*ivim_file_browser.txt*	For Vim version 8.1.	Last change: 2021 Apr 07
+*ivim_file_browser.txt*	For Vim version 8.1.	Last change: 2023 May 02
 
 				iVim REFERENCE MANUAL	by Terry Chou
 
@@ -138,7 +138,7 @@ this filter the history and list ones containing "hello" in their names.
 
 Drag and drop ~
                                                 *ivim-file-browser-dragndrop*
-You can drag items from a file browser and drop them to differnt targets to
+You can drag items from a file browser and drop them to different targets to
 fulfill different purposes:
 
 1) if the dragged item is a directory and you drop it at the edge of the

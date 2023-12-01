@@ -1,4 +1,4 @@
-*ios_external_cmds.txt*     For Vim version 8.1.    Last change: 2020 Jan 20
+*ios_external_cmds.txt*     For Vim version 8.1.    Last change: 2023 Feb 15
 
 			iVim REFERENCE MANUAL	by Terry Chou
 
@@ -274,9 +274,162 @@ Internal commands ~
                                                     *ivish-internal-cmds*
 `ivish` also provides some internal commands:
 
-`exit`: terminate the current `ivish`;
+`alias`: add or list aliases;
+`exit`: terminate the current `ivish` shell;
 `help`: show this documentation;
-`history`: list the current history.
+`history`: list the current commands history (|ivish-history|);
+`unalias`: remove aliases.
+
+Following lists their details and examples:
+						   
+alias [name[=value] ...]			    *ivish-inter-cmd-alias*
+	    Without any argument, it lists all existing aliases in the form
+	    `alias name=value` for each member.
+
+	    When arguments are provided, an alias is created for each name
+	    whose value is given. An existing alias with the same name is
+	    overwritten with the new value. For each name without any value
+	    supplied, the corresponding alias is printed. 
+
+	    For example, this adds a new alias: >
+		    alias ll='ls -l'
+<
+	    Note that there should be no spaces around the "=", otherwise, it
+	    would be treated as a bare name: >
+		    alias ll = 'ls -l'
+<
+	    rather than creating an alias, the above command will try to find 
+	    aliases with names "ll", "=" and "ls -l", and list them instead.
+						    *ivish-alias-illegal-chars*
+	    Also, certain characters are illegal for an alias name:
+
+	    1) break characters: `()<>;&| \t\n`
+	    2) quote characters: `"'\
+	    3) expansion characters: `$<>`
+	    4) path separator: `/`
+
+	    attempts to include any of these in an alias name will fail.
+
+	    This lists aliases "ll" and "la": >
+		    alias ll la
+<
+	    Note that `alias` reports an error if it cannot find a name.
+
+exit						    *ivish-inter-cmd-exit*
+	    It simply exits the current shell.
+
+help						    *ivish-inter-cmd-help*
+	    It opens a help window and jumps to |ivish|.
+
+history						    *ivish-inter-cmd-history*
+	    It lists the commands history of the current shell.
+
+unalias [-a] [name ...]				    *ivish-inter-cmd-unalias*
+	    It removes existing aliases with the given names.
+
+	    If option `-a` is provided, all existing aliases are cleaned up.
+
+	    Without any argument, nothing happens.
+
+	    For example, this removes aliases "ll" and "la": >
+		    unalias ll la
+<
+	    Note that `unalias` reports an error for each name that it failed
+	    to find.
+	    
+Aliases ~
+						    *ivish-aliases*
+Aliases are shortcuts for invoking long commands. 
+
+An alias is comprised of a name and a value. Each `ivish` shell maintains an 
+aliases pool. Before executing a command, the shell checks to see if the first
+word of the command is the name of an existing alias. If so, this word is 
+replaced by the value of the found alias.
+						    *ivish-aliases-recursion*
+The first word of the replacement text is also tested for aliases. This test
+continues until a word appears for the second time in this testing chain. For
+example, if there is an alias `ls='ls -a'`, for the command `ls -l`, the aliases
+test simply stops after its first "ls" is replaced by "ls -a", rather than
+replacing the resulting first "ls" again.
+						    *ivish-aliases-further-test*
+If the last character of one applied alias is a space, the next word in the
+original command following the alias is also tested for aliases.
+
+For example, if an alias `aa='ls -a '` exists and the command `aa bb` is given.
+After the first word "aa" is replaced, the second word "bb" is also checked
+for possible aliases.
+						    *ivish-aliases-cmds*
+In `ivish`, aliases are created and listed with command `alias`
+(|ivish-inter-cmd-alias|), or removed with command `unalias`
+(|ivish-inter-cmd-unalias|).
+						    *ivish-aliases-availability*
+To make useful aliases as available as possible, `iVim` has a root aliases pool.
+
+Aliases in the root pool are available in the following scenes:
+
+* all external commands share the root aliases pool;
+* each `ivish` shell reads aliases from the root pool when it starts.
+
+As a result, you can put commands "!alias name=..." in |.vimrc| to make useful 
+aliases ready whenever `iVim` launches.
+
+Note that however, aliases are not available as commands invoked via |:terminal| 
+since this only calls non-builtin commands.
+						*ivish-aliases-live-expansion*
+At a prompt, `ivish` monitors what you have inputted so far and tries to expand
+aliases within it. If there is any alias expanded, it displays the resulting
+command line below the input line, for example: >
+
+	$ ll
+	= ls -l
+<
+in this case, you know exactly what will be executed after you press enter.
+
+Pipes ~
+						    *ivish-pipes*
+A pipe connects the output of its left command to the input of its right 
+command, and `ivish` supports 2 types of pipes:
+						    *ivish-|*
+1) `|` normal pipe: >
+
+	command1 | command2
+<
+it connects the standard output of command1 to the standard input of command2.
+						    *ivish-|&*
+2) `|&` error combined pipe: >
+
+	command1 |& command2
+<
+in addition to command1's standard output, it also connects its standard error 
+to command2's standard input.
+						    *ivish-pipeline*
+Multiple pipes can be chained together to form a pipeline: >
+
+	command1 | command2 |& command3 ...
+<
+a pipeline waits for all of its commands to terminate before itself exits. The
+exit status of a pipeline is the exit status of its last command.
+
+Note that each piped command is executed in a subshell, which is a separate
+shell.
+
+Sequences ~
+						    *ivish-sequence*
+A sequence is a list of commands or pipelines (|ivish-pipeline|) separated by `;`: >
+
+	ls -al | cat; pwd; uname -a
+<
+The member commands or pipelines are executed one by one in order. `ivish` waits 
+for all members to terminate in turn. The exit status of the last member is
+the exit status of the whole sequence.
+
+Caveats ~
+						    *ivish-caveats*
+Some points concerning using `ivish` are still worth mentioning:
+
+* as a command, `ivish` does not accept or support arguments currently;
+* running `ivish` from the command window via ":!ivish" is not supported;
+* aliases are not recognized when they are started as jobs from |:terminal|.
 
 
 ==============================================================================

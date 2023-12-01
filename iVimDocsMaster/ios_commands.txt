@@ -1,4 +1,4 @@
-*ios_commands.txt*	For Vim version 8.1.	Last change: 2022 May 30
+*ios_commands.txt*	For Vim version 8.1.	Last change: 2023 Jun 02
 
 				iVim REFERENCE MANUAL	by Terry Chou
 
@@ -1375,6 +1375,8 @@ You can manage the preview windows via the Ex command |:ipreview|.
                         open preview windows in windows.
                     -e <ext[,ext...]>, --extension <ext[,ext...]>:
                         specify custom extensions for documents.
+		    -u, --update:
+			update preview views for given [path]s.
 
                 A [path] is the path of a target file. One exception is that
                 when option -a is used to activate an existing preview window,
@@ -1412,6 +1414,23 @@ You can manage the preview windows via the Ex command |:ipreview|.
                     . when the given extensions are less, the rest will be
                     padded with the last given one.
 
+					    *:ipreview-open-multiple-windows*
+		Since introduction of |ivim-web-preview-window|, iVim groups
+		docs of a previewing request, and it is possible that multiple
+		preview windows are opened.
+
+		For example, the following preview command: >
+			:ipreview -w hello.md flower.jpeg
+<
+		opens "hello.md" in a web preview window and "flower.jpeg" in
+		a QuickLook preview window.
+
+		When multiple windows are opened, the order depends on their
+		respective first doc. As in the above example, the web preview
+		window is opened first thanks to the fact that "hello.md" is
+		before "flower.jpeg". When it is to present preview windows
+		in a window, a latter window is presented over its forerunners.
+
                                                             *:ipreview-list*
                 Use option -l to list existing preview windows. If any [path]s
                 are given, only preview windows containing any of them are 
@@ -1419,10 +1438,11 @@ You can manage the preview windows via the Ex command |:ipreview|.
 
                 Following is an example of preview windows listing: >
 
-                87654321-EEFF-5432-1867-3355BBAADDEE [FB]   [a.jpg, b.html]
-                12345678-FFEE-2345-7681-EEDDAABB5533        [c.txt as md]
+                87654321-EEFF-5432-1867-3355BBAADDEE[FB]  [a.jpg, b.png]
+                12345678-FFEE-2345-7681-EEDDAABB5533      [c.txt as md]
+		76589943-EFEF-7658-9623-CCBBEEAA6622[FB]  [a.md]>[b.gif]
 
-                2 preview view(s) found
+                3 preview view(s) found
 <
                 the first column is the identifier of the containing window.
                 Note that a preview window can also be modally presented in
@@ -1434,13 +1454,19 @@ You can manage the preview windows via the Ex command |:ipreview|.
                 .FB: file browser
                 .PW: preview window (it is omitted here since it is right a
                      preview window)
+		.WP: web preview window (|ivim-web-preview-window|)
 
                 Therefore, the first row means the preview window is presented
                 in a file browser window.
 
                 The second column lists the files being previewed. e.g. the
-                first preview window contains files a.jpg and b.html and the
+                first preview window contains files a.jpg and b.png and the
                 second file c.txt (as markdown).
+
+		When multiple windows are presented in a window as described in
+		|:ipreview-open-multiple-windows|, the overlapped windows are
+		listed from top to bottom as shown in the third row in the above
+		example.
 
                 This lists all existing preview windows: >
                     :ipreview -l
@@ -1484,9 +1510,297 @@ You can manage the preview windows via the Ex command |:ipreview|.
                     :ipreview -w
 <
                 Also note that, iVim tries best to open as few preview windows
-                as possible. It priorily activate an existing preview window
-                if it already contains the target file. Or it updates the
-                foreground preview window with the new targets.               
+                as possible. It prioritarily activates an existing preview 
+		window if it already contains the target file. Or it updates 
+		the foreground preview window with the new targets.               
+
+							*:ipreview-update*
+		Normally, iVim watches all previewed documents and updates
+		their preview views automatically whenever they change.
+
+		You can also update a document's preview views manually with
+		option --update.
+
+		For example, this tries and updates preview views for files 
+		"hello.md", "a.html" and "face.jpeg": >
+		    :ipreview -u hello.md a.html face.jpeg
+<
+		And below updates current buffer file since no paths given: >
+		    :ipreview --update
+<
+		Note that updating only works for documents that are already
+		being previewed. To start a fresh preview, see |:ipreview-open|.
+
+		iVim lists all docs that failed to find their preview views: >
+		    :ipreview -u notpreviewed.c readme.md
+		    1 update target(s) not found:
+
+		      Documents/notpreviewed.c
+<
+							*:ipreview-markdown*
+		Extra options are available for markdown documents:
+		    -T <type>, --listtype <type>:
+			used together with -l, list available markdown themes
+			or code highlighting themes.
+		    --mdt <pat[,pat...]>, --markdowntheme <pat[,pat...]>:
+			specify the theme used to preview a markdown doc.
+		    --ct <pat[,pat...]>, --codetheme <pat[,pat...]>:
+			specify code highlighting themes.
+
+						    *:ipreview-markdown-themes*
+		iVim supports markdown themes to make their preview views look 
+		outstanding.
+
+						    *:ipreview-md-themes-list*
+		You can list available markdown themes as following: >
+		    :ipreview -l -T mark
+<
+		Markdown themes's type name is "markdownthemes". Specifying
+		any one of its prefix to option --listtype makes --list list
+		available markdown themes instead.
+
+		While listing markdown themes, you can use [path]s as patterns
+		to filter the results: >
+		    :ipreview -l -T m dark github
+<
+		The above example only lists themes whose names contain "dark"
+		or "github", if any.
+
+						    *:ipreview-md-themes-apply*
+		To apply a specific theme to a markdown doc, use option --mdt: >
+		    :ipreview --mdt github readme.md
+<
+		The above opens a preview view of markdown file "readme.md",
+		and decorates it with the theme "github".
+
+		Note that a --mdt value is a pattern and the first theme whose
+		name starts with it is picked.
+
+		Like option -e, --mdt lets you specify more than one value in
+		case of multiple target documents, as below: >
+		    :ipreview --mdt github,garden readme.md report.md
+<
+		This previews "readme.md" in theme "github", and "report.md"
+		in "garden".
+
+		When the number of --mdt values (v) is not equal to the number
+		of target documents (d):
+
+		    . first d values are used if v > d;
+		    . the last value is repeated (d - v) times for rest (d - v)
+		    documents if d > v.
+
+		For an instance, the following command: >
+		    :ipreview --mdt garden,github a.md b.md c.md
+<
+		assigns "garden" to "a.md" and "github" both "b.md" & "c.md".
+
+						   *:ipreview-md-themes-default*
+		The default markdown theme is used when related info is not
+		available sometimes:
+
+		    . no option --mdt is provided;
+		    . a --mdt pattern is empty or it failed to find a theme;
+		    . there is no way to specify a theme, e.g. when preview a
+		    doc within a file browser (|ivim-file-browser|).
+
+		You can change the default markdown theme in |ios-settings|. See
+		|ios-settings-markdown-preview|.
+
+						    *:ipreview-md-themes-update*
+		To update the theme of a markdown document, use option --mdt 
+		with --update: >
+		    :ipreview -u --mdt github readme.md
+<
+		The above example updates any found preview view of "readme.md"
+		with theme "github". 
+
+						*:ipreview-markdown-code-themes*
+		For better readability, fenced code blocks in a markdown doc
+		is syntax highlighted. iVim lets you specify code highlighting
+		themes to please your own eyes.
+
+						*:ipreview-md-code-themes-list*
+		This lists available code themes: >
+		    :ipreview -l -T code
+<
+		The type name is "codethemes". Using any of its prefixes with
+		option -T changes --list to list available code themes.
+
+		If you use [path]s as patterns, the listed code themes can be
+		filtered: >
+		    :ipreview -l -T c dark dimmed
+<
+		The above command lists code themes with "dark" or "dimmed" in
+		their names.
+
+						*:ipreview-md-code-themes-apply*
+		You can use option --ct to specify code themes when previewing
+		a markdown document: >
+		    :ipreview --ct gruvbox-light:gruvbox-dark readme.md
+<
+		Unlike markdown themes, code themes for light or dark modes
+		are separated. As a result, a --ct value needs to indicate the
+		mode info. You provide the mode info by using the format: >
+		    <light pattern>:<dark pattern>
+<
+		For example, "gruvbox-light:gruvbox-dark" means to use theme
+		"gruvbox-light" to highlight code in light mode, "gruvbox-dark"
+		in dark mode.
+
+		A pattern in the above format is used as a prefix to locate a
+		code theme:
+
+		    . if it is not empty, the first code theme whose name
+		    begins with the pattern is chosen. "gruvbox-l:gruvbox-d"
+		    works as "gruvbox-light:gruvbox-dark" does, for example.
+		    . if it is empty, the default code theme in related mode
+		    is picked. For example, "github:" means to use "github"
+		    for code in light mode and the default dark code theme in
+		    dark mode.
+
+		Actually, if a --ct value does not contain a ":", the pattern 
+		is assigned to the current mode. For example: >
+		    :ipreview --ct github readme.md
+<
+		If at the moment of this command launching, the system is in
+		dark mode, "github" will be corrected as ":github". otherwise,
+		as "github:". Note that this correction is remembered since.
+		
+		You can specify multiple values to --ct for multiple docs: >
+		    :ipreview --ct github:,:github-dark readme.md report.md
+<
+		This highlights code in "readme.md" with theme "github" in
+		light mode and the default dark code theme in dark mode; for
+		doc "report.md", the default light code theme in light mode
+		and "github-dark" in dark mode. 
+
+		When the number of --ct values (v) and the number of docs (d)
+		are not equal:
+
+		    . first d values are used if v > d;
+		    . the last value is repeated (d - v) times for the last
+		    (d - v) docs.
+
+		For example, the following: >
+		    :ipreview --ct github:,:github-dark a.md b.md c.md
+<
+		assigns "github:" to "a.md", and ":github-dark" to both "b.md"
+		and "c.md".
+
+					    *:ipreview-md-code-themes-default*
+		Default code themes are used when related info is unavailable:
+
+		    . no option --ct is specified;
+		    . a --ct pattern is empty or it fails to find a theme;
+		    . there is no way to provide this info, e.g. when preview
+		    a doc within a file browser (|ivim-file-browser|).
+
+		As mentioned above, code themes for light or dark modes are
+		separated. As a result, there are also 2 separated default
+		code themes, with one for each mode.
+
+		You can specify the default code themes in |ios-settings|. See
+		|ios-settings-markdown-preview|.
+
+					    *:ipreview-md-code-themes-update*
+		You can use option --ct with --update to update code themes of
+		a markdown preview view: >
+		    :ipreview -u --ct gruvbox-light: readme.md
+<
+		The above updates preview views of "readme.md" and highlights
+		its code with "gruvbox-light" in light mode; the default dark
+		code theme in dark mode.
+
+		If you want to keep an old code theme, use the "_" pattern: >
+		    :ipreview -u --ct github:_ readme.md
+<
+		The above updates preview views of "readme.md", highlights its
+		code with theme "github" in light mode, and leaves its code
+		theme in dark mode unchanged.
+
+					    *:ipreview-markdown-appearance*
+		In systems where Dark Mode is available (iOS 13.0+), iVim
+		offers option to customize markdown preview views' UI style.  
+
+		By picking an option in |ios-settings-markdown-preview|, you
+		can choose to:
+
+		    . always use light mode regardless of system's choice;
+		    . always use dark mode regardless of system's choice;
+		    . follow system's choice.
+
+		Of course, in systems with no Dark Mode, only the light mode
+		info is used.
+
+				 	   *ivim-web-preview-window* *ivim-wpw*
+
+By default, iVim uses iOS's QuickLook APIs to documents previewing. However,
+they don't work well for web content (e.g. HTML or Markdown docs):
+
+    * custom fonts of a web page are not loaded or respected;
+    * JavaScript scripts are ignored.
+
+To overcome these shortages and offer better web docs previewing experience,
+iVim provides a new web preview window.
+
+Whenever a web document previewing task is requested, iVim loads it with a web
+preview window automatically. Therefore, you don't have to bother to do the
+choice.
+
+								*ivim-wpw-gui*
+
+Like a web browser ~
+
+Normally, a web preview window displays the web content like a web browser.
+
+    * links are clickable;
+    * links are previewable;
+    * the system context menu is available;
+    * the navigation history is kept.
+
+Navigation bar ~
+
+At the top of a web preview window, there is a navigation bar. From left to
+right, it offers:
+
+    * a multiple-items-button
+    * a title: shows the name of the current original document
+    * a more-button
+    * a done-button
+
+read on for details.
+
+					       *ivim-wpw-multiple-items-button*
+Like a QuickLook preview window, a web preview window can load multiple docs.
+
+When a web preview window contains more than one doc, the multiple items
+button appears on the left top corner. Tapping it shows a list of loaded docs
+of the window. In turn, tapping an item in the list switching to that doc.
+
+							 *ivim-wpw-more-button*
+The button with a ellipsis icon is the more-button. Tapping it shows a menu
+providing actions related to the current document.
+							    *ivim-wpw-actions*
+The following actions may be available:
+
+"Open origin":           open the original doc in the main editor and go home
+			 if not already;
+"Go home":		 switch back to the previewed content (not shown if it
+			 is already home);
+"Go back":		 go back one step in the navigation history (not shown
+			 if it cannot go back);
+"Go forward":		 go forward one step in the navigation history (not
+			 shown if it cannot go forward);
+"Change markdown theme": list available markdown themes for you to change to (
+			 only available for Markdown docs);
+"Change code theme":	 list available code highlighting themes for you to
+			 change to (only available for Markdown docs);
+"Share":		 show the share sheet for current previewed doc;
+"Show help":		 bring you here.
+
+							*ivim-wpw-done-button*
+Tapping the done-button dismisses the whole web preview window.
 
 
 ==============================================================================

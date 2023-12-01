@@ -29,6 +29,7 @@ host
 ifconfig
 ivish
 less
+lessecho
 link
 ln
 ls
