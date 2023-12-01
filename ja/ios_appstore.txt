@@ -7,7 +7,7 @@
 
 このファイルは、iVimのApp Storeバージョンの特殊性(註: 特質性？) を文書化しています。
 
-See |ios| for details of the specific iOS-related part.
+
 特定のiOS関連の部分の詳細については、 |ios| を参照してください。
 
 
@@ -19,9 +19,7 @@ See |ios| for details of the specific iOS-related part.
 ==============================================================================
 1. In-App Purchase				*ios-iap*
 
-For continuous maintenance of iVim on the App Store, some features are now
-included into the `support-package` as In-App Purchase items. They need to be
-purchased to work properly in iVim.
+For continuous maintenance of iVim on the App Store, some features are now included into the `support-package` as In-App Purchase items. They need to be purchased to work properly in iVim.
 
 The currently available items are:
 
@@ -32,39 +30,29 @@ c. iVim Pro                                     |ivim-pro|
 
 IAP conflicts alert ~
 
-Whenever iVim is opened and there is any `IAP-conflict` (i.e. some features in 
-the `support-package` are enabled but not purchased yet), it alerts about this
-and the user has two options:
+Whenever iVim is opened and there is any `IAP-conflict` (i.e. some features in the `support-package` are enabled but not purchased yet), it alerts about this and the user has two options:
 
 1) Disable for Now
-this button disables all the conflicted features for the user and dismisses 
-the alert. The user can make decisions later and do the purchases via command
+this button disables all the conflicted features for the user and dismisses the alert. The user can make decisions later and do the purchases via command
 |:isupport|.
 
 2) Purchase
-this button opens the `support-package-purchases` view directly for the user
-to do the purchasing right away.
+this button opens the `support-package-purchases` view directly for the user to do the purchasing right away.
 
 Support package purchases view ~
 
-The `support-package-purchases` view lists all the currently available items
-in the package. Each item shows its title and a brief description on the left,
-and one of three possible states on the right:
+The `support-package-purchases` view lists all the currently available items in the package. Each item shows its title and a brief description on the left, and one of three possible states on the right:
 
 1) purchased
 if one item has been already purchased, it shows a checkmark as its state.
 
 2) available for purchasing
-if one item has not been purchased yet and is available, it shows a button
-with its price on it as the state. Tapping the button starts the purchasing
-process.
+if one item has not been purchased yet and is available, it shows a button with its price on it as the state. Tapping the button starts the purchasing process.
 
-Note that the related feature will be enabled automatically after a 
-successful purchasing.
+Note that the related feature will be enabled automatically after a successful purchasing.
 
 3) not available
-sometimes an item may not be available due to the system settings or some
-other reasons. In this case, its state says "Not available".
+sometimes an item may not be available due to the system settings or some other reasons. In this case, its state says "Not available".
 
 Item menu ~
 
@@ -75,47 +63,37 @@ this option takes you to the help entry on the related feature in iVim.
 
 2) purchase information
 this option behaves differently depending on the item's purchase state:
-a. if it is not purchased yet, it shows the price tag and tapping it to
-purchase;
+a. if it is not purchased yet, it shows the price tag and tapping it to purchase;
 b. if it is already purchased, it shows a grateful message;
 c. it warns if it is not available for now.
 
 There are also two buttons on the top bar:
 
 1) Restore
-this button tries to restore items already purchased for the current user.
-Which is necessary after a new installation of iVim.
+this button tries to restore items already purchased for the current user. Which is necessary after a new installation of iVim.
 
 2) Done
 this button dismisses this purchases view.
 
 Donation ~
 
-Besides the `support-package`, iVim also provides some donation items in the
-IAP list. You can purchase them to support the project.
+Besides the `support-package`, iVim also provides some donation items in the IAP list. You can purchase them to support the project.
 
-Donation items are consumable, which means each of them can be purchased more
-than once. 
+Donation items are consumable, which means each of them can be purchased more than once. 
 
 There are two items available in the donation group right now:
 
 1) Big Donation                                     *ios-iap-big-donation*
-this item provides an option to donate a relatively big amount of money to
-iVim each time. After each purchasing, it shows a piece of thanks information 
-and how many times you have donated so far as the details label of the cell.
+this item provides an option to donate a relatively big amount of money to iVim each time. After each purchasing, it shows a piece of thanks information and how many times you have donated so far as the details label of the cell.
 
 2) Small Donation                                   *ios-iap-small-donation*
-this item provides an option to donate a relatively small amount of money to
-iVim each time. It also shows the thanks information and donation times after 
-each purchasing as Big Donation does.
+this item provides an option to donate a relatively small amount of money to iVim each time. It also shows the thanks information and donation times after each purchasing as Big Donation does.
 
-Note that, because of being consumable, donation items don't show a checkmark
-as their purchasing states.
+Note that, because of being consumable, donation items don't show a checkmark as their purchasing states.
 
 Command :isupport ~
 
-iVim provides one command to open the `support-package-purchases` view at any
-time.
+iVim provides one command to open the `support-package-purchases` view at any time.
 
 :isu[pport]                                         *:isu* *:isupport*
                 It presents the `support-package-purchases` view for the user
@@ -128,14 +106,11 @@ time.
 Since version 2.40, iVim adds an IAP subscription option, named "iVim Pro".
 
 From then on, all new premium features will be added into this IAP package.
-Without the need to purchase them one by one, you can enjoy them all once you
-subscribe to it.
+Without the need to purchase them one by one, you can enjoy them all once you subscribe to it.
 
-`iVim Pro` is auto-renewable. Which means that it automatically renews the 
-subscription whenever a previous one expires, till you cancel it manually.
+`iVim Pro` is auto-renewable. Which means that it automatically renews the subscription whenever a previous one expires, till you cancel it manually.
 
-Note that, the features before `iVim Pro` are still available in the way as it
-has been.
+Note that, the features before `iVim Pro` are still available in the way as it has been.
 
 Included features ~
 
@@ -146,9 +121,7 @@ b. Some Spotlight Searching Features                *ivim-pro-spotlight*
 
     .individual index type toggling         *ios-spotlight-individual-toggle*
     
-    With this feature enabled, you can enable or disable a specific index
-    type, such as help |ios-spotlight-type-help|; otherwise, you can only
-    toggle the whole Spotlight searching completely.
+    With this feature enabled, you can enable or disable a specific index type, such as help |ios-spotlight-type-help|; otherwise, you can only toggle the whole Spotlight searching completely.
 
 c. Quick Commands Widget                    |ios-widget-quick-commands|
 d. Customized Home Screen Quick Actions     |ios-quick-action-customization|
