@@ -19,9 +19,9 @@
 ==============================================================================
 1. In-App Purchase				*ios-iap*
 
-For continuous maintenance of iVim on the App Store, some features are now included into the `support-package` as In-App Purchase items. They need to be purchased to work properly in iVim.
+App StoreでのiVimの継続的なメンテナンスのために、一部の機能がアプリ内購入アイテムとして `support-package` に含まれるようになりました。iVimで正常に動作するために購入する必要があります。
 
-The currently available items are:
+現在利用可能なアイテムは次のとおりです:
 
 a. Auto restore                                 |ios-auto-restore|
 b. Plugins Manager                              |ivim-plugins-manager|
@@ -32,9 +32,11 @@ IAP conflicts alert ~
 
 Whenever iVim is opened and there is any `IAP-conflict` (i.e. some features in the `support-package` are enabled but not purchased yet), it alerts about this and the user has two options:
 
-1) Disable for Now
-this button disables all the conflicted features for the user and dismisses the alert. The user can make decisions later and do the purchases via command
-|:isupport|.
+iVimが開かれ、 `IAP-conflict` があるたびに(つまり、 `support-package` のいくつかの機能が有効になっているが、まだ購入されていない)、これについて警告し、ユーザーには2つのオプションがあります:
+
+
+1) Disable for Now（註: 今のところ無効にする）
+this button disables all the conflicted features for the user and dismisses the alert. The user can make decisions later and do the purchases via command |:isupport|.
 
 2) Purchase
 this button opens the `support-package-purchases` view directly for the user to do the purchasing right away.
