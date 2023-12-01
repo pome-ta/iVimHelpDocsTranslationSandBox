@@ -1,0 +1,1710 @@
+*os_ios.txt*	For Vim version 8.1.	Last change: 2023 Jun 02
+
+			iVim REFERENCE MANUAL	by Terry Chou
+
+
+							*ios* *iOS*
+
+This file documents the particularities of the iOS port of Vim.
+
+iVim is open source: https://github.com/terrychou/iVim, and you can find useful information on its wiki: https://github.com/terrychou/iVim/wiki
+
+ACKNOWLEGEMENT
+
+This project stands on the shoulders of two precendent projects:
+1. Vim port from Applidium: https://github.com/applidium/Vim
+
+Although it has been inactive for a while, it is a pioneer of porting Vim to iOS. Itself and its opened source code inspires many followers.
+
+2. VimIOS - A port of Vim to iOS 9+: https://github.com/larki/VimIOS
+
+Based on the above project, it includes many features to take advantage of the newer iOS systems. This project started from it.
+
+==============================================================================
+
+1.  File system				|ios-file-system|
+2.  Font management			|ios-font-management|
+3.  Extended keyboard			|ios-extended-keyboard|
+4.  Multi-stage language support	|ios-multistage-language|
+5.  Dictation				|ios-dictation|
+6.  Open URL				|ios-open-url|
+7.  Share				|ios-share|
+8.  Settings				|ios-settings|
+9.  External keyboard			|ios-external-keyboard|
+10. Ctags		                |ios-ctags|
+11. Auto restore                        |ios-auto-restore|
+12. External commands                   |ios-external-commands|
+13. Plugins management                  |ios-plugins-management|
+14. Multiple windows                    |ios-multiple-windows|
+15. Shortcuts                           |ios-shortcuts|
+16. Version control                     |ios-version-control|
+17. URL scheme                          |ios-url-scheme|
+18. Greeting button                     |ios-greeting-button|
+19. Spotlight search                    |ios-spotlight|
+20. Running tasks indicator             |ios-running-tasks-indicator|
+21. Widgets                             |ios-widgets|
+22. Quick Actions                       |ios-quick-actions|
+23. Miscellaneous			|ios-miscellaneous|
+
+==============================================================================
+1. File system				*ios-file-system*
+
+For security purpose, an iOS app can only access files within its sandbox environment. Normally, user-generated contents are stored in the `Documents` directory under its data container. Therefore, this directory is set as the default `$HOME` for iVim. You can find or create all the user-specific files under it.
+
+The Inbox directory ~
+
+Under the `Documents` directory, there would also be a subdirectory named `Inbox`. Its role is to save the files shared with iVim by other apps. As a result, the files in this directory are readonly. You cannot create files under it.
+
+The file browser ~
+
+Because iOS systems don't have any shell available, you cannot browse the file system via external Unix commands.
+However, iVim comes with a `netrw` file browser plugin. You can type ":edit ." to get started. It provides an intuitive way to navigate the file system structure. Type ":help netrw" to get the help on how to use it.
+
+The Files app support ~
+
+Newly added in iOS 11, the Files app provides a central place for users to organize their documents. iVim adds support to it. You can now apply common file operations such as copy, duplicate, move, create or delete easily to files or directories under iVim's `Documents` directory.
+iVim can be found under "Locations > On My ..." in Files.
+
+Besides the file editing within its sandbox, iVim can edit text from other apps via |ios-share|.
+
+
+==============================================================================
+2. Font management			*ios-font-management*
+
+iVim provides powerful fonts management.
+
+Available fonts ~
+
+All monospace fonts of the system are available in iVim. iVim also embeds font `Source Code Pro` and uses it as the default font.
+
+Besides those, you can also import your own fonts into iVim.
+
+Import fonts ~
+
+You can import fonts into iVim in many ways:
+
+* through the command |:ifont-add|
+* by opening a font file from another app
+* by adding fonts from the font family picker |ivim-ffp|
+                                                *ivim-font-types*
+Currently, the following font file types are supported:
+
+* TrueType Font (.ttf)
+* OpenType Font (.otf)
+* TrueType Font Collection (.ttc)
+
+The imported font files are stored in the directory `Library/Fonts/`.
+
+Note that only monospace fonts are well supported.
+
+Font member typefaces ~
+                                                *ivim-font-typefaces*
+For a font family, iVim categorizes its members into 4 typefaces:
+
+1) regular
+2) bold
+3) italic
+4) bold & italic
+
+For a font family, it is not always the case that all 4 typefaces are available.
+
+In a perfect world, iVim uses a typeface to render the related styled text, e.g. regular text is rendered by the ragular typeface, bold text the bold typeface.
+                                    *ivim-font-alternative* *ivim-font-alt*
+For a specific text style, when its supposed typeface is unavailable, an alternative one is picked in the following order:
+
+* regular: bold, italic, bold & italic
+* bold:    regular, bold & italic, italic
+* italic:  bold & italic, regular, bold
+
+For example, for the bold text, if the bold typeface is not available, it tries to find the first alternative typeface in the order of regular, bold & italic, italic and uses it instead.
+
+Customize font typefaces ~
+
+Moreover, iVim offers an oppertunity for you to specify a font typeface for a text style. The customized font typeface does not need to match the style, or it can even come from another font family.
+
+You can do this via the command |:ifont-set| or from a font picker |ivim-ffp|.
+
+Delete fonts ~
+
+You can delete a whole font family, or its specific typefaces, via the command |:ifont-remove| or from a font picker |ivim-ffp|.
+                                                *ivim-font-trash*
+By default, a deleted font is moved into the trash. It is only removed from iVim completely when you clean it from the trash. Until then, you can restore a trashed font at any time.
+
+Note that you can only delete fonts that were imported by you.
+
+The option 'guifont' ~
+
+For compatibility, iVim also lets you change the font settings via the option 'guifont'. The format of this option in iVim is: >
+    <regular typeface>[:h<size>][:b[bold typeface]][:i[italic typeface]]
+<
+The <regular typeface> gives the typeface for rendering text in regular style the [bold typeface] the bold style text; the [italic typeface] the italic style text. All but the <regular typeface> are optional. When one entry is omitted, if it already has a value set, it is not changed; otherwise, the related default value is used.
+
+In turn, each typeface part has the following format: >
+    <font family name>[/<typeface>]
+<
+When <typeface> is omitted, the preferred typeface is used. For example, for the <bold typeface>, "Menlo" means "Menlo/b", whereas it equals to "Menlo/i" when set to <italic typeface>.
+
+Back to the option 'guifont', you can use: >
+    :set guifont=Menlo:h15
+<
+to set the regular font to "Menlo" in size 15.0, and use: >
+    :set guifont='Menlo:h15:bUbuntu Mono'
+<
+to set the regular font to "Menlo" and use the bold typeface of "Ubuntu Mono" for the bold text.
+
+Save settings ~
+
+Like the option 'guifont', iVim only keeps the font settings in memory. In other words, what happens to the font settings in the next app launch depends:
+
+* if you have |ios-auto-restore| enabled, the settings persist;
+* otherwise, the settings revert to the default.
+
+In the latter case, if you want to have the same font settings whenever you open iVim, you need to add either one ":set guifont=..." or ":ifont set ..." into your .vimrc file.
+
+Font ligatures ~
+					*ios-font-ligatures*
+iVim supports to render font ligatures, but the following points are worth noting:
+
+a. the font you are using needs to provide ligatures;
+
+b. iVim handles the rendering in a "lazy" way. It means that it won't update the rendering immediately but usually in several edits or moves. You can force an immediate update by running command `:redraw!`.
+
+c. the cursor would break a ligated symbol if it is right positioned on one;
+
+d. there is an option in |ios-settings| to toggle the ligatures rendering, it is enabled by default. 
+
+The font commands ~
+
+iVim adds the |:ifont| command for flexible fonts management. See ":h :ifont" for the usage and details.
+
+Note that since version 2.45, the old ":ideletefont" command retired and its functionality is now in |:ifont|.
+
+The font settings view ~
+                                        *ivim-font-settings-view* *ivim-fsv*
+iVim also provides a GUI view for you to change font settings. Lets call it the Font Settings View (FSV).
+
+You can open a FSV by one of the following:
+
+* "Change fonts …" item in the greeting button |ivim-greeting-button|;
+* running command |:ifont-set| without any arguments;
+* executing ":set guifont=*".
+                                                *ivim-fsv-sections*
+One FSV divides content into 4 sections:
+                                                *ivim-fsv-sec-looks*
+1) The first section is a preview label that is displaying how the text looks like with settings in the current FSV. It updates with any change you make.
+                                                *ivim-fsv-sec-fonts*
+2) The second section lists the specific fonts that are used for different styles of text in iVim. Tapping one font opens the font picker for you to customize the related text style. 
+
+The bold or italic style font may appear in gray color. In those cases, it means that they just follow the regular style automatically, rather than being specified by you.
+                                                *ivim-fsv-sec-size*
+3) The third section is the font size.
+
+You can change the size with the help from the stepper. It also protects you from making the font too big or small by limiting the size between a minimum size (6.0) and a maximum one (42.0).
+                                                *ivim-fsv-sec-options*
+4) The last section provides some extra options:
+
+* Update in realtime
+
+By default, changes that you make in a FSV will be local. Which means they are not applied to iVim until you tap the "Save" button.
+
+With this option turned on, iVim updates fonts immediately with changes in the FSV.
+
+* Reset to Default
+
+This button lets you change back to the default settings.
+
+                                                *ivim-font-picker* *ivim-ffp*
+A font picker lists font families. Lets call it Font Family Picker (FFP).
+                                                *ivim-ffp-actions*
+At the top right corner of a font picker, a button provides you some actions:
+
+* Add fonts …
+
+This opens a documents picker and lets you import fonts.
+
+* "Show trashed" or "Hide trashed"
+
+This toggles the trashed content.
+                                                *ivim-ffp-item*
+Each item in a FFP stands for a font family, with its title displaying its primary typeface and its subtitle all its member typefaces.
+
+Tapping a font family selects it and switches back to the caller.
+
+When you choose "Show trashed", trashed content shows:
+
+* trashed member typefaces appear as strikethroughed
+* a completely trashed font family has its title grayed and strikethroughed
+                                                *ivim-ffp-item-actions*
+Each font family also has a button that offers more actions on the right:
+
+* Show members …
+
+This opens the font typeface picker |ivim-tfp| for you to select a specific typeface of the font family.
+
+* Restore …
+
+This restores all the trashed member typefaces of this font family.
+
+* Trash …
+
+This trashes the font family completely.
+
+* Remove …
+
+This removes the font family completely and directly. 
+
+Note that the difference between removing and trashing is that you cannot restore a removed font family unless you install it again.
+
+                                    *ivim-font-typeface-picker* *ivim-tfp*
+A font typeface picker (TFP) shows all member typefaces of a font family. All typefaces, including trashed ones, are listed.
+                                                *ivim-tfp-item*
+Each item represents a specific member typeface (|ivim-font-typefaces|). 
+
+Tapping a typeface selects it and switches back to the caller. If a typeface is trashed, an alert shows to offer a chance to restore it.
+                                                *ivim-tfp-item-actions*
+A button at the right end provides actions on the typeface:
+
+* Restore …
+
+This restores the typeface if it is trashed.
+
+* Trash …
+
+This trashes the typeface.
+
+* Remove …
+
+This removes the typeface directly.
+
+Note that removed typeface cannot be restored unless you import it again.
+
+
+==============================================================================
+3. Extended keyboard			*ios-extended-keyboard*
+
+An efficient use of Vim requires quick symbol input. However, the iOS system 
+keyboard 'hides' them into other pages to save the screen real-estate. 
+Moreover, some necessary keys are just not available in iOS.
+
+To offer a more productive input, iVim adds an extended keyboard.
+
+The compact button ~
+
+In order to cover as many keys as possible in limited space, compact buttons 
+are used in the extended keyboard.
+The key in the center of the button is the primary key, and a simple tapping 
+will trigger its input. Some optional keys may circle around the primary one. 
+To input an optional key, drag it towards the center and release. For example,
+if you want to input the key sitting at the top left corner, you make a drag 
+right and down. The start point doesn't really matter.
+
+The Ctrl key ~
+
+Some keys are sticky. For example, the Ctrl key needs to be held down while 
+pressing other keys. Thus it is set up as a sticky key:
+
+a. triggering it once will enter the one-off state. After inputting a `C-`
+combination, it will restore automatically.
+
+b. triggering it twice will make it into the held state. It will keep being
+held until it is tapped again. This is good for continuous `C-` inputs.
+
+c. tapping it in any of the above state will restore its state.
+
+Hide and show ~ 
+
+You can toggle the extended keyboard by one finger long pressing the screen. 
+The extended keyboard will show at launch by default. You can make it hide
+by default by toggle related option in |ios-settings|.
+
+Customize ~
+
+If the default buttons or keys on the extended keyboard don't meet your own
+needs, you can customize them through command |:isetekbd|.
+
+
+==============================================================================
+4. Multi-stage language support		*ios-multistage-language*
+
+iVim adds support to multistage input languages such as Chinese or Japanese.
+
+Multistage input means keys from the user may have different meaning than
+their literal one. It requires the user to do further confirm to get the final
+result. Besides the asian languages, `alt-`-enabled accentuated Latin input is 
+also an example.
+
+Input behavior ~
+
+During a multistage input session: 
+
+1) the cursor position will not change until the user confirms thus the final
+result is ready (which also means the end of this session).
+
+2) pressing `esc` cancels current input session and discards all keys input so 
+far.
+
+3) tapping on screen ends current input session and confirms the input result 
+so far as the final result.
+
+4) any arrow key from the extended keyboard behaves as the same as tapping on
+screen. However, arrow keys from an external hardware keyboard will usually be 
+taken over by the system and travel among the available choices.
+
+Note: a. The key pressings will be translated into normal ones if it is not in 
+|Insert| mode. b. Multistage input will stop working during dictation as
+mentioned in |ios-dictation|.
+
+Special highlight ~
+
+Often, by a simple glance, the user cannot tell if a multistage input session 
+is in effect or not. iVim provides a little feature to help with this: the
+user can change the color of the cursor-in-multistage by setting the highlight
+group CursorIM: >
+
+        :highlight CursorIM guifg=NONE guibg=Green
+<
+after this, the cursor becomes green when it is in a multistage input session.
+
+
+==============================================================================
+5. Dictation				*ios-dictation*
+
+iVim supports dictation input of iOS systems.
+
+Behavior ~
+
+In most scenarios, dictation input is live. It means that the hypothesis will 
+keep updating during a dictation session. As a result, mappings will be
+ignored while dictating. One exception is the |Normal| mode, as described
+below.
+
+Normal mode ~
+
+Because of the characteristics of dictation input and |Normal| mode, the 
+former needs special handling for the latter in two ways:
+
+a. Automatical mode jumping
+
+iVim will change the mode from |Normal| to a chosen one when dictation happens
+in the |Normal| mode. The existing dictation result will be passed to the new
+mode. This can be set up as described in `Dictation` part of |ios-settings|.
+
+b. Leaving it to users
+
+In this case, the dictation result will be passed to iVim as if users had 
+typed it. For example, if the result is "insert", iVim will enter the |Insert|
+mode and "nsert" will be inserted.
+
+For a better user control in this way, the dication results will be handled
+specially. A dictation result won't be counted as the input until the user
+confirms by ending the session explicitly. The space characters at the ends of
+the final result, if there is any, will be trimmed. Mappings will work in this
+situation for users to obtain more concise commands. Example: >
+
+	John sets a normal mode mapping from "insert mode" to "i". In the 
+	normal mode, he activates the dication keyboard, says "insert mode",
+	and ends the session by tapping the "Done" button. Although the 
+	dictation result is actually " insert mode", the first space char is
+	trimmed and "insert mode" is passed to iVim. Then iVim finds the
+	existing mapping for it, and it is mapped to the target "i". As a 
+	result, iVim enters the insert mode.
+<
+Interruptions ~
+
+Besides the normal ways to stop a dictation session, you could interrupt it by
+doing one of the followings:
+
+a. Pressing `esc` will cancel the input. It will clean the exisitng hypothesis
+and exit dictation.
+
+b. Pressing any arrow key will stop the input. It will accept the exiting
+result and exit dictation.
+
+c. Tapping the screen will act as the arrow keys do.
+
+d. Any other key pressing will be ignored during a session.
+
+External hardware keyboard ~
+
+If you have a hardware keyboard connected, some points are worth mentioning:
+
+a. Activate dictation input
+
+Normally, the on-screen keyboard is hidden. To activate the dictation, you
+need to toggle it out first (pressing `eject` key would do). Sometimes, the 
+dictation button may not appear on the on-screen keyboard. Changing to another 
+keyboard then back may bring it out again.
+
+b. Things broken
+
+Multistage input will stop working while the dictation keyboard is present. 
+And keyboard layout settings may not be respected during dictation.
+
+
+==============================================================================
+6. Open URL				*ios-open-url*
+
+Another way for sharing info among apps in iOS is via URL scheme. You can put
+info into an URL and open it. Then the system will launch the supporting app
+if there is one, and let it handle this URL. iVim adds support of opening URLs 
+in this way to communicate with or control other apps.
+
+Example ~
+
+URL scheme "https://" is handled by the browser Safari in iOS. When you open
+an URL "https://www.example.com/search?q={expand('<cword>')%[Q}", the browser
+will be launched, open the site "example.com", and do some search with the 
+word under the cursor as the query. All of these actions as a workflow are
+done with just this one opening of the URL.
+
+Include information ~
+
+iVim introduces "variable token" as a way for you to include dynamic info into 
+an URL. By utilizing vim's |expression|, you can get useful info such as
+clipboard contents, current file name or results of functions. In the example 
+above, "{expand('<cword>')%[Q}" is one variable token which will be replaced 
+with the word under the cursor when the URL is opened. 
+
+Refer to command |:iopenurl| for the details on the usage of URL opening.
+
+
+==============================================================================
+7. Share				*ios-share*
+
+Sharing makes iVim's editing power available to more apps. 
+
+Importing ~
+
+If an app supports sharing text files or selected text, you can find iVim in 
+its share panel. See |share-with-ivim| and |copy-to-ivim|.
+
+Through the document picker invoked by ":idocuments import", you can also 
+import text files from iCloud Drive or other document providers. This way,
+you don't have to leave iVim to do the importing.
+
+The imported file or text will be opened in a new tab for further editing.
+
+Exporting ~
+
+You can invoke iVim's share panel via the command |:ishare|, therefore share 
+files or text with other apps.
+
+Editing in place ~
+
+The document picker |:idocuments| also allows you to edit files directly in 
+iCloud Drive or other document provider apps. All the modifications will be 
+saved back to the original files even though this is normally not allowed 
+because they are in different sandbox environments.
+
+iVim also supports opening directories. After you select and open a directory 
+from the document picker, besides file editing, you can do all the supported 
+filesystem operations within it. Such as create or rename subdirectories or 
+files, delete files, etc. Note that operations on the root directory itself 
+break this mechanism therefore would be better avoided.
+
+Also see |open-in-ivim|.
+
+Items in the share panel ~
+
+a. Copy to iVim						*copy-to-ivim*
+
+It will copy the shared file into the `Documents` directory. When invoked, it
+will open iVim and the copied file in a new tab. Note that if there had been
+a file with the same name as the shared one, it will be renamed to avoid the
+conflict. Note that supported font files are always copied for installation.
+
+b. Open in iVim						*open-in-ivim*
+
+It will open the shared file directly in iVim. In another word, it lets iVim
+edit the target file in place. Note that it needs the sharing app's support
+for this feature.
+
+c. Share with iVim (Retired)
+
+iVim provided a share extension for users to get selected text or content of 
+a file (other than editing it in place) from another app. Since version 2.28,
+this has been retired because it was kind of confusing and less used.
+
+
+Old Documents ~						*ivim-old-documents*
+
+Once an edit-in-place file or directory is opened in iVim, it will be 
+bookmarked as one of the old documents. Therefore you can open it later
+directly from the record. iVim provides the command |:iolddocs| to support
+this function. Refer to it for the related details. 
+
+Type ":help :ishare" or ":help :idocuments" for more detailed information.
+
+External Directory Links ~
+                                                        *ivim-exdir-links*
+iVim provides a way to open an external directory from another app and makes
+it as a local link. From then on, you can use this external directory just 
+like a local directory via this link.
+
+Note that this is only fully supported in iOS 13.0 and above.
+
+See |:iexdir| for details on how to use this functionality.
+
+==============================================================================
+8. Settings						*ios-settings*
+
+Because there are scenarios where vim's options cannot cover, iVim also
+provides some setting options in the system's Settings app.
+
+Launch Option ~
+					    *ios-settings-launch-option*
+This settings group allows users indicate launch arguments for vim.
+
+a. Arguments
+You can give the arguments in this field. When iVim launches, this line will 
+be parsed and taken by vim as its command line arguments.
+
+b. Always
+This switch tells iVim about the term of validity of the launch arguments.
+If YES, iVim will take the arguments every time it launches.
+If NO, iVim will only launch with the arguments once, then remove them.
+
+Extended Keyboard ~
+					    *ios-settings-extended-keyboard*
+Toggle with Hardware Keyboard
+If this option is enabled, the extended keyboard hides automatically when
+a hardware keyboard is connected; shows again when it is disconnected. It is
+enabled by default.
+
+Hide By Default
+It controls whether iVim hides the extended keyboard by default or not.
+
+Hardware Keyboard ~
+					    *ios-settings-hardware-keyboard*
+a. Map [caps lock] to
+If you have an external hardware keyboard connected, you can map its less used
+`caps_lock` key to either `esc` or `ctrl` in this option. Note that it has 
+caveats as mentioned at g. in |ios-external-keyboard|.
+
+Note that this option has retired and does not have any effect in iOS 13.0 and
+above due to API changes. Instead, use the native system-wide modifier keys
+remapping in iOS 13.4 and above.
+
+b. Map [ctrl] to [esc] on release
+With this option on, a releasing of a single `ctrl` (without any other keys
+pressed at the same time) will act as if `esc` is pressed. Note that it only 
+works in iOS 13.4 and above due to its using of new APIs. It also works for 
+`ctrl` keys that are actually remapped from other keys. It is off by default.
+
+c. Enable [alt] Mapping
+When enabled, it will map keystrokes with modifier `alt` to |<A-| chords in 
+iVim. Otherwise, they will be handled by iOS system for extended symbols 
+input.
+
+d. Key Repeating
+The held key will repeat itself if this option is enabled. It is on by default.
+Note that it has some caveats as mentioned in |ios-external-keyboard|.
+
+e. Interpret [command + .] as [esc]
+When it is on, iVim interprets chord `<D-.>` as `<Esc>` automatically. Turning 
+it off offers a chance to map `<D-.>` for other uses. It is on by default. 
+Note that this option is a compensation for a change that is mentioned at .b
+in |ios-external-keyboard|. As a result, it only works in i(Pad)OS 16.0+.
+
+Dictation ~
+					    *ios-settings-dication*
+Force normal mode to
+Dictation input is handled specially in |Normal| mode. This option tells iVim
+the target mode to jump to when dictation happens in |Normal| mode. 
+
+`insert_mode` means iVim will enter |Insert| mode; `command_line_mode` targets
+|Cmdline| mode; `none` will not do mode jumping at all. Refer to `Normal_mode`
+part of |ios-dictation| for details.
+
+Auto Restore ~
+					    *ios-settings-auto-restore*
+Enable
+This option toggles the `Auto restore` feature of iVim. See |ios-auto-restore|
+for details.
+
+UI Tweaks ~
+					    *ios-settings-ui-tweaks*
+Enable Font Ligatures
+This option decides whether iVim renders font ligatures or not. See
+|ios-font-ligatures|.
+
+Pinch to Zoom
+Two fingers pinch changes font size when this option is enabled. It is enabled
+by default.
+
+Hide Home Indicator
+When enabled, iVim hides the Home Indicator bar on the screen of some devices
+where it shows. This is disabled by default.
+
+Hide Greeting Button
+When turned on, the |ios-greeting-button| is hidden.
+
+Show Status Bar
+The system's status bar is hidden by default. iVim shows it back when this is
+enabled.
+
+Set Main Editor Status Bar to
+The main editor may have different background color from the system UI style.
+Set this to "light" to make the status bar look better on dark backgrounds;
+"dark" for light backgrounds. Note that it is set to "light" by default, and
+the "dark" style is only available on i(Pad)OS 13.0+. 
+
+URL Scheme ~
+					    *ios-settings-url-scheme*
+Allow
+iVim responses to custom URL scheme requests when this is enabled, otherwise
+all requests are ignored. See |ivim-url-scheme-security| for some details.
+
+Version Control ~
+					    *ios-settings-version-control*
+Enable Live Diff
+If disabled, the whole app's live diff |ivim-livediff| is turned off. It is 
+enabled by default.
+
+Markdown Preview ~
+					    *ios-settings-markdown-preview*
+Appearance
+This option chooses UI style for markdown preview views, it has 3 choices:
+
+* light: a markdown preview view is always in the light mode;
+* dark: a markdown preview view is always in the dark mode;
+* follow system: a markdown preview view's UI style changes with the system.
+
+The default choice is "follow system".
+
+Default Theme
+The default markdown theme is specified in this option. The value is used as
+a pattern to locate a theme. See |:ipreview-md-themes-default| for details. If
+it fails to find a theme, it is corrected automatically by iVim.
+
+Default Light Code Theme
+The default light theme for code highlighting is specified here. The value is
+used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. It
+is corrected automatically by iVim if it fails to find a theme.
+
+Default Dark Code Theme
+The default dark theme for code highlighting is specified here. The value is
+used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. 
+iVim corrects it automatically if it is invalid.
+
+Open Settings ~
+                                                *ivim-open-settings*
+iVim provides command |:isettings| to directly jump to its preferences section 
+in the system's Settings.app.
+
+
+==============================================================================
+9. External keyboard				*ios-external-keyboard*
+
+iVim supports the external hardware keyboard. You can connect the keyboard to
+your iOS device and start typing in iVim.
+
+a. besides the `ctrl` key chords |<C-|, the `command` key chords |<D-| are
+now at your disposal.
+
+b. some `<D-` chords are reserved by the system. For example, `<D-h>`, `<D-q>` 
+and `<D-z>` are not working in i(Pad)OS 16.0. However, this may change version
+by version. Since i(Pad)OS 16.0, chord `<D-.>` is no longer interpreted as
+`<Esc>` automatically by the system. iVim fixes this by providing an option
+in |ios-settings|.
+
+c. by default, the `alt` key is preserved to input the extended symbols.
+But you can enable `alt` key mapping in |ios-settings| to map it to the |<A-| 
+chords handled by iVim. However, special keys `esc`, `arrows`, `tab`, `enter`,
+`pageup`, `pagedown`, `home`(13.4+), `end`(13.4+) and `del`(15.0+), their `alt`
+chords are always available disregarding this setting.
+
+d. special keys `esc`, `arrows`, `tab` and `enter` combined with modifier keys 
+`ctrl`, `command`, `alt` and `shift` respectively are supported. Since version
+2.41, keys `pageup`, `pagedown`, `home`(13.4+), `end`(13.4+) and since 2.42,
+key `del`(15.0+), join this group.
+
+e. since version 2.41, function keys from `f1` through `f12` and their `shift`
+chords are supported (13.4+). 
+
+f. multiple modifiers chords such as `<D-C->` are not supported.
+
+g. you can map `caps_lock` key to either `esc` or `ctrl` in |ios-settings|.
+Note that due to the API limitation, only English keyboards are supported and 
+will be disabled otherwise; after mapped, the default `alt` extended symbol 
+input will be ignored; for an alternative to extended symbol input, you may 
+refer to |digraph|; however, the `alt` mapping mentioned in c. will still work 
+if enabled. 
+
+Note that since iOS 13.0, this has stopped working properly due to the subtle 
+change of the related API. On the other hand, since its version 13.4, iOS has 
+began to offer native support to remap modifier keys on hardware keyboards. You 
+can use that instead.
+
+h. you can choose to map single `ctrl` key releasing to `esc` in |ios-settings|
+in iOS 13.4 and above.
+
+i. there are some caveats worth noting when it comes to |ios-dictation|.
+
+Hardware keyboard automatic configuration ~
+                                                *ivim-hkbd-auto-config*
+Since version 2.44, iVim adds hardware keyboard automatic configuration to
+better support keyboards with layout languages other than English.
+
+It tries to detect the layout language of the connected keyboard, collect
+necessary information, generate related config, and use it from then on.
+
+If it failed the above automatic configuration workflow, the default config
+for English ("en_US") is used. Or you can tune it manually with the help of 
+tools in the hardware keyboard menu |ivim-hkbd-menu|.
+                                                *g:ivim_kbd_primary_language*
+Note that you can checkout the current keyboard layout language via variable
+"g:ivim_kbd_primary_language" and the hardware keyboard configs are stored in 
+file "~/.vim/ivim_hardware_keyboard_config.json".
+
+Hardware keyboard menu ~
+                                                *ivim-hkbd-menu*
+iVim also provides some tools for you to improve the hardware keyboard 
+configuration, via the hardware keyboard menu.
+
+You can open the menu via the key shortcut "control + command + ," in the
+editor window.
+
+The following options are available:
+
+* Reload configs
+
+this reloads all hardware keyboard configs from the config file and makes
+them take effect.
+
+* Configure as language …
+
+with this tool, you can specify a language for your keyboard explicitly and
+override current config with it. It would be a good helper when iVim detects
+your hardware keyboard wrong.
+
+* Tune some keys …
+
+this shows the hardware keyboard key tuning window and gives you a chance to
+correct keys by pressing them.
+
+Note that this tool is only available in i(Pad)OS 13.4+.
+
+* What is this?
+
+this brings you here.
+
+Hardware keyboard key tuning window ~
+
+This is how the hardware keyboard key tuning window works:
+
+. You press the keys that you think are interpreted incorrectly.
+
+. The last detected key is shown in the center, and keys detected so far are
+listed in order under it. Note that only keys for letters, numbers, symbols
+and punctuations are detected, since only these categories are used in the
+configuration.
+
+. If you press a key that has been already pressed, it will be moved to the
+end of the list and highlighted in red.
+
+. You can press `delete` key to remove the last detected key.
+
+. Tap the "Done" button when you are done, iVim will try to correct the keys
+according to their pressing data, and update related config. Note that keys
+whose tuning results are the same as in the existing config, are skipped.
+
+. The tuning stats are reported via notifications.
+
+Key repeating ~
+
+iVim repeats certain held keys for you. The supported keys include:
+
+a. lowercase and uppercase letters
+b. numbers
+c. punctuations
+d. symbols
+
+Note that: 1) you need to switch on iOS system's related setting for this to
+work; 2) you can enable or disable it in |ios-settings|. 3) you can tune keys
+that are not working via tools in |ivim-hkbd-menu|.
+
+Ideographic languages ~
+                                                *ivim-hkbd-ideographic*
+iVim takes good care of ideographic input languages, e.g. Chinese or Japanese
+from a hardware keyboard:
+
+a. in |Normal| mode, iVim automatically uses the default letters and symbols 
+instead of the ideographic ones, since the former makes better sense;
+b. key repeating is also well supported for the ideographic languages.
+
+
+==============================================================================
+10. Ctags			                *ios-ctags*
+
+Ctags is a great tool to generate tags for programming languages. The outcome
+tags are directly supported by vim. 
+
+Before version 2.22, iVim integrated |Exuberant_ctags| into itself and made it
+available as an Ex command.
+
+To make it closer to the common usage and better support plugins which utilize 
+it, iVim has changed to offer ctags as an external command since version 2.22.
+
+Note that instead of the `Excuberant Ctags`, iVim uses the `Universal Ctags` 
+implementation for both compatibility and up-to-date functionalities. Also,
+the Ex command `:ictags` has retired since this change.
+
+You can just use it via `!ctags` in command mode or `ctags` as a command in a
+terminal window.
+
+
+==============================================================================
+11. Auto restore                                *ios-auto-restore*
+
+With `Auto-restore` enabled, iVim automatically restores the last editing 
+session on launch, after an app termination.
+
+Because it is implemented based on vim's |session| feature, `Auto-restore`'s 
+basic behavior goes in that way.
+
+Although iVim tries its best to make a restore look as normal as possible, 
+there are some points worth mentioning:
+
+a. instead of saving a changed buffer directly for the user, iVim caches it
+for each file but leaves the original file alone. 
+
+In another word, iVim will restore the latest content for each file in the
+windows, but the user still needs an explicit `write` operation to save the 
+changes, if there is any, back to the respective file.
+
+1) a changed buffer without a file name will be restored as it was. It is up 
+to the user to save it or just drop it.
+
+2) for a changed buffer with a file name, the changes will be dropped if its
+original file was modified elsewhere before the restore.
+
+3) all undo information is lost for both of the above cases.
+
+b. buffers in the buffer list will be cached. To exclude buffers from the next
+restore, delete them from the buffer list.
+
+c. unlike default vim sessions, opened directories by |netrw| will also be 
+restored. However, their cursor position information is not kept.
+
+d. other useful information such as marks or register contents is stored in
+the |viminfo-file|, and also restored. Its details can be customized via the 
+'viminfo' option.
+ 
+e. `Auto-restore` can be disabled in |ios-settings|. Note that iVim will clear 
+all the cached information when this happens.
+
+f. if the user quits iVim, e.g. via commands such as |:wq| or |:x|, iVim will
+treat this as a demand of a fresh start, thus clear the session info.
+
+g. for better restoration of buffers with |encryption|, iVim caches their keys
+temporarily in the system's keychain.
+
+
+==============================================================================
+12. External commands                   *ios-external-commands*
+
+In order to enhance some plugins and its editing workflow, iVim includes some
+useful external commands and manages to make them work seemlessly with itself.
+
+See |ios-external-cmds| for related details.
+
+
+==============================================================================
+13. Plugins management                  *ios-plugins-management*
+
+Plugins are scripts that provide extra functionalities to vim besides its core 
+ones. 
+
+Since its version 8, vim has began to offer a package system (|packages|) to
+users to manage their plugins. After placing a plugin's scripts to the proper 
+locations, you get the their functionalities directly after each vim's launch. 
+
+Normally, plugins work in iVim as they do in vim on other platforms. However, 
+there are some caveats concerning using plugins in iVim.
+
+Caveats ~
+
+Due to the particularities of iOS systems, the following points should be kept
+in mind while using plugins in iVim:
+
+a. plugins which depend on external commands may not work as well as expected
+
+Even though iVim includes some external commands, plugins depending on certain
+command to function may not work well because either that the command is not
+available or that the command in iVim may have some subtle differences from
+its normal version.
+
+b. plugins which rely on other script languages may not work well
+
+Some plugins could utilize other script languages, such as Lua or Python, to
+implement their functions. Although iVim has enabled Lua and Python features,
+plugins which rely on them may not work well due to the languages' own limit
+on iOS systems.
+
+c. plugins which requires compiling to install will not work
+
+Some plugins are written in other languages and need to be compiled into
+executables to run. In this case, they won't work in iVim due to the lack of
+compilation environment.
+
+Plugins Manager ~
+
+Nowadays, more and more useful plugins are available online. As a result, many
+plugins managers, which also are plugins themselves, were born to help users 
+install and manage those online plugins more efficiently.
+
+Unfortunately, most of these plugins managers require the external command
+`git` to function, but it isn't available in iVim's external commands arsenal.
+
+As an alternative, iVim provides one its own plugins manager named "iplug".
+See |ivim-plugins-manager| for details.
+
+
+==============================================================================
+14. Multiple windows                    *ios-multiple-windows*
+
+Since version 2.29, iVim begins to support multiple windows.
+
+Window Types ~
+
+iVim provides the following types of windows:
+
+1) main editor (since 2.29)
+
+This is the traditional editor interface of vim. Only one instance can exist 
+at any moment. The editing in multiple windows or tabpages still goes in the 
+vim way and happens within this window.
+
+2) file browser (since 2.29)
+
+iVim provides this type of window for users to navigate the local filesystem
+in a more convenient way. It is a better choice for users who are not so 
+accustomed to browsing the filesystem in text mode.  See |ivim-file-browser| 
+for the details.
+
+You can open more than one file browser window at the same time. And you can
+do this by:
+
+a. tapping the plus icon in the iVim's App Exposé;
+b. running the Ex command |:ibrowse|;
+c. choosing to open folders in new windows in a file browser;
+d. dragging a folder from a file browser to the edge of the screen.
+
+3) preview window (since 2.31)
+                                                *ivim-preview-window*
+A preview window previews the contents of given files. Offering it as a 
+window is good for users to put it side by side with its original files and
+get a live preview experience.
+
+More than one preview window can exist simultaneously. You can open one by:
+
+a. choosing the "Preview in new window" action in a file browser;
+b. dragging a previewable item from a file browser to the edge of the screen;
+c. running the Ex command |:ipreview| with option -w.
+
+4) web preview window (since 2.55)
+
+iVim offers this type of window for better web content previewing. Now web
+related documents (e.g. HTML or Markdown docs) are loaded into this window.
+
+One web preview window can be opened in the same way as a preview window as
+described above. iVim picks a right preview window according to the documents
+automatically.
+
+See |ivim-web-preview-window| for details.
+
+Besides the default file formats supported by the system, iVim also provides
+some extensions to preview extra formats:
+
+.md: Markdown files
+
+iVim provides an Ex command |:ipreview| to maintain preview windows.
+
+Behavior ~
+
+Some behaviors that are specific to iVim's multiple windows support are worth 
+mentioning:
+
+1) Normally, tapping the plus icon in iVim's App Exposé opens a new file
+browser window. However, it opens the main editor window instead when it is 
+not opened yet.
+
+2) when you quit iVim by running command such as |:qa| or |:x|, all windows
+will be closed.
+
+Note that multiple windows is only fully available in iPadOS 13.0 and above.
+
+
+==============================================================================
+15. Shortcuts                                       *ios-shortcuts*
+
+Since version 2.30, iVim starts adding Shortcuts support, making available its 
+functionalities for users to integrate into their own workflows.
+
+Actions ~
+
+iVim provides the following Shortcuts actions:
+
+1) Run Ex Command (since 2.30)
+
+This action allows users to run an Ex command and get its output.
+
+Input:
+
+* the Ex command to run (Text)
+
+Output:
+
+* the output of the Ex command (Text)
+
+Note that a command requiring user interactions would fail since this action
+does not invoke iVim's UI.
+
+2) Edit Text With Script (since 2.30)
+
+This action edits the text with the given vim script.
+
+Inputs:
+
+* the text to be edited (Text)
+
+* the script to run on the target text (Text)
+
+Output:
+
+* the edited text (Text)
+
+3) Edit Files With Script (since 2.30)
+
+This action edits the given files by running the script on each file.
+
+Inputs:
+
+* the files to be edited (File): they have to be plain text files
+
+* the script to run (Text)
+
+Output:
+
+* the edited files (File)
+
+Note that you need to use the output files to obtain the edited outcome, the
+original input files are not modified by this action.
+
+Some points concerning the actions are worth mentioning:
+
+a) they run in the background and won't open iVim's windows, therefore would
+fail if some GUI elements are involved;
+
+b) they run under the same vim core, which means their side effects would
+affect each other or the whole iVim environment. For example, if you wipe out
+a buffer in one action, then it disappears from iVim and is not available in
+any cases (following actions or editing in iVim, etc.);
+
+c) they have a 10 seconds limit and would fail if they take longer than that 
+to finish;
+
+d) they are only available in iOS 14.0 and above.
+
+
+==============================================================================
+16. Version control                                 *ios-version-control*
+
+Since version 2.40, iVim adds version control support.
+
+By integrating version control functionalities into its existing UI, iVim now
+provides more intuitive info on what is going on in a project to its users.
+
+For users who are not so familiar with version control systems, iVim uses more
+common names and concepts to simplify those from the version control culture.
+
+With version control enabled in their projects, users now have more confidence
+in making changes.
+
+Users can now share not only their files, but also the editing history with 
+each other.
+
+See |ivim-version-control| for the details.
+
+
+==============================================================================
+17. URL scheme                                      *ios-url-scheme*
+
+Since version 2.41, iVim adds custom URL scheme support.
+
+Through defining and exposing some directives, iVim offers you the opportunity 
+to access to its functionality by simply opening a URL from anywhere in the 
+system.
+
+This is another way in which you can put iVim into your own workflow.
+
+While it is convenient for users who know what it is, URL scheme may introduce
+potential security problems. For this, iVim has a design to offer you a chance
+to allow it or not.
+
+iVim also provides documentation for its usage and well-explained examples for
+you to get to understand and use it fast.
+
+See |ivim-url-scheme| for the details.
+
+
+==============================================================================
+18. Greeting button             *ios-greeting-button* *ivim-greeting-button*
+
+Since version 2.41, by default, iVim shows a "more" button at the top right 
+corner of its main window. Tapping it pops up a menu presenting some options
+to get you started. 
+
+This button is therefore named "greeting button" and is helpful especially
+when you open iVim the first time.
+
+In case that it becomes annoying after you get familiar with iVim, you can
+simply choose to hide the button.
+
+Options ~
+
+The greeting menu contains the following options:
+
+* What is iVim?
+
+It shows the main help page of iVim to give you the ideas of what iVim is and
+how it is special over vim.
+
+* I've never used vim
+
+Since you've never used vim, you must feel baffled when you are looking at its
+plain UI for the first time (no worry, we've all been there). This opens the
+main help page of vim, showing you how you can start toddling in vim instead
+of scratching your head.
+
+* Show me the documents
+
+It is not easy for newcomers to see files in vim. iVim has a GUI file browser
+for you to navigate the docs more intuitively. This opens a file browser that
+you can start tapping.
+
+* Change fonts
+
+This opens the font settings view for you to change the fonts.
+
+* Clone a repository
+
+This opens current directory in the file browser then shows the repository
+cloning view for you to clone a remote project to your device.
+
+* Go to the GitHub project
+
+This opens the project iVim on GitHub, so that you can get extra info, make
+suggestions, or report problems.
+
+* Show me extra features
+
+This opens the In-App Purchases view for you to buy available extra features
+and support iVim.
+
+* What is this?
+
+This brings you here and tells you what the greeting button is all for.
+
+* Hide greeting button
+
+This hides the greeting button when you feel it more like a annoyance than a
+helper. And you can still bring it back via an option in |ios-settings| when
+you miss it.
+
+* iVim x.xx(x)
+
+The last entry simply shows iVim's current version.
+
+==============================================================================
+19. Spotlight search                    *ios-spotlight*
+
+Since version 2.50, iVim makes some of its content searchable in the i(Pad)OS
+Spotlight system. After you input keywords into the system's search bar, 
+iVim-related entries, if any, appear in the resultant list. Tapping one brings
+you directly to the related item in iVim for further information or action.
+
+Available types ~
+                                        *ios-spotlight-types*
+The following searchable types are currently available:
+
+1) help
+                                        *ios-spotlight-type-help*
+Each help tag from iVim documentation, such as "ios-spotlight", is collected 
+as a searchable item. 
+
+Tapping one takes you to its documentation page in iVim.
+                                        *ios-spotlight-entry-help*
+It has the sign "[H]" prepended to its title. In the body, it may have a
+one line description if it has it from the |index.txt| (Examples include
+|:idoc| or |i_CTRL-V|). Also, info of its containing documentation file is
+included at the end.
+
+2) buffer
+                                        *ios-spotlight-type-buffer*
+Each buffer that is currently being edited in iVim is collected as a searchable
+item.
+
+Tapping one brings you to the first window which opens it.
+                                        *ios-spotlight-entry-buffer*
+It has the sign "[B]" ("[B+]" for changed buffers) in its title. Its content,
+if any, is shown in the body.
+
+Note that this type is not available unless |ios-auto-restore| is enabled.
+
+3) document
+                                        *ios-spotlight-type-document*
+All documents under the $HOME directory are collected as searchable items.
+
+Tapping one opens the document in iVim.
+                                        *ios-spotlight-entry-document*
+It starts its title with the sign "[D]" ("[D/]" for directories). Also it
+puts the content of plain text document in the body. Finally, the document's
+last modified time at the end.
+                                        *ios-spotlight-ignored-docs*
+Some documents are ignored to make more sense:
+
+. vim swap files
+. git repo directories (".git" directories)
+
+Enabled or disabled ~
+                                        *ios-spotlight-state*
+An index type can be in one of two states:
+
+* enabled
+An enabled type keeps its content indexed and available for searching in the
+system Spotlight.
+
+You can disable an enabled type via |:ispotlight-disable|.
+
+* disabled
+Once a type is disabled, iVim stops indexing its content and removing all its
+existing indexed items, i.e. it is not available for searching any more.
+
+You can enable a disabled type via |:ispotlight-enable|.
+
+However, besides being disabled manually by users, the reason for why a type 
+is disabled may be because its prerequisite is not fulfilled. For example, 
+type "buffer" requires |ios-auto-restore| to be first enabled. In this case, 
+you cannot enable a type until its prerequisite is satisfied.
+
+Indexing ~
+                                        *ios-spotlight-indexing*
+Content needs to be indexed first in order to be available in Spotlight
+searching.
+
+Normally, iVim deals with the indexing automatically in background for you.
+Therefore, you don't even have to be aware of it when things go well.
+
+However, making clear of each type's indexing method and timing will be
+helpful for you to better understand a related problem when it shows up.
+
+1) help
+                                        *ios-spotlight-indexing-help*
+By default, help tags are only indexed at each iVim update, because that is
+the timing they may possibly change.
+
+2) buffer
+                                        *ios-spotlight-indexing-buffer*
+Since buffers change frequently, they are indexed whenever iVim resigns the
+focus, so that their information is up-to-date.
+
+3) document
+                                        *ios-spotlight-indexing-document*
+The whole $HOME directory is indexed whenever it is enabled, then iVim watches 
+its changes and update accordingly. 
+
+Whenever you feel that something seems not right with the indexed items, you 
+can request a manual re-indexing via |:ispotlight-index|.
+
+Since a Spotlight indexing task often takes a while to finish, it is left in
+background running. To make you aware of it, it is put into the running tasks
+list and triggers the indicator |ios-running-tasks-indicator|.
+
+Search tips ~
+                                        *ios-spotlight-tips*
+Although Spotlight is a powerful searching tool, it is easy to get lost in the
+sea of information. Here are some tips for you to reach the expected content
+faster:
+
+* Each type has special keywords to make it stand out: 
+
+    1) help: `ivimhelp`;
+    2) buffer: `ivimbuffer`, `ivimchangedbuffer`; 
+    3) document: `ivimdocument`, `ivimdocdir`.
+
+    For example, `ivimhelp spotlight` makes help tags about `spotlight` appear
+    before other ones; `ivimchangedbuffer` prioritizes changed buffers to other
+    things; `ivimdocdir hello` puts directories before other things even though
+    they all answer to keyword `hello`. 
+
+* Use `punc_{punctuation}` to find single punctuations in help tags.
+
+    Normally, Spotlight does not respond to simple punctuations such as `;` or
+    `:`. However, iVim help tags abound in them. If you want to get help for
+    `:`, use `punc_:`.
+
+* Use double quotes to find exact match in help tags.
+
+    Say you want to get the help for CTRL-V in input mode, `i_CTRL-V` may not
+    return the exact tag as the first entry. In this case, `"i_CTRL-V"` would
+    return a better result.
+
+Management ~
+                                        *ios-spotlight-management*
+Even though Spotlight searching is well covered automatically by iVim, you may
+sometimes need to know its state or tune it. 
+
+iVim offers a Ex command for Spotlight searching management, see |:ispotlight|
+for details.
+
+
+==============================================================================
+20. Running tasks indicator             *ios-running-tasks-indicator*
+
+Usually, iVim puts long running tasks into background so that they do not
+disturb your editing. However, you may quit or switch out of iVim without 
+noticing there were still running tasks. In this case, these running tasks 
+would probably not finish properly.
+
+To deal with this potential problem, iVim shows an indicator reminding you
+that there are still tasks running in background. 
+
+Where is it ~
+                                        *ios-running-tasks-indicator-pos*
+The indicator is a small green dot which may appear at the following places:
+
+* top right corner of the main editor
+
+If the |ivim-greeting-button| is shown, it sits to the button's left; otherwise
+it is just in the proximity of the top right corner.
+
+Supported tasks ~
+                                        *ios-running-tasks-supported*
+Currently, the following types of task trigger the indicator when they are 
+running in background:
+
+. Spotlight indexing tasks (|ios-spotlight-indexing|)
+
+Running tasks list ~
+                                        *ios-running-tasks-list*
+If you want to see the details of the running tasks, you can tap the indicator
+dot. A list of running tasks appear with its members and each member's progress
+updating in live.
+
+
+==============================================================================
+21. Widgets                             *ios-widgets*
+
+Starting from version 2.51, iVim provides some widgets for you to put on the
+Home Screen or Today View on devices running i(Pad)OS 14.0 or later.
+
+Moreover, iVim adds some Lock Screen widgets (|ios-widget-lock-screen|) for
+iOS 16.0+ devices since version 2.52.
+
+Widget types ~
+                                        *ios-widget-types*
+The following widget types are currently available:
+
+* Buffer stats
+                                        *ios-widget-buffer-stats*
+A buffer stats widget displays some statistical info on your open buffers in 
+iVim. Basically, it shows the number of open buffers. It also tells you about
+the detail numbers of the following categories if there is any of them:
+
+    .unsaved                            *ios-widget-buffer-stats-unsaved* 
+
+    Unsaved buffers include buffers that changed but you forgot to write to 
+    disk, or ones that you created but forgot to give names to.
+
+    .directory                          *ios-widget-buffer-stats-directory*
+
+    This category means buffers whose targets are directories rather than
+    normal files.
+
+    .readonly                           *ios-widget-buffer-stats-readonly*
+
+    Readonly buffers prevent you from making any changes to them. E.g. help
+    documents.
+
+    .external                           *ios-widget-buffer-stats-external*
+
+    External buffers are for documents that you opened from other apps.
+
+The buffer stats widget is available only in small size.
+
+Note that it requires |ios-auto-restore| to be enabled.
+
+* Quick commands
+                                        *ios-widget-quick-commands*
+A quick commands widget lets you run some preset Ex commands directly from the
+widget.
+
+By long tapping the widget then tapping "Edit Widget", you can manage (i.e.
+add, remove or re-order) the commands. Each command appears as a button on the
+widget, tapping it opens iVim and runs the command.
+                    *ios-widget-quick-commands-var* *g:ivim_last_quick_command*
+Running a quick command is a little different from running it directly from
+the command window. Its output is not directly printed in the command window. 
+Instead, iVim provides a global variable "g:ivim_last_quick_command" which
+records the running info of the last quick command. It is a dictionary having
+the below fields:
+
+- "cmd": the quick command ran.
+- "output": the output of the command running.
+
+The quick commands widget offers medium and large sizes.
+
+Lock Screen widgets ~
+                                        *ios-widget-lock-screen*
+Since version 2.52, iVim adds some Lock Screen widgets:
+
+* Buffer stats
+                                        *ios-widget-lock-screen-bs*
+It has the same info as its Home Screen counterpart |ios-widget-buffer-stats|.
+And it is available as the following:
+
+    .inline                             *ios-widget-lock-screen-bs-inline*
+
+    The inline widget is displayed in the line above the Lock Screen time. It
+    starts with the total buffer number. The category numbers follow. To save
+    space, the category names are abbrevivated to their respective initial
+    letter.
+
+    For example, "5·U2·D1" means there are 5 open buffers. Among these, there
+    are 2 unsaved files and 1 directory.
+
+    .circular                           *ios-widget-lock-screen-bs-circular*
+
+    The circular widget shows the total buffer number in its center. It has
+    the same formatted category numbers as the inline widget and puts them
+    along the lower arc.
+
+Tapping each buffer stats widget opens iVim.
+
+* Quick command
+                                        *ios-widget-lock-screen-quick-cmd*
+You can also run quick commands from the Lock Screen via the quick command
+widgets. They are available as the following:
+
+    .circular                           *ios-widget-lock-screen-qc-circular*
+
+    It displays the command's initial character in the center and the full
+    command line along the lower arc (it may be truncated at the end if it is
+    too long).
+
+Like its Home Screen counterpart, you need to preset commands for each widget.
+However, only its first command gets to run when you tap a widget. Except for 
+this, the command running behaviors are the same as its Home Screen 
+counterparts (|ios-widget-quick-commands|).
+
+
+==============================================================================
+22. Quick Actions                       *ios-quick-actions* 
+
+Since version 2.51, when you touch and hold iVim's icon on the Home screen on
+a device running i(Pad)OS 13 or later, it pops up a menu providing some quick
+action items. Each quick action item offers a piece of quick functionality or 
+glancible information.
+
+Default actions ~
+                                        *ios-quick-action-default-actions*
+By default, iVim provides the following quick actions:
+
+* New                                   *ios-quick-action-default-new*
+
+This action opens a new (unnamed) document in iVim for you.
+
+* Browse                                *ios-quick-action-default-browse* 
+
+It opens a file browser in iVim for you.
+
+* Continue Unsaved              *ios-quick-action-default-continue-unsaved*
+
+It randomly shows, as its subtitle, one of the unsaved documents you left in 
+iVim last time, and opens the document in iVim if you tap it.
+
+Note that this item requires |ios-auto-restore| to be enabled, and it will not
+appear if there is no unsaved documents.
+
+* Last Used                             *ios-quick-action-default-last-used*
+
+It shows the last time when you used iVim. Tapping it just opens iVim.
+
+Customization ~
+                    *ios-quick-action-config* *ios-quick-action-customization*
+Meanwhile, iVim also offers you an opportunity to customize the quick actions:
+when it sees config file "~/.vim/ivim_quick_actions_config.json", it reads and 
+loads quick actions from it instead of the default ones.
+                                        *ios-quick-action-config-format*
+The config file is a JSON file. It describes a list of quick actions as below: >
+
+    [
+        {
+            "type": (1),
+            "action": (2*) {
+                "title": (3*),
+                "subtitle": (4) {
+                    "text": (5),
+                    "command": (6),
+                },
+                "icon": (7),
+                "command": (8),
+            },
+        },
+        ...
+    ]
+<
+In each quick action config as shown above:
+
+(1) the "type" field gives the type of this action: 
+
+It could be "custom", so iVim makes a customized quick action according to the 
+info in "action" (2*); 
+
+Or it could be "default" if you want to include one of the default actions (
+|ios-quick-action-default-actions|) in your list. In this case, you provide 
+the title of the default action in "title" (3*) to make clear which one you 
+need.
+
+"custom" is implicitly used when this field is omitted.
+
+(2*) the "action" field provides necessary information for the quick action.
+
+    (3*) the "title" field indicates the title of the action. If you choose to
+    use a default action in "type" (1), it selects the target default action
+    according to this title.
+
+    This field is required.
+
+    (4) the "subtitle" field provides the information on how to generate the
+    subtitle of the action.
+
+        (5) when the "text" field is given, its value is literally used as the 
+        subtitle.
+
+        (6) when the "command" field is given, its value is ran as a Ex
+        command and the output is used as the subtitle. Note that since iVim 
+        generates quick actions before it becomes inactive, the command is 
+        ran and in turn the output is generated at this same timing.
+
+        When both (5) and (6) are given, (5) wins.
+
+    (7) the "icon" field indicates the SF Symbol name that is used as the
+    action's icon. By default, "gearshape.circle" is used.
+
+    (8) the "command" field gives the Ex command for the customized action.
+
+    Note that if the type (1) is "default", all fields but "title" (3*) are
+    ignored.
+
+For example, the following sample config generates two quick action items: >
+
+    [
+        {
+            "type": "custom",
+            "action": {
+                "title": "Pick External Doc",
+                "subtitle": {
+                    "text": "Open the documents picker",
+                },
+                "icon": "doc.fill.badge.plus",
+                "command": "idocuments",
+            },
+        },
+        {
+            "type": "default",
+            "action": {
+                "title": "Last Used",
+            },
+        },
+    ]
+<
+The first is a customized action with title "Pick External Doc" and subtitle
+"Open the documents picker". It uses SF Symbol "doc.fill.badge.plus" as its
+icon. When invoked, it runs command |:idocuments| therefore opens the picker 
+in iVim.
+
+The second is the default "Last Used" action |ios-quick-action-default-last-used|.
+        
+                                        *ios-quick-action-custom-command*
+A customized quick action lets you run your own command quickly.
+        *ios-quick-action-custom-command-var* *g:ivim_last_custom_quick_action*
+Like in |ivim-url-scheme|, the last running of customized quick action command 
+records its info into the global variable "g:ivim_last_custom_quick_action".
+It is a dictionay containing the following fields:
+
+- "cmd": the quick action command.
+- "output": the output of the command running.
+
+
+==============================================================================
+23. Miscellaneous			*ios-miscellaneous* *ios-misc*
+
+Touch support ~
+
+iVim adds support to basic touch gestures to make operations more intuitive 
+and efficient.
+
+a. Single tapping is like mouse left click on computers: it can change cursor 
+position, window or select specific tab.
+
+b. Single finger dragging can select text within a window, or resize a window 
+when the fingers are on its status bar.
+
+c. Two fingers dragging will scroll text in a window. Note that iVim will not
+try to become focused with this gesture.
+
+d. While one finger long pressing toggles the extended keyboard, two fingers
+long pressing hides the system keyboard, and a single tap to bring it back.
+
+e. Two fingers pinch changes the font size. Note that this can be disabled in 
+|ios-settings|.
+
+Trackpad & mouse support ~
+
+iPadOS 13.4 introduces dynamic pointer effects and behaviors enhancing the
+experience of using an external pointing device, like a trackpad or mouse,
+with iPad. iVim also adds some basic support for this.
+
+. Single tapping or clicking from a pointing device works like a single tap 
+on the screen.
+
+. Long pressing from a pointing device toggles the extended keyboard.
+
+. Scrolling from a pointing device scrolls text in a window (since 2.41).
+
+Home indicator ~
+                                            *ivim-home-indicator*
+On some devices, a Home Indicator bar is present at the bottom of the screen, 
+replacing the absent physical Home button. You can choose to hide it in iVim
+with an option in |ios-settings|.
+
+Swap file cleaning ~
+
+Due to the sudden app termination mechanism of the iOS system, there would be
+leftover swap files in the filesystem. iVim will try and clean them on each
+launch automatically.
+
+The viminfo file ~
+
+The default writing timing for the |viminfo-file| is when vim exits. However,
+that does not happen so often in iVim. Therefore, iVim takes over and records
+the file when necessary.
+
+Auto toggle extended keyboard ~
+
+iVim supports to hide the extended keyboard automatically when a hardware
+keyboard is connected and show it when disconnected. This can be enabled or
+disabled in |ios-settings|. Note that this stops working after a manual
+toggle happens, until the next iVim launch.
+
+Status bar ~
+                                            *ivim-status-bar*
+Since version 2.51, in |ios-settings|, iVim offers one option for you to show
+or hide the system's status bar. Through another option, you can also pick
+the status bar style to better match your main editor's background.
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
