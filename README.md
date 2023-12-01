@@ -219,4 +219,5 @@ xxd-ru.1
 xxd-ru.UTF-8.1
 xxd.1
 xxd.man
+
 ```

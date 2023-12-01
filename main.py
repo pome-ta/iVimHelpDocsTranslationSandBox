@@ -47,7 +47,7 @@ if __name__ == '__main__':
   pull_dir_name: str = './pullDocs'
   match: str = 'ios|ivim'
 
-  # picup_docs(master_dir_name)
+  picup_docs(master_dir_name)
   docs: list = get_iVim_docs(master_dir_name, match)
   pull_out_docs(pull_dir_name, docs)
 
