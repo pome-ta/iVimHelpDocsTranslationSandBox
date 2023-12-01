@@ -1,4 +1,4 @@
-*os_ios.txt*	For Vim version 8.1.	Last change: 2022 Jul 09
+*os_ios.txt*	For Vim version 8.1.	Last change: 2023 Jun 02
 
 			iVim REFERENCE MANUAL	by Terry Chou
 
@@ -613,7 +613,7 @@ Because there are scenarios where vim's options cannot cover, iVim also
 provides some setting options in the system's Settings app.
 
 Launch Option ~
-
+					    *ios-settings-launch-option*
 This settings group allows users indicate launch arguments for vim.
 
 a. Arguments
@@ -626,7 +626,7 @@ If YES, iVim will take the arguments every time it launches.
 If NO, iVim will only launch with the arguments once, then remove them.
 
 Extended Keyboard ~
-
+					    *ios-settings-extended-keyboard*
 Toggle with Hardware Keyboard
 If this option is enabled, the extended keyboard hides automatically when
 a hardware keyboard is connected; shows again when it is disconnected. It is
@@ -636,7 +636,7 @@ Hide By Default
 It controls whether iVim hides the extended keyboard by default or not.
 
 Hardware Keyboard ~
-
+					    *ios-settings-hardware-keyboard*
 a. Map [caps lock] to
 If you have an external hardware keyboard connected, you can map its less used
 `caps_lock` key to either `esc` or `ctrl` in this option. Note that it has 
@@ -661,8 +661,14 @@ d. Key Repeating
 The held key will repeat itself if this option is enabled. It is on by default.
 Note that it has some caveats as mentioned in |ios-external-keyboard|.
 
-Dictation ~
+e. Interpret [command + .] as [esc]
+When it is on, iVim interprets chord `<D-.>` as `<Esc>` automatically. Turning 
+it off offers a chance to map `<D-.>` for other uses. It is on by default. 
+Note that this option is a compensation for a change that is mentioned at .b
+in |ios-external-keyboard|. As a result, it only works in i(Pad)OS 16.0+.
 
+Dictation ~
+					    *ios-settings-dication*
 Force normal mode to
 Dictation input is handled specially in |Normal| mode. This option tells iVim
 the target mode to jump to when dictation happens in |Normal| mode. 
@@ -672,13 +678,13 @@ the target mode to jump to when dictation happens in |Normal| mode.
 part of |ios-dictation| for details.
 
 Auto Restore ~
-
+					    *ios-settings-auto-restore*
 Enable
 This option toggles the `Auto restore` feature of iVim. See |ios-auto-restore|
 for details.
 
 UI Tweaks ~
-
+					    *ios-settings-ui-tweaks*
 Enable Font Ligatures
 This option decides whether iVim renders font ligatures or not. See
 |ios-font-ligatures|.
@@ -705,16 +711,42 @@ Set this to "light" to make the status bar look better on dark backgrounds;
 the "dark" style is only available on i(Pad)OS 13.0+. 
 
 URL Scheme ~
-
+					    *ios-settings-url-scheme*
 Allow
 iVim responses to custom URL scheme requests when this is enabled, otherwise
 all requests are ignored. See |ivim-url-scheme-security| for some details.
 
 Version Control ~
-
+					    *ios-settings-version-control*
 Enable Live Diff
 If disabled, the whole app's live diff |ivim-livediff| is turned off. It is 
 enabled by default.
+
+Markdown Preview ~
+					    *ios-settings-markdown-preview*
+Appearance
+This option chooses UI style for markdown preview views, it has 3 choices:
+
+* light: a markdown preview view is always in the light mode;
+* dark: a markdown preview view is always in the dark mode;
+* follow system: a markdown preview view's UI style changes with the system.
+
+The default choice is "follow system".
+
+Default Theme
+The default markdown theme is specified in this option. The value is used as
+a pattern to locate a theme. See |:ipreview-md-themes-default| for details. If
+it fails to find a theme, it is corrected automatically by iVim.
+
+Default Light Code Theme
+The default light theme for code highlighting is specified here. The value is
+used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. It
+is corrected automatically by iVim if it fails to find a theme.
+
+Default Dark Code Theme
+The default dark theme for code highlighting is specified here. The value is
+used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. 
+iVim corrects it automatically if it is invalid.
 
 Open Settings ~
                                                 *ivim-open-settings*
@@ -731,7 +763,11 @@ your iOS device and start typing in iVim.
 a. besides the `ctrl` key chords |<C-|, the `command` key chords |<D-| are
 now at your disposal.
 
-b. chords `<D-s>`, `<D-h>` and `<D-.>` are reserved by iOS system.
+b. some `<D-` chords are reserved by the system. For example, `<D-h>`, `<D-q>` 
+and `<D-z>` are not working in i(Pad)OS 16.0. However, this may change version
+by version. Since i(Pad)OS 16.0, chord `<D-.>` is no longer interpreted as
+`<Esc>` automatically by the system. iVim fixes this by providing an option
+in |ios-settings|.
 
 c. by default, the `alt` key is preserved to input the extended symbols.
 But you can enable `alt` key mapping in |ios-settings| to map it to the |<A-| 
@@ -1027,6 +1063,17 @@ More than one preview window can exist simultaneously. You can open one by:
 a. choosing the "Preview in new window" action in a file browser;
 b. dragging a previewable item from a file browser to the edge of the screen;
 c. running the Ex command |:ipreview| with option -w.
+
+4) web preview window (since 2.55)
+
+iVim offers this type of window for better web content previewing. Now web
+related documents (e.g. HTML or Markdown docs) are loaded into this window.
+
+One web preview window can be opened in the same way as a preview window as
+described above. iVim picks a right preview window according to the documents
+automatically.
+
+See |ivim-web-preview-window| for details.
 
 Besides the default file formats supported by the system, iVim also provides
 some extensions to preview extra formats:
@@ -1414,6 +1461,9 @@ updating in live.
 Starting from version 2.51, iVim provides some widgets for you to put on the
 Home Screen or Today View on devices running i(Pad)OS 14.0 or later.
 
+Moreover, iVim adds some Lock Screen widgets (|ios-widget-lock-screen|) for
+iOS 16.0+ devices since version 2.52.
+
 Widget types ~
                                         *ios-widget-types*
 The following widget types are currently available:
@@ -1457,7 +1507,7 @@ add, remove or re-order) the commands. Each command appears as a button on the
 widget, tapping it opens iVim and runs the command.
                     *ios-widget-quick-commands-var* *g:ivim_last_quick_command*
 Running a quick command is a little different from running it directly from
-the command window. It's output is not directly printed in the command window. 
+the command window. Its output is not directly printed in the command window. 
 Instead, iVim provides a global variable "g:ivim_last_quick_command" which
 records the running info of the last quick command. It is a dictionary having
 the below fields:
@@ -1466,6 +1516,49 @@ the below fields:
 - "output": the output of the command running.
 
 The quick commands widget offers medium and large sizes.
+
+Lock Screen widgets ~
+                                        *ios-widget-lock-screen*
+Since version 2.52, iVim adds some Lock Screen widgets:
+
+* Buffer stats
+                                        *ios-widget-lock-screen-bs*
+It has the same info as its Home Screen counterpart |ios-widget-buffer-stats|.
+And it is available as the following:
+
+    .inline                             *ios-widget-lock-screen-bs-inline*
+
+    The inline widget is displayed in the line above the Lock Screen time. It
+    starts with the total buffer number. The category numbers follow. To save
+    space, the category names are abbrevivated to their respective initial
+    letter.
+
+    For example, "5·U2·D1" means there are 5 open buffers. Among these, there
+    are 2 unsaved files and 1 directory.
+
+    .circular                           *ios-widget-lock-screen-bs-circular*
+
+    The circular widget shows the total buffer number in its center. It has
+    the same formatted category numbers as the inline widget and puts them
+    along the lower arc.
+
+Tapping each buffer stats widget opens iVim.
+
+* Quick command
+                                        *ios-widget-lock-screen-quick-cmd*
+You can also run quick commands from the Lock Screen via the quick command
+widgets. They are available as the following:
+
+    .circular                           *ios-widget-lock-screen-qc-circular*
+
+    It displays the command's initial character in the center and the full
+    command line along the lower arc (it may be truncated at the end if it is
+    too long).
+
+Like its Home Screen counterpart, you need to preset commands for each widget.
+However, only its first command gets to run when you tap a widget. Except for 
+this, the command running behaviors are the same as its Home Screen 
+counterparts (|ios-widget-quick-commands|).
 
 
 ==============================================================================
