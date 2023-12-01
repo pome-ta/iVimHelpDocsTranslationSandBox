@@ -26,7 +26,9 @@ def get_iVim_docs(dir_name: str, search_str: str) -> list:
   if not dir_is:
     return []
   glob_iter: iter = path.glob('*.*')
-  iVim_docs: list = [doc for doc in glob_iter if re.search(search_str, str(doc))]
+  iVim_docs: list = [
+    doc for doc in glob_iter if re.search(search_str, str(doc))
+  ]
   return iVim_docs
 
 
@@ -48,3 +50,4 @@ if __name__ == '__main__':
   # picup_docs(master_dir_name)
   docs: list = get_iVim_docs(master_dir_name, match)
   pull_out_docs(pull_dir_name, docs)
+
