@@ -370,14 +370,11 @@ For a better user control in this way, the dication results will be handled spec
 <
 Interruptions ~
 
-Besides the normal ways to stop a dictation session, you could interrupt it by
-doing one of the followings:
+Besides the normal ways to stop a dictation session, you could interrupt it by doing one of the followings:
 
-a. Pressing `esc` will cancel the input. It will clean the exisitng hypothesis
-and exit dictation.
+a. Pressing `esc` will cancel the input. It will clean the exisitng hypothesis and exit dictation.
 
-b. Pressing any arrow key will stop the input. It will accept the exiting
-result and exit dictation.
+b. Pressing any arrow key will stop the input. It will accept the exiting result and exit dictation.
 
 c. Tapping the screen will act as the arrow keys do.
 
@@ -389,40 +386,25 @@ If you have a hardware keyboard connected, some points are worth mentioning:
 
 a. Activate dictation input
 
-Normally, the on-screen keyboard is hidden. To activate the dictation, you
-need to toggle it out first (pressing `eject` key would do). Sometimes, the 
-dictation button may not appear on the on-screen keyboard. Changing to another 
-keyboard then back may bring it out again.
+Normally, the on-screen keyboard is hidden. To activate the dictation, you need to toggle it out first (pressing `eject` key would do). Sometimes, the dictation button may not appear on the on-screen keyboard. Changing to another keyboard then back may bring it out again.
 
 b. Things broken
 
-Multistage input will stop working while the dictation keyboard is present. 
-And keyboard layout settings may not be respected during dictation.
+Multistage input will stop working while the dictation keyboard is present.  And keyboard layout settings may not be respected during dictation.
 
 
 ==============================================================================
 6. Open URL				*ios-open-url*
 
-Another way for sharing info among apps in iOS is via URL scheme. You can put
-info into an URL and open it. Then the system will launch the supporting app
-if there is one, and let it handle this URL. iVim adds support of opening URLs 
-in this way to communicate with or control other apps.
+Another way for sharing info among apps in iOS is via URL scheme. You can put info into an URL and open it. Then the system will launch the supporting app if there is one, and let it handle this URL. iVim adds support of opening URLs in this way to communicate with or control other apps.  
 
 Example ~
 
-URL scheme "https://" is handled by the browser Safari in iOS. When you open
-an URL "https://www.example.com/search?q={expand('<cword>')%[Q}", the browser
-will be launched, open the site "example.com", and do some search with the 
-word under the cursor as the query. All of these actions as a workflow are
-done with just this one opening of the URL.
+URL scheme "https://" is handled by the browser Safari in iOS. When you open an URL "https://www.example.com/search?q={expand('<cword>')%[Q}", the browser will be launched, open the site "example.com", and do some search with the word under the cursor as the query. All of these actions as a workflow are done with just this one opening of the URL.
 
 Include information ~
 
-iVim introduces "variable token" as a way for you to include dynamic info into 
-an URL. By utilizing vim's |expression|, you can get useful info such as
-clipboard contents, current file name or results of functions. In the example 
-above, "{expand('<cword>')%[Q}" is one variable token which will be replaced 
-with the word under the cursor when the URL is opened. 
+iVim introduces "variable token" as a way for you to include dynamic info into an URL. By utilizing vim's |expression|, you can get useful info such as clipboard contents, current file name or results of functions. In the example above, "{expand('<cword>')%[Q}" is one variable token which will be replaced with the word under the cursor when the URL is opened. 
 
 Refer to command |:iopenurl| for the details on the usage of URL opening.
 
@@ -434,32 +416,21 @@ Sharing makes iVim's editing power available to more apps.
 
 Importing ~
 
-If an app supports sharing text files or selected text, you can find iVim in 
-its share panel. See |share-with-ivim| and |copy-to-ivim|.
+If an app supports sharing text files or selected text, you can find iVim in its share panel. See |share-with-ivim| and |copy-to-ivim|.
 
-Through the document picker invoked by ":idocuments import", you can also 
-import text files from iCloud Drive or other document providers. This way,
-you don't have to leave iVim to do the importing.
+Through the document picker invoked by ":idocuments import", you can also import text files from iCloud Drive or other document providers. This way, you don't have to leave iVim to do the importing.
 
 The imported file or text will be opened in a new tab for further editing.
 
 Exporting ~
 
-You can invoke iVim's share panel via the command |:ishare|, therefore share 
-files or text with other apps.
+You can invoke iVim's share panel via the command |:ishare|, therefore share files or text with other apps.
 
 Editing in place ~
 
-The document picker |:idocuments| also allows you to edit files directly in 
-iCloud Drive or other document provider apps. All the modifications will be 
-saved back to the original files even though this is normally not allowed 
-because they are in different sandbox environments.
+The document picker |:idocuments| also allows you to edit files directly in iCloud Drive or other document provider apps. All the modifications will be saved back to the original files even though this is normally not allowed because they are in different sandbox environments.
 
-iVim also supports opening directories. After you select and open a directory 
-from the document picker, besides file editing, you can do all the supported 
-filesystem operations within it. Such as create or rename subdirectories or 
-files, delete files, etc. Note that operations on the root directory itself 
-break this mechanism therefore would be better avoided.
+iVim also supports opening directories. After you select and open a directory from the document picker, besides file editing, you can do all the supported filesystem operations within it. Such as create or rename subdirectories or files, delete files, etc. Note that operations on the root directory itself break this mechanism therefore would be better avoided.
 
 Also see |open-in-ivim|.
 
@@ -467,38 +438,26 @@ Items in the share panel ~
 
 a. Copy to iVim						*copy-to-ivim*
 
-It will copy the shared file into the `Documents` directory. When invoked, it
-will open iVim and the copied file in a new tab. Note that if there had been
-a file with the same name as the shared one, it will be renamed to avoid the
-conflict. Note that supported font files are always copied for installation.
+It will copy the shared file into the `Documents` directory. When invoked, it will open iVim and the copied file in a new tab. Note that if there had been a file with the same name as the shared one, it will be renamed to avoid the conflict. Note that supported font files are always copied for installation.
 
 b. Open in iVim						*open-in-ivim*
 
-It will open the shared file directly in iVim. In another word, it lets iVim
-edit the target file in place. Note that it needs the sharing app's support
-for this feature.
+It will open the shared file directly in iVim. In another word, it lets iVim edit the target file in place. Note that it needs the sharing app's support for this feature.
 
 c. Share with iVim (Retired)
 
-iVim provided a share extension for users to get selected text or content of 
-a file (other than editing it in place) from another app. Since version 2.28,
-this has been retired because it was kind of confusing and less used.
+iVim provided a share extension for users to get selected text or content of a file (other than editing it in place) from another app. Since version 2.28, this has been retired because it was kind of confusing and less used.
 
 
 Old Documents ~						*ivim-old-documents*
 
-Once an edit-in-place file or directory is opened in iVim, it will be 
-bookmarked as one of the old documents. Therefore you can open it later
-directly from the record. iVim provides the command |:iolddocs| to support
-this function. Refer to it for the related details. 
+Once an edit-in-place file or directory is opened in iVim, it will be bookmarked as one of the old documents. Therefore you can open it later directly from the record. iVim provides the command |:iolddocs| to support this function. Refer to it for the related details. 
 
 Type ":help :ishare" or ":help :idocuments" for more detailed information.
 
 External Directory Links ~
                                                         *ivim-exdir-links*
-iVim provides a way to open an external directory from another app and makes
-it as a local link. From then on, you can use this external directory just 
-like a local directory via this link.
+iVim provides a way to open an external directory from another app and makes it as a local link. From then on, you can use this external directory just like a local directory via this link.
 
 Note that this is only fully supported in iOS 13.0 and above.
 
@@ -507,16 +466,14 @@ See |:iexdir| for details on how to use this functionality.
 ==============================================================================
 8. Settings						*ios-settings*
 
-Because there are scenarios where vim's options cannot cover, iVim also
-provides some setting options in the system's Settings app.
+Because there are scenarios where vim's options cannot cover, iVim also provides some setting options in the system's Settings app.
 
 Launch Option ~
 					    *ios-settings-launch-option*
 This settings group allows users indicate launch arguments for vim.
 
 a. Arguments
-You can give the arguments in this field. When iVim launches, this line will 
-be parsed and taken by vim as its command line arguments.
+You can give the arguments in this field. When iVim launches, this line will be parsed and taken by vim as its command line arguments.
 
 b. Always
 This switch tells iVim about the term of validity of the launch arguments.
@@ -526,9 +483,7 @@ If NO, iVim will only launch with the arguments once, then remove them.
 Extended Keyboard ~
 					    *ios-settings-extended-keyboard*
 Toggle with Hardware Keyboard
-If this option is enabled, the extended keyboard hides automatically when
-a hardware keyboard is connected; shows again when it is disconnected. It is
-enabled by default.
+If this option is enabled, the extended keyboard hides automatically when a hardware keyboard is connected; shows again when it is disconnected. It is enabled by default.
 
 Hide By Default
 It controls whether iVim hides the extended keyboard by default or not.
@@ -536,89 +491,67 @@ It controls whether iVim hides the extended keyboard by default or not.
 Hardware Keyboard ~
 					    *ios-settings-hardware-keyboard*
 a. Map [caps lock] to
-If you have an external hardware keyboard connected, you can map its less used
-`caps_lock` key to either `esc` or `ctrl` in this option. Note that it has 
-caveats as mentioned at g. in |ios-external-keyboard|.
+If you have an external hardware keyboard connected, you can map its less used `caps_lock` key to either `esc` or `ctrl` in this option. Note that it has caveats as mentioned at g. in |ios-external-keyboard|.
 
-Note that this option has retired and does not have any effect in iOS 13.0 and
-above due to API changes. Instead, use the native system-wide modifier keys
-remapping in iOS 13.4 and above.
+Note that this option has retired and does not have any effect in iOS 13.0 and above due to API changes. Instead, use the native system-wide modifier keys remapping in iOS 13.4 and above.
 
 b. Map [ctrl] to [esc] on release
-With this option on, a releasing of a single `ctrl` (without any other keys
-pressed at the same time) will act as if `esc` is pressed. Note that it only 
-works in iOS 13.4 and above due to its using of new APIs. It also works for 
-`ctrl` keys that are actually remapped from other keys. It is off by default.
+With this option on, a releasing of a single `ctrl` (without any other keys pressed at the same time) will act as if `esc` is pressed. Note that it only works in iOS 13.4 and above due to its using of new APIs. It also works for `ctrl` keys that are actually remapped from other keys. It is off by default.
 
 c. Enable [alt] Mapping
-When enabled, it will map keystrokes with modifier `alt` to |<A-| chords in 
-iVim. Otherwise, they will be handled by iOS system for extended symbols 
-input.
+When enabled, it will map keystrokes with modifier `alt` to |<A-| chords in iVim. Otherwise, they will be handled by iOS system for extended symbols input.
 
 d. Key Repeating
 The held key will repeat itself if this option is enabled. It is on by default.
 Note that it has some caveats as mentioned in |ios-external-keyboard|.
 
 e. Interpret [command + .] as [esc]
-When it is on, iVim interprets chord `<D-.>` as `<Esc>` automatically. Turning 
-it off offers a chance to map `<D-.>` for other uses. It is on by default. 
-Note that this option is a compensation for a change that is mentioned at .b
-in |ios-external-keyboard|. As a result, it only works in i(Pad)OS 16.0+.
+When it is on, iVim interprets chord `<D-.>` as `<Esc>` automatically. Turning it off offers a chance to map `<D-.>` for other uses. It is on by default. 
+Note that this option is a compensation for a change that is mentioned at .b in |ios-external-keyboard|. As a result, it only works in i(Pad)OS 16.0+.
 
 Dictation ~
 					    *ios-settings-dication*
 Force normal mode to
-Dictation input is handled specially in |Normal| mode. This option tells iVim
-the target mode to jump to when dictation happens in |Normal| mode. 
+Dictation input is handled specially in |Normal| mode. This option tells iVim the target mode to jump to when dictation happens in |Normal| mode. 
 
-`insert_mode` means iVim will enter |Insert| mode; `command_line_mode` targets
-|Cmdline| mode; `none` will not do mode jumping at all. Refer to `Normal_mode`
-part of |ios-dictation| for details.
+`insert_mode` means iVim will enter |Insert| mode; `command_line_mode` targets |Cmdline| mode; `none` will not do mode jumping at all. Refer to `Normal_mode` part of |ios-dictation| for details.
 
 Auto Restore ~
 					    *ios-settings-auto-restore*
 Enable
-This option toggles the `Auto restore` feature of iVim. See |ios-auto-restore|
-for details.
+This option toggles the `Auto restore` feature of iVim. See |ios-auto-restore| for details.
 
 UI Tweaks ~
 					    *ios-settings-ui-tweaks*
 Enable Font Ligatures
-This option decides whether iVim renders font ligatures or not. See
-|ios-font-ligatures|.
+This option decides whether iVim renders font ligatures or not. See |ios-font-ligatures|.
 
 Pinch to Zoom
-Two fingers pinch changes font size when this option is enabled. It is enabled
-by default.
+Two fingers pinch changes font size when this option is enabled. It is enabled by default.
 
 Hide Home Indicator
-When enabled, iVim hides the Home Indicator bar on the screen of some devices
-where it shows. This is disabled by default.
+When enabled, iVim hides the Home Indicator bar on the screen of some devices where it shows. This is disabled by default.
 
 Hide Greeting Button
 When turned on, the |ios-greeting-button| is hidden.
 
 Show Status Bar
-The system's status bar is hidden by default. iVim shows it back when this is
-enabled.
+The system's status bar is hidden by default. iVim shows it back when this is enabled.
 
 Set Main Editor Status Bar to
 The main editor may have different background color from the system UI style.
 Set this to "light" to make the status bar look better on dark backgrounds;
-"dark" for light backgrounds. Note that it is set to "light" by default, and
-the "dark" style is only available on i(Pad)OS 13.0+. 
+"dark" for light backgrounds. Note that it is set to "light" by default, and the "dark" style is only available on i(Pad)OS 13.0+. 
 
 URL Scheme ~
 					    *ios-settings-url-scheme*
 Allow
-iVim responses to custom URL scheme requests when this is enabled, otherwise
-all requests are ignored. See |ivim-url-scheme-security| for some details.
+iVim responses to custom URL scheme requests when this is enabled, otherwise all requests are ignored. See |ivim-url-scheme-security| for some details.
 
 Version Control ~
 					    *ios-settings-version-control*
 Enable Live Diff
-If disabled, the whole app's live diff |ivim-livediff| is turned off. It is 
-enabled by default.
+If disabled, the whole app's live diff |ivim-livediff| is turned off. It is enabled by default.
 
 Markdown Preview ~
 					    *ios-settings-markdown-preview*
@@ -632,115 +565,76 @@ This option chooses UI style for markdown preview views, it has 3 choices:
 The default choice is "follow system".
 
 Default Theme
-The default markdown theme is specified in this option. The value is used as
-a pattern to locate a theme. See |:ipreview-md-themes-default| for details. If
-it fails to find a theme, it is corrected automatically by iVim.
+The default markdown theme is specified in this option. The value is used as a pattern to locate a theme. See |:ipreview-md-themes-default| for details. If it fails to find a theme, it is corrected automatically by iVim.
 
 Default Light Code Theme
-The default light theme for code highlighting is specified here. The value is
-used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. It
-is corrected automatically by iVim if it fails to find a theme.
+The default light theme for code highlighting is specified here. The value is used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. It is corrected automatically by iVim if it fails to find a theme.
 
 Default Dark Code Theme
-The default dark theme for code highlighting is specified here. The value is
-used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. 
+The default dark theme for code highlighting is specified here. The value is used as a pattern to locate a theme. See |:ipreview-md-code-themes-default|. 
 iVim corrects it automatically if it is invalid.
 
 Open Settings ~
                                                 *ivim-open-settings*
-iVim provides command |:isettings| to directly jump to its preferences section 
-in the system's Settings.app.
+iVim provides command |:isettings| to directly jump to its preferences section in the system's Settings.app.
 
 
 ==============================================================================
 9. External keyboard				*ios-external-keyboard*
 
-iVim supports the external hardware keyboard. You can connect the keyboard to
-your iOS device and start typing in iVim.
+iVim supports the external hardware keyboard. You can connect the keyboard to your iOS device and start typing in iVim.
 
-a. besides the `ctrl` key chords |<C-|, the `command` key chords |<D-| are
-now at your disposal.
+a. besides the `ctrl` key chords |<C-|, the `command` key chords |<D-| are now at your disposal.
 
-b. some `<D-` chords are reserved by the system. For example, `<D-h>`, `<D-q>` 
-and `<D-z>` are not working in i(Pad)OS 16.0. However, this may change version
-by version. Since i(Pad)OS 16.0, chord `<D-.>` is no longer interpreted as
-`<Esc>` automatically by the system. iVim fixes this by providing an option
-in |ios-settings|.
+b. some `<D-` chords are reserved by the system. For example, `<D-h>`, `<D-q>` and `<D-z>` are not working in i(Pad)OS 16.0. However, this may change version by version. Since i(Pad)OS 16.0, chord `<D-.>` is no longer interpreted as `<Esc>` automatically by the system. iVim fixes this by providing an option in |ios-settings|.
 
 c. by default, the `alt` key is preserved to input the extended symbols.
-But you can enable `alt` key mapping in |ios-settings| to map it to the |<A-| 
-chords handled by iVim. However, special keys `esc`, `arrows`, `tab`, `enter`,
-`pageup`, `pagedown`, `home`(13.4+), `end`(13.4+) and `del`(15.0+), their `alt`
-chords are always available disregarding this setting.
+But you can enable `alt` key mapping in |ios-settings| to map it to the |<A-| chords handled by iVim. However, special keys `esc`, `arrows`, `tab`, `enter`, `pageup`, `pagedown`, `home`(13.4+), `end`(13.4+) and `del`(15.0+), their `alt` chords are always available disregarding this setting.
 
-d. special keys `esc`, `arrows`, `tab` and `enter` combined with modifier keys 
-`ctrl`, `command`, `alt` and `shift` respectively are supported. Since version
-2.41, keys `pageup`, `pagedown`, `home`(13.4+), `end`(13.4+) and since 2.42,
-key `del`(15.0+), join this group.
+d. special keys `esc`, `arrows`, `tab` and `enter` combined with modifier keys `ctrl`, `command`, `alt` and `shift` respectively are supported. Since version 2.41, keys `pageup`, `pagedown`, `home`(13.4+), `end`(13.4+) and since 2.42, key `del`(15.0+), join this group.
 
-e. since version 2.41, function keys from `f1` through `f12` and their `shift`
-chords are supported (13.4+). 
+e. since version 2.41, function keys from `f1` through `f12` and their `shift` chords are supported (13.4+). 
 
 f. multiple modifiers chords such as `<D-C->` are not supported.
 
 g. you can map `caps_lock` key to either `esc` or `ctrl` in |ios-settings|.
-Note that due to the API limitation, only English keyboards are supported and 
-will be disabled otherwise; after mapped, the default `alt` extended symbol 
-input will be ignored; for an alternative to extended symbol input, you may 
-refer to |digraph|; however, the `alt` mapping mentioned in c. will still work 
-if enabled. 
+Note that due to the API limitation, only English keyboards are supported and will be disabled otherwise; after mapped, the default `alt` extended symbol input will be ignored; for an alternative to extended symbol input, you may refer to |digraph|; however, the `alt` mapping mentioned in c. will still work if enabled. 
 
-Note that since iOS 13.0, this has stopped working properly due to the subtle 
-change of the related API. On the other hand, since its version 13.4, iOS has 
-began to offer native support to remap modifier keys on hardware keyboards. You 
-can use that instead.
+Note that since iOS 13.0, this has stopped working properly due to the subtle change of the related API. On the other hand, since its version 13.4, iOS has began to offer native support to remap modifier keys on hardware keyboards. You can use that instead.
 
-h. you can choose to map single `ctrl` key releasing to `esc` in |ios-settings|
-in iOS 13.4 and above.
+h. you can choose to map single `ctrl` key releasing to `esc` in |ios-settings| in iOS 13.4 and above.
 
 i. there are some caveats worth noting when it comes to |ios-dictation|.
 
 Hardware keyboard automatic configuration ~
                                                 *ivim-hkbd-auto-config*
-Since version 2.44, iVim adds hardware keyboard automatic configuration to
-better support keyboards with layout languages other than English.
+Since version 2.44, iVim adds hardware keyboard automatic configuration to better support keyboards with layout languages other than English.
 
-It tries to detect the layout language of the connected keyboard, collect
-necessary information, generate related config, and use it from then on.
+It tries to detect the layout language of the connected keyboard, collect necessary information, generate related config, and use it from then on.
 
-If it failed the above automatic configuration workflow, the default config
-for English ("en_US") is used. Or you can tune it manually with the help of 
-tools in the hardware keyboard menu |ivim-hkbd-menu|.
+If it failed the above automatic configuration workflow, the default config for English ("en_US") is used. Or you can tune it manually with the help of tools in the hardware keyboard menu |ivim-hkbd-menu|.
                                                 *g:ivim_kbd_primary_language*
-Note that you can checkout the current keyboard layout language via variable
-"g:ivim_kbd_primary_language" and the hardware keyboard configs are stored in 
-file "~/.vim/ivim_hardware_keyboard_config.json".
+Note that you can checkout the current keyboard layout language via variable "g:ivim_kbd_primary_language" and the hardware keyboard configs are stored in file "~/.vim/ivim_hardware_keyboard_config.json".
 
 Hardware keyboard menu ~
                                                 *ivim-hkbd-menu*
-iVim also provides some tools for you to improve the hardware keyboard 
-configuration, via the hardware keyboard menu.
+iVim also provides some tools for you to improve the hardware keyboard configuration, via the hardware keyboard menu.
 
-You can open the menu via the key shortcut "control + command + ," in the
-editor window.
+You can open the menu via the key shortcut "control + command + ," in the editor window.
 
 The following options are available:
 
 * Reload configs
 
-this reloads all hardware keyboard configs from the config file and makes
-them take effect.
+this reloads all hardware keyboard configs from the config file and makes them take effect.
 
 * Configure as language …
 
-with this tool, you can specify a language for your keyboard explicitly and
-override current config with it. It would be a good helper when iVim detects
-your hardware keyboard wrong.
+with this tool, you can specify a language for your keyboard explicitly and override current config with it. It would be a good helper when iVim detects your hardware keyboard wrong.
 
 * Tune some keys …
 
-this shows the hardware keyboard key tuning window and gives you a chance to
-correct keys by pressing them.
+this shows the hardware keyboard key tuning window and gives you a chance to correct keys by pressing them.
 
 Note that this tool is only available in i(Pad)OS 13.4+.
 
@@ -754,19 +648,13 @@ This is how the hardware keyboard key tuning window works:
 
 . You press the keys that you think are interpreted incorrectly.
 
-. The last detected key is shown in the center, and keys detected so far are
-listed in order under it. Note that only keys for letters, numbers, symbols
-and punctuations are detected, since only these categories are used in the
-configuration.
+. The last detected key is shown in the center, and keys detected so far are listed in order under it. Note that only keys for letters, numbers, symbols and punctuations are detected, since only these categories are used in the configuration.
 
-. If you press a key that has been already pressed, it will be moved to the
-end of the list and highlighted in red.
+. If you press a key that has been already pressed, it will be moved to the end of the list and highlighted in red.
 
 . You can press `delete` key to remove the last detected key.
 
-. Tap the "Done" button when you are done, iVim will try to correct the keys
-according to their pressing data, and update related config. Note that keys
-whose tuning results are the same as in the existing config, are skipped.
+. Tap the "Done" button when you are done, iVim will try to correct the keys according to their pressing data, and update related config. Note that keys whose tuning results are the same as in the existing config, are skipped.
 
 . The tuning stats are reported via notifications.
 
@@ -779,17 +667,13 @@ b. numbers
 c. punctuations
 d. symbols
 
-Note that: 1) you need to switch on iOS system's related setting for this to
-work; 2) you can enable or disable it in |ios-settings|. 3) you can tune keys
-that are not working via tools in |ivim-hkbd-menu|.
+Note that: 1) you need to switch on iOS system's related setting for this to work; 2) you can enable or disable it in |ios-settings|. 3) you can tune keys that are not working via tools in |ivim-hkbd-menu|.
 
 Ideographic languages ~
                                                 *ivim-hkbd-ideographic*
-iVim takes good care of ideographic input languages, e.g. Chinese or Japanese
-from a hardware keyboard:
+iVim takes good care of ideographic input languages, e.g. Chinese or Japanese from a hardware keyboard:
 
-a. in |Normal| mode, iVim automatically uses the default letters and symbols 
-instead of the ideographic ones, since the former makes better sense;
+a. in |Normal| mode, iVim automatically uses the default letters and symbols instead of the ideographic ones, since the former makes better sense;
 b. key repeating is also well supported for the ideographic languages.
 
 
