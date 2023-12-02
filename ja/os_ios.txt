@@ -282,45 +282,35 @@ Note that removed typeface cannot be restored unless you import it again.
 ==============================================================================
 3. Extended keyboard			*ios-extended-keyboard*
 
-An efficient use of Vim requires quick symbol input. However, the iOS system 
-keyboard 'hides' them into other pages to save the screen real-estate. 
+An efficient use of Vim requires quick symbol input. However, the iOS system keyboard 'hides' them into other pages to save the screen real-estate. 
 Moreover, some necessary keys are just not available in iOS.
 
 To offer a more productive input, iVim adds an extended keyboard.
 
 The compact button ~
 
-In order to cover as many keys as possible in limited space, compact buttons 
-are used in the extended keyboard.
-The key in the center of the button is the primary key, and a simple tapping 
-will trigger its input. Some optional keys may circle around the primary one. 
-To input an optional key, drag it towards the center and release. For example,
-if you want to input the key sitting at the top left corner, you make a drag 
-right and down. The start point doesn't really matter.
+In order to cover as many keys as possible in limited space, compact buttons are used in the extended keyboard.
+The key in the center of the button is the primary key, and a simple tapping will trigger its input. Some optional keys may circle around the primary one. 
+To input an optional key, drag it towards the center and release. For example, if you want to input the key sitting at the top left corner, you make a drag right and down. The start point doesn't really matter.
 
 The Ctrl key ~
 
-Some keys are sticky. For example, the Ctrl key needs to be held down while 
-pressing other keys. Thus it is set up as a sticky key:
+Some keys are sticky. For example, the Ctrl key needs to be held down while pressing other keys. Thus it is set up as a sticky key:
 
-a. triggering it once will enter the one-off state. After inputting a `C-`
-combination, it will restore automatically.
+a. triggering it once will enter the one-off state. After inputting a `C-` combination, it will restore automatically.
 
-b. triggering it twice will make it into the held state. It will keep being
-held until it is tapped again. This is good for continuous `C-` inputs.
+b. triggering it twice will make it into the held state. It will keep being held until it is tapped again. This is good for continuous `C-` inputs.
 
 c. tapping it in any of the above state will restore its state.
 
 Hide and show ~ 
 
 You can toggle the extended keyboard by one finger long pressing the screen. 
-The extended keyboard will show at launch by default. You can make it hide
-by default by toggle related option in |ios-settings|.
+The extended keyboard will show at launch by default. You can make it hide by default by toggle related option in |ios-settings|.
 
 Customize ~
 
-If the default buttons or keys on the extended keyboard don't meet your own
-needs, you can customize them through command |:isetekbd|.
+If the default buttons or keys on the extended keyboard don't meet your own needs, you can customize them through command |:isetekbd|.
 
 
 ==============================================================================
@@ -328,38 +318,25 @@ needs, you can customize them through command |:isetekbd|.
 
 iVim adds support to multistage input languages such as Chinese or Japanese.
 
-Multistage input means keys from the user may have different meaning than
-their literal one. It requires the user to do further confirm to get the final
-result. Besides the asian languages, `alt-`-enabled accentuated Latin input is 
-also an example.
+Multistage input means keys from the user may have different meaning than their literal one. It requires the user to do further confirm to get the final result. Besides the asian languages, `alt-`-enabled accentuated Latin input is also an example.
 
 Input behavior ~
 
 During a multistage input session: 
 
-1) the cursor position will not change until the user confirms thus the final
-result is ready (which also means the end of this session).
+1) the cursor position will not change until the user confirms thus the final result is ready (which also means the end of this session).
 
-2) pressing `esc` cancels current input session and discards all keys input so 
-far.
+2) pressing `esc` cancels current input session and discards all keys input so far.
 
-3) tapping on screen ends current input session and confirms the input result 
-so far as the final result.
+3) tapping on screen ends current input session and confirms the input result so far as the final result.
 
-4) any arrow key from the extended keyboard behaves as the same as tapping on
-screen. However, arrow keys from an external hardware keyboard will usually be 
-taken over by the system and travel among the available choices.
+4) any arrow key from the extended keyboard behaves as the same as tapping on screen. However, arrow keys from an external hardware keyboard will usually be taken over by the system and travel among the available choices.
 
-Note: a. The key pressings will be translated into normal ones if it is not in 
-|Insert| mode. b. Multistage input will stop working during dictation as
-mentioned in |ios-dictation|.
+Note: a. The key pressings will be translated into normal ones if it is not in |Insert| mode. b. Multistage input will stop working during dictation as mentioned in |ios-dictation|.
 
 Special highlight ~
 
-Often, by a simple glance, the user cannot tell if a multistage input session 
-is in effect or not. iVim provides a little feature to help with this: the
-user can change the color of the cursor-in-multistage by setting the highlight
-group CursorIM: >
+Often, by a simple glance, the user cannot tell if a multistage input session is in effect or not. iVim provides a little feature to help with this: the user can change the color of the cursor-in-multistage by setting the highlight group CursorIM: >
 
         :highlight CursorIM guifg=NONE guibg=Green
 <
@@ -373,41 +350,23 @@ iVim supports dictation input of iOS systems.
 
 Behavior ~
 
-In most scenarios, dictation input is live. It means that the hypothesis will 
-keep updating during a dictation session. As a result, mappings will be
-ignored while dictating. One exception is the |Normal| mode, as described
-below.
+In most scenarios, dictation input is live. It means that the hypothesis will keep updating during a dictation session. As a result, mappings will be ignored while dictating. One exception is the |Normal| mode, as described below.
 
 Normal mode ~
 
-Because of the characteristics of dictation input and |Normal| mode, the 
-former needs special handling for the latter in two ways:
+Because of the characteristics of dictation input and |Normal| mode, the former needs special handling for the latter in two ways:
 
 a. Automatical mode jumping
 
-iVim will change the mode from |Normal| to a chosen one when dictation happens
-in the |Normal| mode. The existing dictation result will be passed to the new
-mode. This can be set up as described in `Dictation` part of |ios-settings|.
+iVim will change the mode from |Normal| to a chosen one when dictation happens in the |Normal| mode. The existing dictation result will be passed to the new mode. This can be set up as described in `Dictation` part of |ios-settings|.
 
 b. Leaving it to users
 
-In this case, the dictation result will be passed to iVim as if users had 
-typed it. For example, if the result is "insert", iVim will enter the |Insert|
-mode and "nsert" will be inserted.
+In this case, the dictation result will be passed to iVim as if users had typed it. For example, if the result is "insert", iVim will enter the |Insert| mode and "nsert" will be inserted.
 
-For a better user control in this way, the dication results will be handled
-specially. A dictation result won't be counted as the input until the user
-confirms by ending the session explicitly. The space characters at the ends of
-the final result, if there is any, will be trimmed. Mappings will work in this
-situation for users to obtain more concise commands. Example: >
+For a better user control in this way, the dication results will be handled specially. A dictation result won't be counted as the input until the user confirms by ending the session explicitly. The space characters at the ends of the final result, if there is any, will be trimmed. Mappings will work in this situation for users to obtain more concise commands. Example: >
 
-	John sets a normal mode mapping from "insert mode" to "i". In the 
-	normal mode, he activates the dication keyboard, says "insert mode",
-	and ends the session by tapping the "Done" button. Although the 
-	dictation result is actually " insert mode", the first space char is
-	trimmed and "insert mode" is passed to iVim. Then iVim finds the
-	existing mapping for it, and it is mapped to the target "i". As a 
-	result, iVim enters the insert mode.
+	John sets a normal mode mapping from "insert mode" to "i". In the normal mode, he activates the dication keyboard, says "insert mode", and ends the session by tapping the "Done" button. Although the dictation result is actually " insert mode", the first space char is trimmed and "insert mode" is passed to iVim. Then iVim finds the existing mapping for it, and it is mapped to the target "i". As a result, iVim enters the insert mode.
 <
 Interruptions ~
 
