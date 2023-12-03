@@ -680,75 +680,53 @@ b. key repeating is also well supported for the ideographic languages.
 ==============================================================================
 10. Ctags			                *ios-ctags*
 
-Ctags is a great tool to generate tags for programming languages. The outcome
-tags are directly supported by vim. 
+Ctags is a great tool to generate tags for programming languages. The outcome tags are directly supported by vim. 
 
-Before version 2.22, iVim integrated |Exuberant_ctags| into itself and made it
-available as an Ex command.
+Before version 2.22, iVim integrated |Exuberant_ctags| into itself and made it available as an Ex command.
 
-To make it closer to the common usage and better support plugins which utilize 
-it, iVim has changed to offer ctags as an external command since version 2.22.
+To make it closer to the common usage and better support plugins which utilize it, iVim has changed to offer ctags as an external command since version 2.22.
 
-Note that instead of the `Excuberant Ctags`, iVim uses the `Universal Ctags` 
-implementation for both compatibility and up-to-date functionalities. Also,
-the Ex command `:ictags` has retired since this change.
+Note that instead of the `Excuberant Ctags`, iVim uses the `Universal Ctags` implementation for both compatibility and up-to-date functionalities. Also, the Ex command `:ictags` has retired since this change.
 
-You can just use it via `!ctags` in command mode or `ctags` as a command in a
-terminal window.
+You can just use it via `!ctags` in command mode or `ctags` as a command in a terminal window.
 
 
 ==============================================================================
 11. Auto restore                                *ios-auto-restore*
 
-With `Auto-restore` enabled, iVim automatically restores the last editing 
-session on launch, after an app termination.
+With `Auto-restore` enabled, iVim automatically restores the last editing session on launch, after an app termination.
 
-Because it is implemented based on vim's |session| feature, `Auto-restore`'s 
-basic behavior goes in that way.
+Because it is implemented based on vim's |session| feature, `Auto-restore`'s basic behavior goes in that way.
 
-Although iVim tries its best to make a restore look as normal as possible, 
-there are some points worth mentioning:
+Although iVim tries its best to make a restore look as normal as possible, there are some points worth mentioning:
 
-a. instead of saving a changed buffer directly for the user, iVim caches it
-for each file but leaves the original file alone. 
+a. instead of saving a changed buffer directly for the user, iVim caches it for each file but leaves the original file alone. 
 
-In another word, iVim will restore the latest content for each file in the
-windows, but the user still needs an explicit `write` operation to save the 
-changes, if there is any, back to the respective file.
+In another word, iVim will restore the latest content for each file in the windows, but the user still needs an explicit `write` operation to save the changes, if there is any, back to the respective file.
 
-1) a changed buffer without a file name will be restored as it was. It is up 
-to the user to save it or just drop it.
+1) a changed buffer without a file name will be restored as it was. It is up to the user to save it or just drop it.
 
-2) for a changed buffer with a file name, the changes will be dropped if its
-original file was modified elsewhere before the restore.
+2) for a changed buffer with a file name, the changes will be dropped if its original file was modified elsewhere before the restore.
 
 3) all undo information is lost for both of the above cases.
 
-b. buffers in the buffer list will be cached. To exclude buffers from the next
-restore, delete them from the buffer list.
+b. buffers in the buffer list will be cached. To exclude buffers from the next restore, delete them from the buffer list.
 
-c. unlike default vim sessions, opened directories by |netrw| will also be 
-restored. However, their cursor position information is not kept.
+c. unlike default vim sessions, opened directories by |netrw| will also be restored. However, their cursor position information is not kept.
 
-d. other useful information such as marks or register contents is stored in
-the |viminfo-file|, and also restored. Its details can be customized via the 
-'viminfo' option.
+d. other useful information such as marks or register contents is stored in the |viminfo-file|, and also restored. Its details can be customized via the 'viminfo' option.
  
-e. `Auto-restore` can be disabled in |ios-settings|. Note that iVim will clear 
-all the cached information when this happens.
+e. `Auto-restore` can be disabled in |ios-settings|. Note that iVim will clear all the cached information when this happens.
 
-f. if the user quits iVim, e.g. via commands such as |:wq| or |:x|, iVim will
-treat this as a demand of a fresh start, thus clear the session info.
+f. if the user quits iVim, e.g. via commands such as |:wq| or |:x|, iVim will treat this as a demand of a fresh start, thus clear the session info.
 
-g. for better restoration of buffers with |encryption|, iVim caches their keys
-temporarily in the system's keychain.
+g. for better restoration of buffers with |encryption|, iVim caches their keys temporarily in the system's keychain.
 
 
 ==============================================================================
 12. External commands                   *ios-external-commands*
 
-In order to enhance some plugins and its editing workflow, iVim includes some
-useful external commands and manages to make them work seemlessly with itself.
+In order to enhance some plugins and its editing workflow, iVim includes some useful external commands and manages to make them work seemlessly with itself.
 
 See |ios-external-cmds| for related details.
 
@@ -756,52 +734,35 @@ See |ios-external-cmds| for related details.
 ==============================================================================
 13. Plugins management                  *ios-plugins-management*
 
-Plugins are scripts that provide extra functionalities to vim besides its core 
-ones. 
+Plugins are scripts that provide extra functionalities to vim besides its core ones. 
 
-Since its version 8, vim has began to offer a package system (|packages|) to
-users to manage their plugins. After placing a plugin's scripts to the proper 
-locations, you get the their functionalities directly after each vim's launch. 
+Since its version 8, vim has began to offer a package system (|packages|) to users to manage their plugins. After placing a plugin's scripts to the proper locations, you get the their functionalities directly after each vim's launch. 
 
-Normally, plugins work in iVim as they do in vim on other platforms. However, 
-there are some caveats concerning using plugins in iVim.
+Normally, plugins work in iVim as they do in vim on other platforms. However, there are some caveats concerning using plugins in iVim.
 
 Caveats ~
 
-Due to the particularities of iOS systems, the following points should be kept
-in mind while using plugins in iVim:
+Due to the particularities of iOS systems, the following points should be kept in mind while using plugins in iVim:
 
 a. plugins which depend on external commands may not work as well as expected
 
-Even though iVim includes some external commands, plugins depending on certain
-command to function may not work well because either that the command is not
-available or that the command in iVim may have some subtle differences from
-its normal version.
+Even though iVim includes some external commands, plugins depending on certain command to function may not work well because either that the command is not available or that the command in iVim may have some subtle differences from its normal version.
 
 b. plugins which rely on other script languages may not work well
 
-Some plugins could utilize other script languages, such as Lua or Python, to
-implement their functions. Although iVim has enabled Lua and Python features,
-plugins which rely on them may not work well due to the languages' own limit
-on iOS systems.
+Some plugins could utilize other script languages, such as Lua or Python, to implement their functions. Although iVim has enabled Lua and Python features, plugins which rely on them may not work well due to the languages' own limit on iOS systems.
 
 c. plugins which requires compiling to install will not work
 
-Some plugins are written in other languages and need to be compiled into
-executables to run. In this case, they won't work in iVim due to the lack of
-compilation environment.
+Some plugins are written in other languages and need to be compiled into executables to run. In this case, they won't work in iVim due to the lack of compilation environment.
 
 Plugins Manager ~
 
-Nowadays, more and more useful plugins are available online. As a result, many
-plugins managers, which also are plugins themselves, were born to help users 
-install and manage those online plugins more efficiently.
+Nowadays, more and more useful plugins are available online. As a result, many plugins managers, which also are plugins themselves, were born to help users install and manage those online plugins more efficiently.
 
-Unfortunately, most of these plugins managers require the external command
-`git` to function, but it isn't available in iVim's external commands arsenal.
+Unfortunately, most of these plugins managers require the external command `git` to function, but it isn't available in iVim's external commands arsenal.
 
-As an alternative, iVim provides one its own plugins manager named "iplug".
-See |ivim-plugins-manager| for details.
+As an alternative, iVim provides one its own plugins manager named "iplug".  See |ivim-plugins-manager| for details.
 
 
 ==============================================================================
@@ -815,19 +776,14 @@ iVim provides the following types of windows:
 
 1) main editor (since 2.29)
 
-This is the traditional editor interface of vim. Only one instance can exist 
-at any moment. The editing in multiple windows or tabpages still goes in the 
-vim way and happens within this window.
+This is the traditional editor interface of vim. Only one instance can exist at any moment. The editing in multiple windows or tabpages still goes in the vim way and happens within this window.
 
 2) file browser (since 2.29)
 
-iVim provides this type of window for users to navigate the local filesystem
-in a more convenient way. It is a better choice for users who are not so 
-accustomed to browsing the filesystem in text mode.  See |ivim-file-browser| 
+iVim provides this type of window for users to navigate the local filesystem in a more convenient way. It is a better choice for users who are not so accustomed to browsing the filesystem in text mode.  See |ivim-file-browser| 
 for the details.
 
-You can open more than one file browser window at the same time. And you can
-do this by:
+You can open more than one file browser window at the same time. And you can do this by:
 
 a. tapping the plus icon in the iVim's App Exposé;
 b. running the Ex command |:ibrowse|;
@@ -836,9 +792,7 @@ d. dragging a folder from a file browser to the edge of the screen.
 
 3) preview window (since 2.31)
                                                 *ivim-preview-window*
-A preview window previews the contents of given files. Offering it as a 
-window is good for users to put it side by side with its original files and
-get a live preview experience.
+A preview window previews the contents of given files. Offering it as a window is good for users to put it side by side with its original files and get a live preview experience.
 
 More than one preview window can exist simultaneously. You can open one by:
 
@@ -848,17 +802,13 @@ c. running the Ex command |:ipreview| with option -w.
 
 4) web preview window (since 2.55)
 
-iVim offers this type of window for better web content previewing. Now web
-related documents (e.g. HTML or Markdown docs) are loaded into this window.
+iVim offers this type of window for better web content previewing. Now web related documents (e.g. HTML or Markdown docs) are loaded into this window.
 
-One web preview window can be opened in the same way as a preview window as
-described above. iVim picks a right preview window according to the documents
-automatically.
+One web preview window can be opened in the same way as a preview window as described above. iVim picks a right preview window according to the documents automatically.
 
 See |ivim-web-preview-window| for details.
 
-Besides the default file formats supported by the system, iVim also provides
-some extensions to preview extra formats:
+Besides the default file formats supported by the system, iVim also provides some extensions to preview extra formats:
 
 .md: Markdown files
 
@@ -866,15 +816,11 @@ iVim provides an Ex command |:ipreview| to maintain preview windows.
 
 Behavior ~
 
-Some behaviors that are specific to iVim's multiple windows support are worth 
-mentioning:
+Some behaviors that are specific to iVim's multiple windows support are worth mentioning:
 
-1) Normally, tapping the plus icon in iVim's App Exposé opens a new file
-browser window. However, it opens the main editor window instead when it is 
-not opened yet.
+1) Normally, tapping the plus icon in iVim's App Exposé opens a new file browser window. However, it opens the main editor window instead when it is not opened yet.
 
-2) when you quit iVim by running command such as |:qa| or |:x|, all windows
-will be closed.
+2) when you quit iVim by running command such as |:qa| or |:x|, all windows will be closed.
 
 Note that multiple windows is only fully available in iPadOS 13.0 and above.
 
@@ -882,8 +828,7 @@ Note that multiple windows is only fully available in iPadOS 13.0 and above.
 ==============================================================================
 15. Shortcuts                                       *ios-shortcuts*
 
-Since version 2.30, iVim starts adding Shortcuts support, making available its 
-functionalities for users to integrate into their own workflows.
+Since version 2.30, iVim starts adding Shortcuts support, making available its functionalities for users to integrate into their own workflows.
 
 Actions ~
 
@@ -901,8 +846,7 @@ Output:
 
 * the output of the Ex command (Text)
 
-Note that a command requiring user interactions would fail since this action
-does not invoke iVim's UI.
+Note that a command requiring user interactions would fail since this action does not invoke iVim's UI.
 
 2) Edit Text With Script (since 2.30)
 
@@ -932,21 +876,16 @@ Output:
 
 * the edited files (File)
 
-Note that you need to use the output files to obtain the edited outcome, the
-original input files are not modified by this action.
+Note that you need to use the output files to obtain the edited outcome, the original input files are not modified by this action.
 
 Some points concerning the actions are worth mentioning:
 
-a) they run in the background and won't open iVim's windows, therefore would
-fail if some GUI elements are involved;
+a) they run in the background and won't open iVim's windows, therefore would fail if some GUI elements are involved;
 
-b) they run under the same vim core, which means their side effects would
-affect each other or the whole iVim environment. For example, if you wipe out
-a buffer in one action, then it disappears from iVim and is not available in
+b) they run under the same vim core, which means their side effects would affect each other or the whole iVim environment. For example, if you wipe out a buffer in one action, then it disappears from iVim and is not available in
 any cases (following actions or editing in iVim, etc.);
 
-c) they have a 10 seconds limit and would fail if they take longer than that 
-to finish;
+c) they have a 10 seconds limit and would fail if they take longer than that to finish;
 
 d) they are only available in iOS 14.0 and above.
 
@@ -956,17 +895,13 @@ d) they are only available in iOS 14.0 and above.
 
 Since version 2.40, iVim adds version control support.
 
-By integrating version control functionalities into its existing UI, iVim now
-provides more intuitive info on what is going on in a project to its users.
+By integrating version control functionalities into its existing UI, iVim now provides more intuitive info on what is going on in a project to its users.
 
-For users who are not so familiar with version control systems, iVim uses more
-common names and concepts to simplify those from the version control culture.
+For users who are not so familiar with version control systems, iVim uses more common names and concepts to simplify those from the version control culture.
 
-With version control enabled in their projects, users now have more confidence
-in making changes.
+With version control enabled in their projects, users now have more confidence in making changes.
 
-Users can now share not only their files, but also the editing history with 
-each other.
+Users can now share not only their files, but also the editing history with each other.
 
 See |ivim-version-control| for the details.
 
@@ -976,18 +911,13 @@ See |ivim-version-control| for the details.
 
 Since version 2.41, iVim adds custom URL scheme support.
 
-Through defining and exposing some directives, iVim offers you the opportunity 
-to access to its functionality by simply opening a URL from anywhere in the 
-system.
+Through defining and exposing some directives, iVim offers you the opportunity to access to its functionality by simply opening a URL from anywhere in the system.
 
 This is another way in which you can put iVim into your own workflow.
 
-While it is convenient for users who know what it is, URL scheme may introduce
-potential security problems. For this, iVim has a design to offer you a chance
-to allow it or not.
+While it is convenient for users who know what it is, URL scheme may introduce potential security problems. For this, iVim has a design to offer you a chance to allow it or not.
 
-iVim also provides documentation for its usage and well-explained examples for
-you to get to understand and use it fast.
+iVim also provides documentation for its usage and well-explained examples for you to get to understand and use it fast.
 
 See |ivim-url-scheme| for the details.
 
@@ -995,15 +925,11 @@ See |ivim-url-scheme| for the details.
 ==============================================================================
 18. Greeting button             *ios-greeting-button* *ivim-greeting-button*
 
-Since version 2.41, by default, iVim shows a "more" button at the top right 
-corner of its main window. Tapping it pops up a menu presenting some options
-to get you started. 
+Since version 2.41, by default, iVim shows a "more" button at the top right corner of its main window. Tapping it pops up a menu presenting some options to get you started. 
 
-This button is therefore named "greeting button" and is helpful especially
-when you open iVim the first time.
+This button is therefore named "greeting button" and is helpful especially when you open iVim the first time.
 
-In case that it becomes annoying after you get familiar with iVim, you can
-simply choose to hide the button.
+In case that it becomes annoying after you get familiar with iVim, you can simply choose to hide the button.
 
 Options ~
 
@@ -1011,21 +937,15 @@ The greeting menu contains the following options:
 
 * What is iVim?
 
-It shows the main help page of iVim to give you the ideas of what iVim is and
-how it is special over vim.
+It shows the main help page of iVim to give you the ideas of what iVim is and how it is special over vim.
 
 * I've never used vim
 
-Since you've never used vim, you must feel baffled when you are looking at its
-plain UI for the first time (no worry, we've all been there). This opens the
-main help page of vim, showing you how you can start toddling in vim instead
-of scratching your head.
+Since you've never used vim, you must feel baffled when you are looking at its plain UI for the first time (no worry, we've all been there). This opens the main help page of vim, showing you how you can start toddling in vim instead of scratching your head.
 
 * Show me the documents
 
-It is not easy for newcomers to see files in vim. iVim has a GUI file browser
-for you to navigate the docs more intuitively. This opens a file browser that
-you can start tapping.
+It is not easy for newcomers to see files in vim. iVim has a GUI file browser for you to navigate the docs more intuitively. This opens a file browser that you can start tapping.
 
 * Change fonts
 
@@ -1033,18 +953,15 @@ This opens the font settings view for you to change the fonts.
 
 * Clone a repository
 
-This opens current directory in the file browser then shows the repository
-cloning view for you to clone a remote project to your device.
+This opens current directory in the file browser then shows the repository cloning view for you to clone a remote project to your device.
 
 * Go to the GitHub project
 
-This opens the project iVim on GitHub, so that you can get extra info, make
-suggestions, or report problems.
+This opens the project iVim on GitHub, so that you can get extra info, make suggestions, or report problems.
 
 * Show me extra features
 
-This opens the In-App Purchases view for you to buy available extra features
-and support iVim.
+This opens the In-App Purchases view for you to buy available extra features and support iVim.
 
 * What is this?
 
@@ -1052,9 +969,7 @@ This brings you here and tells you what the greeting button is all for.
 
 * Hide greeting button
 
-This hides the greeting button when you feel it more like a annoyance than a
-helper. And you can still bring it back via an option in |ios-settings| when
-you miss it.
+This hides the greeting button when you feel it more like a annoyance than a helper. And you can still bring it back via an option in |ios-settings| when you miss it.
 
 * iVim x.xx(x)
 
@@ -1063,10 +978,7 @@ The last entry simply shows iVim's current version.
 ==============================================================================
 19. Spotlight search                    *ios-spotlight*
 
-Since version 2.50, iVim makes some of its content searchable in the i(Pad)OS
-Spotlight system. After you input keywords into the system's search bar, 
-iVim-related entries, if any, appear in the resultant list. Tapping one brings
-you directly to the related item in iVim for further information or action.
+Since version 2.50, iVim makes some of its content searchable in the i(Pad)OS Spotlight system. After you input keywords into the system's search bar, iVim-related entries, if any, appear in the resultant list. Tapping one brings you directly to the related item in iVim for further information or action.
 
 Available types ~
                                         *ios-spotlight-types*
@@ -1074,25 +986,19 @@ The following searchable types are currently available:
 
 1) help
                                         *ios-spotlight-type-help*
-Each help tag from iVim documentation, such as "ios-spotlight", is collected 
-as a searchable item. 
+Each help tag from iVim documentation, such as "ios-spotlight", is collected as a searchable item. 
 
 Tapping one takes you to its documentation page in iVim.
                                         *ios-spotlight-entry-help*
-It has the sign "[H]" prepended to its title. In the body, it may have a
-one line description if it has it from the |index.txt| (Examples include
-|:idoc| or |i_CTRL-V|). Also, info of its containing documentation file is
-included at the end.
+It has the sign "[H]" prepended to its title. In the body, it may have a one line description if it has it from the |index.txt| (Examples include |:idoc| or |i_CTRL-V|). Also, info of its containing documentation file is included at the end.
 
 2) buffer
                                         *ios-spotlight-type-buffer*
-Each buffer that is currently being edited in iVim is collected as a searchable
-item.
+Each buffer that is currently being edited in iVim is collected as a searchable item.
 
 Tapping one brings you to the first window which opens it.
                                         *ios-spotlight-entry-buffer*
-It has the sign "[B]" ("[B+]" for changed buffers) in its title. Its content,
-if any, is shown in the body.
+It has the sign "[B]" ("[B+]" for changed buffers) in its title. Its content, if any, is shown in the body.
 
 Note that this type is not available unless |ios-auto-restore| is enabled.
 
@@ -1102,9 +1008,7 @@ All documents under the $HOME directory are collected as searchable items.
 
 Tapping one opens the document in iVim.
                                         *ios-spotlight-entry-document*
-It starts its title with the sign "[D]" ("[D/]" for directories). Also it
-puts the content of plain text document in the body. Finally, the document's
-last modified time at the end.
+It starts its title with the sign "[D]" ("[D/]" for directories). Also it puts the content of plain text document in the body. Finally, the document's last modified time at the end.
                                         *ios-spotlight-ignored-docs*
 Some documents are ignored to make more sense:
 
@@ -1116,26 +1020,20 @@ Enabled or disabled ~
 An index type can be in one of two states:
 
 * enabled
-An enabled type keeps its content indexed and available for searching in the
-system Spotlight.
+An enabled type keeps its content indexed and available for searching in the system Spotlight.
 
 You can disable an enabled type via |:ispotlight-disable|.
 
 * disabled
-Once a type is disabled, iVim stops indexing its content and removing all its
-existing indexed items, i.e. it is not available for searching any more.
+Once a type is disabled, iVim stops indexing its content and removing all its existing indexed items, i.e. it is not available for searching any more.
 
 You can enable a disabled type via |:ispotlight-enable|.
 
-However, besides being disabled manually by users, the reason for why a type 
-is disabled may be because its prerequisite is not fulfilled. For example, 
-type "buffer" requires |ios-auto-restore| to be first enabled. In this case, 
-you cannot enable a type until its prerequisite is satisfied.
+However, besides being disabled manually by users, the reason for why a type is disabled may be because its prerequisite is not fulfilled. For example, type "buffer" requires |ios-auto-restore| to be first enabled. In this case, you cannot enable a type until its prerequisite is satisfied.
 
 Indexing ~
                                         *ios-spotlight-indexing*
-Content needs to be indexed first in order to be available in Spotlight
-searching.
+Content needs to be indexed first in order to be available in Spotlight searching.
 
 Normally, iVim deals with the indexing automatically in background for you.
 Therefore, you don't even have to be aware of it when things go well.
