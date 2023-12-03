@@ -1035,38 +1035,29 @@ Indexing ~
                                         *ios-spotlight-indexing*
 Content needs to be indexed first in order to be available in Spotlight searching.
 
-Normally, iVim deals with the indexing automatically in background for you.
-Therefore, you don't even have to be aware of it when things go well.
+Normally, iVim deals with the indexing automatically in background for you.  Therefore, you don't even have to be aware of it when things go well.
 
-However, making clear of each type's indexing method and timing will be
-helpful for you to better understand a related problem when it shows up.
+However, making clear of each type's indexing method and timing will be helpful for you to better understand a related problem when it shows up.
 
 1) help
                                         *ios-spotlight-indexing-help*
-By default, help tags are only indexed at each iVim update, because that is
-the timing they may possibly change.
+By default, help tags are only indexed at each iVim update, because that is the timing they may possibly change.
 
 2) buffer
                                         *ios-spotlight-indexing-buffer*
-Since buffers change frequently, they are indexed whenever iVim resigns the
-focus, so that their information is up-to-date.
+Since buffers change frequently, they are indexed whenever iVim resigns the focus, so that their information is up-to-date.
 
 3) document
                                         *ios-spotlight-indexing-document*
-The whole $HOME directory is indexed whenever it is enabled, then iVim watches 
-its changes and update accordingly. 
+The whole $HOME directory is indexed whenever it is enabled, then iVim watches its changes and update accordingly. 
 
-Whenever you feel that something seems not right with the indexed items, you 
-can request a manual re-indexing via |:ispotlight-index|.
+Whenever you feel that something seems not right with the indexed items, you can request a manual re-indexing via |:ispotlight-index|.
 
-Since a Spotlight indexing task often takes a while to finish, it is left in
-background running. To make you aware of it, it is put into the running tasks
-list and triggers the indicator |ios-running-tasks-indicator|.
+Since a Spotlight indexing task often takes a while to finish, it is left in background running. To make you aware of it, it is put into the running tasks list and triggers the indicator |ios-running-tasks-indicator|.
 
 Search tips ~
                                         *ios-spotlight-tips*
-Although Spotlight is a powerful searching tool, it is easy to get lost in the
-sea of information. Here are some tips for you to reach the expected content
+Although Spotlight is a powerful searching tool, it is easy to get lost in the sea of information. Here are some tips for you to reach the expected content
 faster:
 
 * Each type has special keywords to make it stand out: 
@@ -1075,10 +1066,7 @@ faster:
     2) buffer: `ivimbuffer`, `ivimchangedbuffer`; 
     3) document: `ivimdocument`, `ivimdocdir`.
 
-    For example, `ivimhelp spotlight` makes help tags about `spotlight` appear
-    before other ones; `ivimchangedbuffer` prioritizes changed buffers to other
-    things; `ivimdocdir hello` puts directories before other things even though
-    they all answer to keyword `hello`. 
+    For example, `ivimhelp spotlight` makes help tags about `spotlight` appear before other ones; `ivimchangedbuffer` prioritizes changed buffers to other things; `ivimdocdir hello` puts directories before other things even though they all answer to keyword `hello`. 
 
 * Use `punc_{punctuation}` to find single punctuations in help tags.
 
@@ -1088,14 +1076,11 @@ faster:
 
 * Use double quotes to find exact match in help tags.
 
-    Say you want to get the help for CTRL-V in input mode, `i_CTRL-V` may not
-    return the exact tag as the first entry. In this case, `"i_CTRL-V"` would
-    return a better result.
+    Say you want to get the help for CTRL-V in input mode, `i_CTRL-V` may not return the exact tag as the first entry. In this case, `"i_CTRL-V"` would return a better result.
 
 Management ~
                                         *ios-spotlight-management*
-Even though Spotlight searching is well covered automatically by iVim, you may
-sometimes need to know its state or tune it. 
+Even though Spotlight searching is well covered automatically by iVim, you may sometimes need to know its state or tune it. 
 
 iVim offers a Ex command for Spotlight searching management, see |:ispotlight|
 for details.
@@ -1104,13 +1089,9 @@ for details.
 ==============================================================================
 20. Running tasks indicator             *ios-running-tasks-indicator*
 
-Usually, iVim puts long running tasks into background so that they do not
-disturb your editing. However, you may quit or switch out of iVim without 
-noticing there were still running tasks. In this case, these running tasks 
-would probably not finish properly.
+Usually, iVim puts long running tasks into background so that they do not disturb your editing. However, you may quit or switch out of iVim without noticing there were still running tasks. In this case, these running tasks would probably not finish properly.
 
-To deal with this potential problem, iVim shows an indicator reminding you
-that there are still tasks running in background. 
+To deal with this potential problem, iVim shows an indicator reminding you that there are still tasks running in background. 
 
 Where is it ~
                                         *ios-running-tasks-indicator-pos*
@@ -1118,31 +1099,25 @@ The indicator is a small green dot which may appear at the following places:
 
 * top right corner of the main editor
 
-If the |ivim-greeting-button| is shown, it sits to the button's left; otherwise
-it is just in the proximity of the top right corner.
+If the |ivim-greeting-button| is shown, it sits to the button's left; otherwise it is just in the proximity of the top right corner.
 
 Supported tasks ~
                                         *ios-running-tasks-supported*
-Currently, the following types of task trigger the indicator when they are 
-running in background:
+Currently, the following types of task trigger the indicator when they are running in background:
 
 . Spotlight indexing tasks (|ios-spotlight-indexing|)
 
 Running tasks list ~
                                         *ios-running-tasks-list*
-If you want to see the details of the running tasks, you can tap the indicator
-dot. A list of running tasks appear with its members and each member's progress
-updating in live.
+If you want to see the details of the running tasks, you can tap the indicator dot. A list of running tasks appear with its members and each member's progress updating in live.
 
 
 ==============================================================================
 21. Widgets                             *ios-widgets*
 
-Starting from version 2.51, iVim provides some widgets for you to put on the
-Home Screen or Today View on devices running i(Pad)OS 14.0 or later.
+Starting from version 2.51, iVim provides some widgets for you to put on the Home Screen or Today View on devices running i(Pad)OS 14.0 or later.
 
-Moreover, iVim adds some Lock Screen widgets (|ios-widget-lock-screen|) for
-iOS 16.0+ devices since version 2.52.
+Moreover, iVim adds some Lock Screen widgets (|ios-widget-lock-screen|) for iOS 16.0+ devices since version 2.52.
 
 Widget types ~
                                         *ios-widget-types*
@@ -1150,24 +1125,19 @@ The following widget types are currently available:
 
 * Buffer stats
                                         *ios-widget-buffer-stats*
-A buffer stats widget displays some statistical info on your open buffers in 
-iVim. Basically, it shows the number of open buffers. It also tells you about
-the detail numbers of the following categories if there is any of them:
+A buffer stats widget displays some statistical info on your open buffers in iVim. Basically, it shows the number of open buffers. It also tells you about the detail numbers of the following categories if there is any of them:
 
     .unsaved                            *ios-widget-buffer-stats-unsaved* 
 
-    Unsaved buffers include buffers that changed but you forgot to write to 
-    disk, or ones that you created but forgot to give names to.
+    Unsaved buffers include buffers that changed but you forgot to write to disk, or ones that you created but forgot to give names to.
 
     .directory                          *ios-widget-buffer-stats-directory*
 
-    This category means buffers whose targets are directories rather than
-    normal files.
+    This category means buffers whose targets are directories rather than normal files.
 
     .readonly                           *ios-widget-buffer-stats-readonly*
 
-    Readonly buffers prevent you from making any changes to them. E.g. help
-    documents.
+    Readonly buffers prevent you from making any changes to them. E.g. help documents.
 
     .external                           *ios-widget-buffer-stats-external*
 
@@ -1179,18 +1149,12 @@ Note that it requires |ios-auto-restore| to be enabled.
 
 * Quick commands
                                         *ios-widget-quick-commands*
-A quick commands widget lets you run some preset Ex commands directly from the
-widget.
+A quick commands widget lets you run some preset Ex commands directly from the widget.
 
-By long tapping the widget then tapping "Edit Widget", you can manage (i.e.
-add, remove or re-order) the commands. Each command appears as a button on the
-widget, tapping it opens iVim and runs the command.
+By long tapping the widget then tapping "Edit Widget", you can manage (i.e.  add, remove or re-order) the commands. Each command appears as a button on the widget, tapping it opens iVim and runs the command.
                     *ios-widget-quick-commands-var* *g:ivim_last_quick_command*
-Running a quick command is a little different from running it directly from
-the command window. Its output is not directly printed in the command window. 
-Instead, iVim provides a global variable "g:ivim_last_quick_command" which
-records the running info of the last quick command. It is a dictionary having
-the below fields:
+Running a quick command is a little different from running it directly from the command window. Its output is not directly printed in the command window. 
+Instead, iVim provides a global variable "g:ivim_last_quick_command" which records the running info of the last quick command. It is a dictionary having the below fields:
 
 - "cmd": the quick command ran.
 - "output": the output of the command running.
@@ -1208,46 +1172,32 @@ And it is available as the following:
 
     .inline                             *ios-widget-lock-screen-bs-inline*
 
-    The inline widget is displayed in the line above the Lock Screen time. It
-    starts with the total buffer number. The category numbers follow. To save
-    space, the category names are abbrevivated to their respective initial
-    letter.
+    The inline widget is displayed in the line above the Lock Screen time. It starts with the total buffer number. The category numbers follow. To save space, the category names are abbrevivated to their respective initial letter.
 
-    For example, "5·U2·D1" means there are 5 open buffers. Among these, there
-    are 2 unsaved files and 1 directory.
+    For example, "5·U2·D1" means there are 5 open buffers. Among these, there are 2 unsaved files and 1 directory.
 
     .circular                           *ios-widget-lock-screen-bs-circular*
 
-    The circular widget shows the total buffer number in its center. It has
-    the same formatted category numbers as the inline widget and puts them
-    along the lower arc.
+    The circular widget shows the total buffer number in its center. It has the same formatted category numbers as the inline widget and puts them along the lower arc.
 
 Tapping each buffer stats widget opens iVim.
 
 * Quick command
                                         *ios-widget-lock-screen-quick-cmd*
-You can also run quick commands from the Lock Screen via the quick command
-widgets. They are available as the following:
+You can also run quick commands from the Lock Screen via the quick command widgets. They are available as the following:
 
     .circular                           *ios-widget-lock-screen-qc-circular*
 
-    It displays the command's initial character in the center and the full
-    command line along the lower arc (it may be truncated at the end if it is
-    too long).
+    It displays the command's initial character in the center and the full command line along the lower arc (it may be truncated at the end if it is too long).
 
 Like its Home Screen counterpart, you need to preset commands for each widget.
-However, only its first command gets to run when you tap a widget. Except for 
-this, the command running behaviors are the same as its Home Screen 
-counterparts (|ios-widget-quick-commands|).
+However, only its first command gets to run when you tap a widget. Except for this, the command running behaviors are the same as its Home Screen counterparts (|ios-widget-quick-commands|).
 
 
 ==============================================================================
 22. Quick Actions                       *ios-quick-actions* 
 
-Since version 2.51, when you touch and hold iVim's icon on the Home screen on
-a device running i(Pad)OS 13 or later, it pops up a menu providing some quick
-action items. Each quick action item offers a piece of quick functionality or 
-glancible information.
+Since version 2.51, when you touch and hold iVim's icon on the Home screen on a device running i(Pad)OS 13 or later, it pops up a menu providing some quick action items. Each quick action item offers a piece of quick functionality or glancible information.
 
 Default actions ~
                                         *ios-quick-action-default-actions*
@@ -1263,11 +1213,9 @@ It opens a file browser in iVim for you.
 
 * Continue Unsaved              *ios-quick-action-default-continue-unsaved*
 
-It randomly shows, as its subtitle, one of the unsaved documents you left in 
-iVim last time, and opens the document in iVim if you tap it.
+It randomly shows, as its subtitle, one of the unsaved documents you left in iVim last time, and opens the document in iVim if you tap it.
 
-Note that this item requires |ios-auto-restore| to be enabled, and it will not
-appear if there is no unsaved documents.
+Note that this item requires |ios-auto-restore| to be enabled, and it will not appear if there is no unsaved documents.
 
 * Last Used                             *ios-quick-action-default-last-used*
 
@@ -1276,8 +1224,7 @@ It shows the last time when you used iVim. Tapping it just opens iVim.
 Customization ~
                     *ios-quick-action-config* *ios-quick-action-customization*
 Meanwhile, iVim also offers you an opportunity to customize the quick actions:
-when it sees config file "~/.vim/ivim_quick_actions_config.json", it reads and 
-loads quick actions from it instead of the default ones.
+when it sees config file "~/.vim/ivim_quick_actions_config.json", it reads and loads quick actions from it instead of the default ones.
                                         *ios-quick-action-config-format*
 The config file is a JSON file. It describes a list of quick actions as below: >
 
@@ -1301,44 +1248,31 @@ In each quick action config as shown above:
 
 (1) the "type" field gives the type of this action: 
 
-It could be "custom", so iVim makes a customized quick action according to the 
-info in "action" (2*); 
+It could be "custom", so iVim makes a customized quick action according to the info in "action" (2*); 
 
-Or it could be "default" if you want to include one of the default actions (
-|ios-quick-action-default-actions|) in your list. In this case, you provide 
-the title of the default action in "title" (3*) to make clear which one you 
-need.
+Or it could be "default" if you want to include one of the default actions ( |ios-quick-action-default-actions|) in your list. In this case, you provide the title of the default action in "title" (3*) to make clear which one you need.
 
 "custom" is implicitly used when this field is omitted.
 
 (2*) the "action" field provides necessary information for the quick action.
 
-    (3*) the "title" field indicates the title of the action. If you choose to
-    use a default action in "type" (1), it selects the target default action
-    according to this title.
+    (3*) the "title" field indicates the title of the action. If you choose to use a default action in "type" (1), it selects the target default action according to this title.
 
     This field is required.
 
-    (4) the "subtitle" field provides the information on how to generate the
-    subtitle of the action.
+    (4) the "subtitle" field provides the information on how to generate the subtitle of the action.
 
-        (5) when the "text" field is given, its value is literally used as the 
-        subtitle.
+        (5) when the "text" field is given, its value is literally used as the subtitle.
 
-        (6) when the "command" field is given, its value is ran as a Ex
-        command and the output is used as the subtitle. Note that since iVim 
-        generates quick actions before it becomes inactive, the command is 
-        ran and in turn the output is generated at this same timing.
+        (6) when the "command" field is given, its value is ran as a Ex command and the output is used as the subtitle. Note that since iVim generates quick actions before it becomes inactive, the command is ran and in turn the output is generated at this same timing.
 
         When both (5) and (6) are given, (5) wins.
 
-    (7) the "icon" field indicates the SF Symbol name that is used as the
-    action's icon. By default, "gearshape.circle" is used.
+    (7) the "icon" field indicates the SF Symbol name that is used as the action's icon. By default, "gearshape.circle" is used.
 
     (8) the "command" field gives the Ex command for the customized action.
 
-    Note that if the type (1) is "default", all fields but "title" (3*) are
-    ignored.
+    Note that if the type (1) is "default", all fields but "title" (3*) are ignored.
 
 For example, the following sample config generates two quick action items: >
 
@@ -1362,18 +1296,14 @@ For example, the following sample config generates two quick action items: >
         },
     ]
 <
-The first is a customized action with title "Pick External Doc" and subtitle
-"Open the documents picker". It uses SF Symbol "doc.fill.badge.plus" as its
-icon. When invoked, it runs command |:idocuments| therefore opens the picker 
-in iVim.
+The first is a customized action with title "Pick External Doc" and subtitle "Open the documents picker". It uses SF Symbol "doc.fill.badge.plus" as its icon. When invoked, it runs command |:idocuments| therefore opens the picker in iVim.
 
 The second is the default "Last Used" action |ios-quick-action-default-last-used|.
         
                                         *ios-quick-action-custom-command*
 A customized quick action lets you run your own command quickly.
         *ios-quick-action-custom-command-var* *g:ivim_last_custom_quick_action*
-Like in |ivim-url-scheme|, the last running of customized quick action command 
-records its info into the global variable "g:ivim_last_custom_quick_action".
+Like in |ivim-url-scheme|, the last running of customized quick action command records its info into the global variable "g:ivim_last_custom_quick_action".
 It is a dictionay containing the following fields:
 
 - "cmd": the quick action command.
@@ -1385,32 +1315,23 @@ It is a dictionay containing the following fields:
 
 Touch support ~
 
-iVim adds support to basic touch gestures to make operations more intuitive 
-and efficient.
+iVim adds support to basic touch gestures to make operations more intuitive and efficient.
 
-a. Single tapping is like mouse left click on computers: it can change cursor 
-position, window or select specific tab.
+a. Single tapping is like mouse left click on computers: it can change cursor position, window or select specific tab.
 
-b. Single finger dragging can select text within a window, or resize a window 
-when the fingers are on its status bar.
+b. Single finger dragging can select text within a window, or resize a window when the fingers are on its status bar.
 
-c. Two fingers dragging will scroll text in a window. Note that iVim will not
-try to become focused with this gesture.
+c. Two fingers dragging will scroll text in a window. Note that iVim will not try to become focused with this gesture.
 
-d. While one finger long pressing toggles the extended keyboard, two fingers
-long pressing hides the system keyboard, and a single tap to bring it back.
+d. While one finger long pressing toggles the extended keyboard, two fingers long pressing hides the system keyboard, and a single tap to bring it back.
 
-e. Two fingers pinch changes the font size. Note that this can be disabled in 
-|ios-settings|.
+e. Two fingers pinch changes the font size. Note that this can be disabled in |ios-settings|.
 
 Trackpad & mouse support ~
 
-iPadOS 13.4 introduces dynamic pointer effects and behaviors enhancing the
-experience of using an external pointing device, like a trackpad or mouse,
-with iPad. iVim also adds some basic support for this.
+iPadOS 13.4 introduces dynamic pointer effects and behaviors enhancing the experience of using an external pointing device, like a trackpad or mouse, with iPad. iVim also adds some basic support for this.
 
-. Single tapping or clicking from a pointing device works like a single tap 
-on the screen.
+. Single tapping or clicking from a pointing device works like a single tap on the screen.
 
 . Long pressing from a pointing device toggles the extended keyboard.
 
@@ -1418,34 +1339,23 @@ on the screen.
 
 Home indicator ~
                                             *ivim-home-indicator*
-On some devices, a Home Indicator bar is present at the bottom of the screen, 
-replacing the absent physical Home button. You can choose to hide it in iVim
-with an option in |ios-settings|.
+On some devices, a Home Indicator bar is present at the bottom of the screen, replacing the absent physical Home button. You can choose to hide it in iVim with an option in |ios-settings|.
 
 Swap file cleaning ~
 
-Due to the sudden app termination mechanism of the iOS system, there would be
-leftover swap files in the filesystem. iVim will try and clean them on each
-launch automatically.
+Due to the sudden app termination mechanism of the iOS system, there would be leftover swap files in the filesystem. iVim will try and clean them on each launch automatically.
 
 The viminfo file ~
 
-The default writing timing for the |viminfo-file| is when vim exits. However,
-that does not happen so often in iVim. Therefore, iVim takes over and records
-the file when necessary.
+The default writing timing for the |viminfo-file| is when vim exits. However, that does not happen so often in iVim. Therefore, iVim takes over and records the file when necessary.
 
 Auto toggle extended keyboard ~
 
-iVim supports to hide the extended keyboard automatically when a hardware
-keyboard is connected and show it when disconnected. This can be enabled or
-disabled in |ios-settings|. Note that this stops working after a manual
-toggle happens, until the next iVim launch.
+iVim supports to hide the extended keyboard automatically when a hardware keyboard is connected and show it when disconnected. This can be enabled or disabled in |ios-settings|. Note that this stops working after a manual toggle happens, until the next iVim launch.
 
 Status bar ~
                                             *ivim-status-bar*
-Since version 2.51, in |ios-settings|, iVim offers one option for you to show
-or hide the system's status bar. Through another option, you can also pick
-the status bar style to better match your main editor's background.
+Since version 2.51, in |ios-settings|, iVim offers one option for you to show or hide the system's status bar. Through another option, you can also pick the status bar style to better match your main editor's background.
 
 
  vim:tw=78:ts=8:noet:ft=help:norl:
