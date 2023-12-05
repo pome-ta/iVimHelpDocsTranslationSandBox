@@ -5,7 +5,7 @@
 
 					        *ios-external-cmds* 
 
-This file documents the particularities of the external commands support provided by iVim.
+このファイルは、iVimが提供する外部コマンドのサポートの特殊性を文書化しています。
 
 1. Concepts                             |ios-exter-cmds-concepts|
 2. Available Commands                   |ios-exter-cmds-list|
