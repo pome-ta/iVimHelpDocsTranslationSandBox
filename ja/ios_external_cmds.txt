@@ -72,17 +72,13 @@ There, you can find useful information about external commands, such as their us
 ==============================================================================
 4. CA Certificates                              *ios-exter-cmds-ca-certs*
 
-If you communicate with HTTPS or other TLS(SSL)-using servers via an external
-command, it may need a CA certificate to do the SSL verification. Otherwise,
-the communication may fail.
+If you communicate with HTTPS or other TLS(SSL)-using servers via an external command, it may need a CA certificate to do the SSL verification. Otherwise, the communication may fail.
 
 The location of the CA certificate file is given by the environment varibale
 `$SSL_CERT_FILE`. 
 
 Because it is kind of private, iVim does not provide this file by default. 
-Therefore, you may have to obtain and deploy it by yourself. If you do not 
-have clues on how to do this, there is a wiki page giving related suggestion 
-and instructions:
+Therefore, you may have to obtain and deploy it by yourself. If you do not have clues on how to do this, there is a wiki page giving related suggestion and instructions:
 https://github.com/terrychou/iVim/wiki/External-Command:-curl#ca-certificate
 
 
@@ -91,71 +87,53 @@ https://github.com/terrychou/iVim/wiki/External-Command:-curl#ca-certificate
 
 Editing ~
 
-iVim provides an interactive line mode for running external commands. Which 
-means that it waits and accepts your input if the command expects so. 
+iVim provides an interactive line mode for running external commands. Which means that it waits and accepts your input if the command expects so. 
 
 During the input:
 
 a) it collects and reflects what you have input so far. 
 
-b) you can delete the character before the cursor one by one, but cannot jump 
-among them with the arrow keys. 
+b) you can delete the character before the cursor one by one, but cannot jump among them with the arrow keys. 
 
-c) you confirm your input by inputting a return (new line). When that happens, 
-iVim sends the content collected so far as a whole line to the command.
+c) you confirm your input by inputting a return (new line). When that happens, iVim sends the content collected so far as a whole line to the command.
 
 Control inputs ~
 
 While the external command is running, iVim only accepts two control inputs:
 
 1) `Ctrl-C`
-it interrupts the running command. Different commands respond in their 
-different respective ways to this input.
+it interrupts the running command. Different commands respond in their different respective ways to this input.
 
 2) `Ctrl-D`
-it means the end of the whole input. The command responds in the way when it 
-gets EOF (End Of File).
+it means the end of the whole input. The command responds in the way when it gets EOF (End Of File).
 
 Command output ~
 
-iVim gets all the content that the command outputs to the standard output or 
-the standard error, and prints it in the message window. Note that you cannot
-scroll back when the output is more than one screen.
+iVim gets all the content that the command outputs to the standard output or the standard error, and prints it in the message window. Note that you cannot scroll back when the output is more than one screen.
 
 
 ==============================================================================
 6. Terminal                                     *ios-exter-cmds-term*
 
-iVim enables the |+terminal| feature. Which means you can also run external
-commands in a |terminal-window|.
+iVim enables the |+terminal| feature. Which means you can also run external commands in a |terminal-window|.
 
-The easiest way to run an external command in a terminal window, is to invoke
-it via the |:terminal| command: >
+The easiest way to run an external command in a terminal window, is to invoke it via the |:terminal| command: >
         :terminal pwd               "open a terminal window and show current
                                     "directory in it
 <
 The advantages of running commands in a terminal window include:
 
 a) colors 
-the terminal window support the ANSI colors. Commands' output including them
-will be displayed correctly. Note that iVim also enables |+termguicolors|, so
-you can set the default 16 ANSI colors used by the terminal via the variable
-|g:terminal_ansi_colors|.
+the terminal window support the ANSI colors. Commands' output including them will be displayed correctly. Note that iVim also enables |+termguicolors|, so you can set the default 16 ANSI colors used by the terminal via the variable |g:terminal_ansi_colors|.
 
 b) multiple commands simultaneously
-unlike running via ex command line, you can open multiple terminal windows
-and run one command in each, at the same time.
+unlike running via ex command line, you can open multiple terminal windows and run one command in each, at the same time.
 
 c) more convenient output browsing
-While you cannot scroll back to see the earlier output if it exceeds one page
-in the ex command line, a terminal window, by default, will be kept open after
-its command is finished. As a result, you are able to browse the whole output 
-as easily as reading a normal document in vim.
+While you cannot scroll back to see the earlier output if it exceeds one page in the ex command line, a terminal window, by default, will be kept open after its command is finished. As a result, you are able to browse the whole output as easily as reading a normal document in vim.
 
 d) auto-restore support
-if a command was still running in a terminal window when iVim terminated, the
-related window will be restored automatically at the next launch, with the 
-right command started within it.
+if a command was still running in a terminal window when iVim terminated, the related window will be restored automatically at the next launch, with the right command started within it.
 
 See |terminal| for details about the terminal window.
 
@@ -163,22 +141,18 @@ See |terminal| for details about the terminal window.
 ==============================================================================
 7. ivish                                        *ivish*
 
-To make running external commands in a more continous way, iVim includes a 
-simple shell named `ivish`. You can launch it via: >
+To make running external commands in a more continous way, iVim includes a simple shell named `ivish`. You can launch it via: >
         :terminal ivish
 <
 or just simply: >
         :terminal
 <
-the difference between them is that in the latter case, the terminal window 
-will be closed automatically when `ivish` exits.
+the difference between them is that in the latter case, the terminal window will be closed automatically when `ivish` exits.
 
 Input & output ~
 
-After `ivish` started, it shows a prompt `$ ` and waits for you to offer a 
-command. `ivish` won't handle your input until you confirm by pressing enter.
-After it started, the running command takes over the input and output. Only 
-when it is done, `ivish` comes out again and expects your next command.
+After `ivish` started, it shows a prompt `$ ` and waits for you to offer a command. `ivish` won't handle your input until you confirm by pressing enter.
+After it started, the running command takes over the input and output. Only when it is done, `ivish` comes out again and expects your next command.
 
 Line editing ~
                                                     *ivish-editing*
@@ -194,8 +168,7 @@ end; Note that if the current line is empty, it exits `ivish`;
 `^K`: delete all since the cursor;
 `^T`: move one word backward;
 `^U`: delete all before the cursor;
-`^W`: delete one previous word; Note that since the terminal window eats `^W`
-use `^W.` to do this;
+`^W`: delete one previous word; Note that since the terminal window eats `^W` use `^W.` to do this;
 `^Y`: move one word forward.
 
 Hints & completion ~
@@ -205,23 +178,19 @@ Right now, `ivish` provides completion for the following types:
 a) command names
 b) file or directory names
 
-During your input, `ivish` watches the cursor position and gives the first of
-all possible completion candidates as a hint. 
+During your input, `ivish` watches the cursor position and gives the first of all possible completion candidates as a hint. 
 
 When you press the `tab` key:
 
-a) if there are more than one completion candidates available, `ivish` lists 
-them and complete the word to their longest common prefix;
+a) if there are more than one completion candidates available, `ivish` lists them and complete the word to their longest common prefix;
 b) if there is only one candidate, the whole word gets completed;
 c) if no candidates available, nothing happens.
 
-Note that hints and completion only work in `ivish` right now, not the running
-commands.
+Note that hints and completion only work in `ivish` right now, not the running commands.
 
 History ~
                                                     *ivish-history*
-Every confirmed line in `ivish` will be recorded as one history item. You can
-navigate the list via:
+Every confirmed line in `ivish` will be recorded as one history item. You can navigate the list via:
 
 `^P` or `up-arrow`: move to the previous line if available;
 `^N` or `down-arrow`: move to the next line if available, otherwise return to
@@ -310,23 +279,14 @@ Aliases ~
 						    *ivish-aliases*
 Aliases are shortcuts for invoking long commands. 
 
-An alias is comprised of a name and a value. Each `ivish` shell maintains an 
-aliases pool. Before executing a command, the shell checks to see if the first
-word of the command is the name of an existing alias. If so, this word is 
-replaced by the value of the found alias.
+An alias is comprised of a name and a value. Each `ivish` shell maintains an aliases pool. Before executing a command, the shell checks to see if the first word of the command is the name of an existing alias. If so, this word is replaced by the value of the found alias.
 						    *ivish-aliases-recursion*
-The first word of the replacement text is also tested for aliases. This test
-continues until a word appears for the second time in this testing chain. For
-example, if there is an alias `ls='ls -a'`, for the command `ls -l`, the aliases
-test simply stops after its first "ls" is replaced by "ls -a", rather than
-replacing the resulting first "ls" again.
+The first word of the replacement text is also tested for aliases. This test continues until a word appears for the second time in this testing chain. For example, if there is an alias `ls='ls -a'`, for the command `ls -l`, the aliases test simply stops after its first "ls" is replaced by "ls -a", rather than replacing the resulting first "ls" again.
 						    *ivish-aliases-further-test*
-If the last character of one applied alias is a space, the next word in the
-original command following the alias is also tested for aliases.
+If the last character of one applied alias is a space, the next word in the original command following the alias is also tested for aliases.
 
 For example, if an alias `aa='ls -a '` exists and the command `aa bb` is given.
-After the first word "aa" is replaced, the second word "bb" is also checked
-for possible aliases.
+After the first word "aa" is replaced, the second word "bb" is also checked for possible aliases.
 						    *ivish-aliases-cmds*
 In `ivish`, aliases are created and listed with command `alias`
 (|ivish-inter-cmd-alias|), or removed with command `unalias`
@@ -339,15 +299,12 @@ Aliases in the root pool are available in the following scenes:
 * all external commands share the root aliases pool;
 * each `ivish` shell reads aliases from the root pool when it starts.
 
-As a result, you can put commands "!alias name=..." in |.vimrc| to make useful 
-aliases ready whenever `iVim` launches.
+As a result, you can put commands "!alias name=..." in |.vimrc| to make useful aliases ready whenever `iVim` launches.
 
 Note that however, aliases are not available as commands invoked via |:terminal| 
 since this only calls non-builtin commands.
 						*ivish-aliases-live-expansion*
-At a prompt, `ivish` monitors what you have inputted so far and tries to expand
-aliases within it. If there is any alias expanded, it displays the resulting
-command line below the input line, for example: >
+At a prompt, `ivish` monitors what you have inputted so far and tries to expand aliases within it. If there is any alias expanded, it displays the resulting command line below the input line, for example: >
 
 	$ ll
 	= ls -l
@@ -356,8 +313,7 @@ in this case, you know exactly what will be executed after you press enter.
 
 Pipes ~
 						    *ivish-pipes*
-A pipe connects the output of its left command to the input of its right 
-command, and `ivish` supports 2 types of pipes:
+A pipe connects the output of its left command to the input of its right command, and `ivish` supports 2 types of pipes:
 						    *ivish-|*
 1) `|` normal pipe: >
 
@@ -369,18 +325,15 @@ it connects the standard output of command1 to the standard input of command2.
 
 	command1 |& command2
 <
-in addition to command1's standard output, it also connects its standard error 
-to command2's standard input.
+in addition to command1's standard output, it also connects its standard error to command2's standard input.
 						    *ivish-pipeline*
 Multiple pipes can be chained together to form a pipeline: >
 
 	command1 | command2 |& command3 ...
 <
-a pipeline waits for all of its commands to terminate before itself exits. The
-exit status of a pipeline is the exit status of its last command.
+a pipeline waits for all of its commands to terminate before itself exits. The exit status of a pipeline is the exit status of its last command.
 
-Note that each piped command is executed in a subshell, which is a separate
-shell.
+Note that each piped command is executed in a subshell, which is a separate shell.
 
 Sequences ~
 						    *ivish-sequence*
@@ -388,9 +341,7 @@ A sequence is a list of commands or pipelines (|ivish-pipeline|) separated by `;
 
 	ls -al | cat; pwd; uname -a
 <
-The member commands or pipelines are executed one by one in order. `ivish` waits 
-for all members to terminate in turn. The exit status of the last member is
-the exit status of the whole sequence.
+The member commands or pipelines are executed one by one in order. `ivish` waits for all members to terminate in turn. The exit status of the last member is the exit status of the whole sequence.
 
 Caveats ~
 						    *ivish-caveats*
