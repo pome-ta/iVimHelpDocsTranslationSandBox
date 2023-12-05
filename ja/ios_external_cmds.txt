@@ -19,15 +19,15 @@
 ==============================================================================
 1. Concepts                                     *ios-exter-cmds-concepts*
 
-To enhance some of its plugins and its whole editing workflow, iVim includes some external commands as the auxiliary tools.
+プラグインの一部と編集ワークフロー全体を強化するために、iVimには補助ツールとしていくつかの外部コマンドが含まれています。
 
 How it works ~
 
-An "external command" here means a complete program on its own. It does not depend on the function of vim. Vim communicates with it only through the input and output.
+ここでの「外部コマンド」とは、それ自体が完全なプログラムを意味します。それはvimの機能に依存しません。Vimは入力と出力を介してのみ通信します。
+セキュリティのため、iOSはアプリが単独で新しいプログラムを起動することを許可していません。しかし、プロジェクト `ios_system` は、これを克服し、プログラムの立ち上げを可能にするための優れた回避策モデルを提供します。 `ios_system` に特別な感謝と乾杯!
 
-For security's sake, iOS does not allow an app to launch a new program by itself. However, the project `ios_system` provides a brilliant workaround model to overcome this and make the program launching possible. Special thanks and cheers to `ios_system`!
+`ios_system` に基づいて、iVimにはいくつかの外部コマンドが含まれており、シェルから来ているように見えます。したがって、 |:!cmd|、|:write_c| または |:read!| などのシェルコマンドのように使用できます。
 
-Based on `ios_system`, iVim includes some external commands, and make them look like coming from a shell. Therefore, you can use them like a shell command, such as via |:!cmd|, |:write_c| or |:read!|.
 
 Plugins ~
 
