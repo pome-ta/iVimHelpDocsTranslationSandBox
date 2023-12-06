@@ -55,20 +55,24 @@ iVimが提供する外部コマンドは、ほとんどのユーザ�
 ==============================================================================
 3. Command Personalities                        *ios-exter-cmds-personalities*
 
-Since the external commands have been modified somehow in order to run in the `ios_system` model, and iVim is not providing a genuine shell after all, they may unavoidably have some particularities that users have to pay attention to.
+外部コマンドは `ios_system` モデルで実行するために何らかの形で変更されており、iVimは結局本物のシェルを提供していないため、必然的にユーザーが注意を払わなければならないいくつかの特殊性があるかもしれません。
 
-However, for the reason of being subject to change in future updates, the details of external commands' personalities are not given in this document.
-Instead, it is available in iVim's project wiki page |ios-exter-cmds-wiki|.
+
+ただし、将来の更新で変更される可能性があるため、外部コマンドの性格の詳細はこの文書には記載されていません。
+代わりに、iVimのプロジェクトウィキページ |ios-exter-cmds-wiki| で入手できます。
+
 
 Environment variables ~
                                                 *ios-exter-cmds-env*
-As usual, one external command may respect certain environment variables. In other words, the values of certain environment variables change the behavior of the command. So this is a way to configurate the external commands. You can also find related information on the wiki page |ios-exter-cmds-wiki|.
+いつものように、1つの外部コマンドは特定の環境変数を尊重する場合があります。言い換えれば、特定の環境変数の値はコマンドの動作を変更します。したがって、これは外部コマンドを構成する方法です。また、wikiページ |ios-exter-cmds-wiki| で関連情報を見つけることができます。
+
 
 External commands wiki page ~
                                                 *ios-exter-cmds-wiki*
-To provide updated information on external commands, iVim has a specific wiki page: https://github.com/terrychou/iVim/wiki/External-Commands
+外部コマンドに関する最新情報を提供するために、iVimには特定のwikiページがあります。
+https://github.com/terrychou/iVim/wiki/External-Commands
 
-There, you can find useful information about external commands, such as their usage, configuration, etc.
+そこでは、使用法、設定など、外部コマンドに関する有用な情報を見つけることができます。
 
 
 ==============================================================================
