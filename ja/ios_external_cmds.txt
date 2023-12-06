@@ -31,23 +31,25 @@ How it works ~
 
 Plugins ~
 
-Since the external commands are integrated into iVim in the "standard" way somehow, those plugins that didn't work or work properly due to the lack of certain external command, may work or work better now.
+外部コマンドは何らかの形で「標準」な方法でiVimに統合されているため、特定の外部コマンドがないために機能しなかった、または正常に機能しなかったプラグインは、現在よりうまく機能または機能するかもしれません。
 
-For example, |netrw| can now edit remote files on a network computer via the `scp://` protocol thanks to the availability of the command `scp`.
+たとえば、 |netrw| は、コマンド `scp` の可用性のおかげで、 `scp://` プロトコルを介してネットワークコンピュータ上のリモートファイルを編集できるようになりました。
+
 
 Some tech details ~
 
-Normally, a program needs to become a process in the system to run. To prevent apps from launching new programs, iOS disables, from the bottom level, the ability of starting new processes. On the other hand, the project `ios_system` (https://github.com/holzschu/ios_system) makes it possible by changing to put the program into a thread instead. Of course, the program needs to be modified correspondingly somehow to fit this model.
+通常、プログラムは実行するシステムのプロセスになる必要があります。アプリが新しいプログラムを起動するのを防ぐために、iOSは下のレベルから新しいプロセスを開始する能力を無効にします。一方、プロジェクト `ios_system` (https://github.com/holzschu/ios_system) は、代わりにプログラムをスレッドに入れるように変更することで可能にします。もちろん、このプログラムは、このモデルに合わせて何らかの形で変更する必要があります。
 
 
 ==============================================================================
 2. Available Commands                           *ios-exter-cmds-list*
 
-The external commands that iVim provides, are useful command line tools that most users are familiar with and happy to have. Moreover, new commands could be added and old ones could be removed in future updates. 
+iVimが提供する外部コマンドは、ほとんどのユーザーが慣れ親しんでいて喜んで持っている便利なコマンドラインツールです。さらに、新しいコマンドが追加され、古いコマンドは将来の更新で削除される可能性があります。
 
-As a result, the inventory of available external commands are not given in details in this document.
+その結果、利用可能な外部コマンドのインベントリは、このドキュメントでは詳細に記載されていません。
 
-However, as how it works for shell commands for vim on other platforms, you can always use ^D (|c_CTRL-D|) after having input `:!` in the cmdline to list all available external commands in current version. Also, it lists external commands that have the prefix you have input after `:!` in this way.
+ただし、他のプラットフォームでのvimのシェルコマンドの仕組みとして、 `:!` を入力した後、いつでも ^D (|c_CTRL-D|) を使用できます。Cmdlineで、現在のバージョンで利用可能なすべての外部コマンドを一覧表示します。また、 `:!` の後に入力した接頭辞を持つ外部コマンドもリストされています。このように。
+
 
 
 ==============================================================================
