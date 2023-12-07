@@ -80,10 +80,10 @@ https://github.com/terrychou/iVim/wiki/External-Commands
 
 外部コマンドを介してHTTPSまたは他のTLS(SSL)を使用するサーバーと通信する場合、SSL検証を行うためにCA証明書が必要になる場合があります。そうしないと、通信が失敗する可能性があります。
 
-The location of the CA certificate file is given by the environment varibale `$SSL_CERT_FILE`. 
+CA証明書ファイルの場所は、環境変数 `$SSL_CERT_FILE` によって与えられます。
 
-Because it is kind of private, iVim does not provide this file by default. 
-Therefore, you may have to obtain and deploy it by yourself. If you do not have clues on how to do this, there is a wiki page giving related suggestion and instructions:
+一種のプライベートなので、iVimはデフォルトでこのファイルを提供していません。
+したがって、自分で入手して展開する必要があるかもしれません。これを行う方法の手がかりがない場合は、関連する提案と指示を提供するwikiページがあります:
 https://github.com/terrychou/iVim/wiki/External-Command:-curl#ca-certificate
 
 
@@ -92,29 +92,29 @@ https://github.com/terrychou/iVim/wiki/External-Command:-curl#ca-certificate
 
 Editing ~
 
-iVim provides an interactive line mode for running external commands. Which means that it waits and accepts your input if the command expects so. 
+iVimは、外部コマンドを実行するためのインタラクティブなラインモードを提供します。これは、コマンドがそう期待している場合、あなたの入力を待って受け入れることを意味します。
 
 During the input:
 
-a) it collects and reflects what you have input so far. 
+a) これまでに入力したものを収集し、反映します。 
 
-b) you can delete the character before the cursor one by one, but cannot jump among them with the arrow keys. 
+b) カーソルの前の文字を1つずつ削除できますが、矢印キーでその中を飛び越えることはできません。
 
-c) you confirm your input by inputting a return (new line). When that happens, iVim sends the content collected so far as a whole line to the command.
+c) リターン(新しい行)を入力して入力を確認します。その場合、iVimはこれまでに収集されたコンテンツを行全体としてコマンドに送信します。
 
 Control inputs ~
 
-While the external command is running, iVim only accepts two control inputs:
+外部コマンドが実行されている間、iVimは2つの制御入力のみを受け入れます:
 
 1) `Ctrl-C`
-it interrupts the running command. Different commands respond in their different respective ways to this input.
+実行中のコマンドを中断します。異なるコマンドは、この入力にそれぞれの方法で応答します。
 
 2) `Ctrl-D`
-it means the end of the whole input. The command responds in the way when it gets EOF (End Of File).
+それは入力全体の終わりを意味します。このコマンドは、EOF(ファイルの終了)を取得するときに応答します。
 
 Command output ~
 
-iVim gets all the content that the command outputs to the standard output or the standard error, and prints it in the message window. Note that you cannot scroll back when the output is more than one screen.
+iVimは、コマンドが標準出力または標準エラーに出力するすべてのコンテンツを取得し、メッセージウィンドウに出力します。出力が複数の画面の場合、スクロールバックできないことに注意してください。
 
 
 ==============================================================================
