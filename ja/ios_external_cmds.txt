@@ -78,10 +78,9 @@ https://github.com/terrychou/iVim/wiki/External-Commands
 ==============================================================================
 4. CA Certificates                              *ios-exter-cmds-ca-certs*
 
-If you communicate with HTTPS or other TLS(SSL)-using servers via an external command, it may need a CA certificate to do the SSL verification. Otherwise, the communication may fail.
+外部コマンドを介してHTTPSまたは他のTLS(SSL)を使用するサーバーと通信する場合、SSL検証を行うためにCA証明書が必要になる場合があります。そうしないと、通信が失敗する可能性があります。
 
-The location of the CA certificate file is given by the environment varibale
-`$SSL_CERT_FILE`. 
+The location of the CA certificate file is given by the environment varibale `$SSL_CERT_FILE`. 
 
 Because it is kind of private, iVim does not provide this file by default. 
 Therefore, you may have to obtain and deploy it by yourself. If you do not have clues on how to do this, there is a wiki page giving related suggestion and instructions:
