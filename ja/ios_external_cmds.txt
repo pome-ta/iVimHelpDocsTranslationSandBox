@@ -160,41 +160,41 @@ Input & output ~
 
 Line editing ~
                                                     *ivish-editing*
-`ivish` provides a powerful line editing mode for you to edit your input.
+`ivish` は、入力を編集するための強力な行編集モードを提供します。
 
-`^A`: jump to the start of the line;
-`^B`: move one character backward;
-`^C`: cancel the current line and start a new prompt;
-`^D`: delete the character under the cursor; act like enter if cursor at the
-end; Note that if the current line is empty, it exits `ivish`;
-`^E`: jump to the end of the line;
-`^F`: move one character forward;
-`^K`: delete all since the cursor;
-`^T`: move one word backward;
-`^U`: delete all before the cursor;
-`^W`: delete one previous word; Note that since the terminal window eats `^W` use `^W.` to do this;
-`^Y`: move one word forward.
+`^A`: 行の先頭にジャンプする;
+`^B`: 1 文字後ろに移動;
+`^C`: 現在の行をキャンセルして、新しいプロンプトを開始します;
+`^D`: カーソルの下の文字を削除します。 Enter のように動作します if カーソルが最後にあります;
+現在の行が空の場合、`ivish` が終了することに注意してください;
+`^E`: 行の最後にジャンプする;
+`^F`: 1文字前に移動;
+`^K`: カーソル以降をすべて削除;
+`^T`: 1 単語後ろに移動;
+`^U`: カーソルの前をすべて削除;
+`^W`: 前の単語を 1 つ削除します。ターミナル ウィンドウは `^W` を使用するため、これを行うには `^W.` を使用することに注意してください;
+`^Y`: 1 単語先に進みます
 
 Hints & completion ~
                                                     *ivish-completion*
-Right now, `ivish` provides completion for the following types:
+現時点では、`ivish` は次のタイプの補完を提供します:
 
-a) command names
-b) file or directory names
+a) コマンド名
+b) ファイル名またはディレクトリ名
 
-During your input, `ivish` watches the cursor position and gives the first of all possible completion candidates as a hint. 
+入力中、`ivish` はカーソルの位置を監視し、すべての可能な補完候補の最初のものをヒントとして提供します。
 
-When you press the `tab` key:
+`tab` キーを押すと:
 
-a) if there are more than one completion candidates available, `ivish` lists them and complete the word to their longest common prefix;
-b) if there is only one candidate, the whole word gets completed;
-c) if no candidates available, nothing happens.
+a) 利用可能な補完候補が複数ある場合、`ivish` はそれらをリストし、それらの最長の共通接頭辞まで単語を補完します;
+b) 候補が 1 つだけの場合、単語全体が完成します;
+c) 候補者がいない場合は何も起こりません。
 
-Note that hints and completion only work in `ivish` right now, not the running commands.
+現時点では、ヒントと補完は ivish でのみ機能し、実行中のコマンドでは機能しないことに注意してください。
 
 History ~
                                                     *ivish-history*
-Every confirmed line in `ivish` will be recorded as one history item. You can navigate the list via:
+`ivish` で確認されたすべての行が 1 つの履歴項目として記録されます。リスト内を移動するには:
 
 `^P` or `up-arrow`: move to the previous line if available;
 `^N` or `down-arrow`: move to the next line if available, otherwise return to
