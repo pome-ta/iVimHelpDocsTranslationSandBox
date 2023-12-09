@@ -145,18 +145,18 @@ iVim の終了時にターミナル ウィンドウでコマンドか�
 ==============================================================================
 7. ivish                                        *ivish*
 
-To make running external commands in a more continous way, iVim includes a simple shell named `ivish`. You can launch it via: >
+外部コマンドをより継続的に実行できるようにするために、iVim には `ivish` という名前の単純なシェルが含まれています。次の方法で起動できます: >
         :terminal ivish
 <
-or just simply: >
+または単純に: >
         :terminal
 <
-the difference between them is that in the latter case, the terminal window will be closed automatically when `ivish` exits.
+両者の違いは、後者の場合、 `ivish` が終了するとターミナル ウィンドウが自動的に閉じられることです。
 
 Input & output ~
 
-After `ivish` started, it shows a prompt `$ ` and waits for you to offer a command. `ivish` won't handle your input until you confirm by pressing enter.
-After it started, the running command takes over the input and output. Only when it is done, `ivish` comes out again and expects your next command.
+`ivish` が起動すると、プロンプト `$ ` が表示され、コマンドの入力を待ちます。 Enter キーを押して確定するまで、`ivish` は入力を処理しません。
+開始後、実行中のコマンドが入力と出力を引き継ぎます。それが完了した場合にのみ、`ivish` が再び出てきて、次のコマンドを待ちます。
 
 Line editing ~
                                                     *ivish-editing*
