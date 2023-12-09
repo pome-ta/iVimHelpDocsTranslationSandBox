@@ -120,27 +120,26 @@ iVimは、コマンドが標準出力または標準エラーに出力す�
 ==============================================================================
 6. Terminal                                     *ios-exter-cmds-term*
 
-iVim enables the |+terminal| feature. Which means you can also run external commands in a |terminal-window|.
+iVim は |+terminal| を有効にします。特徴。つまり、 |terminal-window| で外部コマンドを実行することもできます。
 
-The easiest way to run an external command in a terminal window, is to invoke it via the |:terminal| command: >
-        :terminal pwd               "open a terminal window and show current
+ターミナル ウィンドウで外部コマンドを実行する最も簡単な方法は、 |:terminal| 経由でコマンドを呼び出すことです: >        :terminal pwd               "open a terminal window and show current
                                     "directory in it
 <
-The advantages of running commands in a terminal window include:
+ターミナル ウィンドウでコマンドを実行する利点は次のとおりです:
 
 a) colors 
-the terminal window support the ANSI colors. Commands' output including them will be displayed correctly. Note that iVim also enables |+termguicolors|, so you can set the default 16 ANSI colors used by the terminal via the variable |g:terminal_ansi_colors|.
+端末ウィンドウは ANSI カラーをサポートします。これらを含むコマンドの出力は正しく表示されます。 iVim は |+termguicolors| も有効にするので、変数 |g:terminal_ansi_colors| を介して端末で使用されるデフォルトの 16 ANSI カラーを設定できることに注意してください。
 
 b) multiple commands simultaneously
-unlike running via ex command line, you can open multiple terminal windows and run one command in each, at the same time.
+元のコマンド ライン経由で実行するのとは異なり、複数のターミナル ウィンドウを開いて、それぞれで 1 つのコマンドを同時に実行できます。
 
 c) more convenient output browsing
-While you cannot scroll back to see the earlier output if it exceeds one page in the ex command line, a terminal window, by default, will be kept open after its command is finished. As a result, you are able to browse the whole output as easily as reading a normal document in vim.
+ex コマンド ラインで 1 ページを超える場合は、スクロールして前の出力を表示することはできませんが、デフォルトでは、コマンドの終了後もターミナル ウィンドウが開いたままになります。その結果、vim で通常のドキュメントを読むのと同じくらい簡単に出力全体を参照できるようになります。
 
 d) auto-restore support
-if a command was still running in a terminal window when iVim terminated, the related window will be restored automatically at the next launch, with the right command started within it.
+iVim の終了時にターミナル ウィンドウでコマンドがまだ実行されていた場合、次回の起動時に関連するウィンドウが自動的に復元され、その中で適切なコマンドが開始されます。
 
-See |terminal| for details about the terminal window.
+ターミナル ウィンドウの詳細については、 |terminal| を参照してください。
 
             
 ==============================================================================
