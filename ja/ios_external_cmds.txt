@@ -196,14 +196,13 @@ History ~
                                                     *ivish-history*
 `ivish` で確認されたすべての行が 1 つの履歴項目として記録されます。リスト内を移動するには:
 
-`^P` or `up-arrow`: move to the previous line if available;
-`^N` or `down-arrow`: move to the next line if available, otherwise return to
-the current input;
-`esc`: restore to the current input.
+`^P` or `up-arrow`: 可能な場合は前の行に移動;
+`^N` or `down-arrow`: 可能な場合は次の行に移動し、そうでない場合は現在の入力に戻ります;
+`esc`: 現在の入力に戻す
 
-You can list the current history items via the internal command `history`.
+内部コマンド `history` を使用して、現在の履歴項目を一覧表示できます。
 
-There are some notes worth mentioning:
+言及する価値のある注意事項がいくつかあります:
 
 a) repeated lines are allowed;
 b) at most 100 items are kept in the history;
